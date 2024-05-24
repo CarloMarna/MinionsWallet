@@ -69,7 +69,7 @@ const Grafici = () => {
     };
 
     return (
-        <View style={{ flex: 1, paddingTop: screenHeight * 0.02 }}>
+        <View style={{ flex: 1, }}>
             <View style={styles.containerGrafici}>
                 <Text style={[styles.textStyle, { color: '#0057B8' }]}>Andamenento spese in un anno:</Text>
 
