@@ -77,7 +77,7 @@ const Grafici = () => {
                     <LineChart
                         data={dataGraficoAndamento}
                         width={Dimensions.get("window").width} // from react-native
-                        height={screenHeight * 0.42}
+                        height={screenHeight * 0.40}
                         yAxisLabel="$"
                         yAxisSuffix="k"
                         yAxisInterval={1} // optional, defaults to 1
@@ -99,7 +99,7 @@ const Grafici = () => {
                         }}
                         data={dataGraficoABarre}
                         width={dataGraficoABarre.datasets.length * 2 * screenWidth}
-                        height={screenHeight * 0.45}
+                        height={screenHeight * 0.38}
                         yAxisLabel={valuta = '$'}
                         chartConfig={chartConfigBarre}
                         verticalLabelRotation={40}
