@@ -100,9 +100,7 @@ const Registration = ({ navigation }) => {
         {
           text: 'OK',
           onPress: () => {
-
-            navigation.navigate("HomeGraficiStatistiche")
-            //navigation.navigate("HomePage")
+            navigation.navigate("HomePage")
           },
           style: 'default',
         },
