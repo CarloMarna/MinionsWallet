@@ -62,12 +62,23 @@ const Categorie=()=>{
         img: string;
         nomeCategoria: string;
       };
+    
+    type ItemPopUp={
+        img: string;
+    };
 
     type ItemProps={    //proprietà dell'item
         item: ItemCategoria;    //item di tipo ItemCategoria
         onPress: ()=>void;  //funzione di tipo void
         backgroundColor: string;
         color: string;
+    };
+
+    type ItemPopUpProps={    //proprietà dell'item
+        item: ItemCategoria;    //item di tipo ItemCategoria
+        onPress: ()=>void;  //funzione di tipo void
+        borderColor: string;
+        borderWidth: number;
     };
 
     const lista_categorie: ItemCategoria[]=[    //lista categorie di tipo ItemCategoria
@@ -85,11 +96,34 @@ const Categorie=()=>{
         nomeCategoria: 'bollette'},
     ];
 
+    const lista_icone: ItemPopUp[]=[
+        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
+        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
+        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
+        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
+        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
+        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
+        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
+        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
+        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
+        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
+        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
+        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
+    ];
+    
     const Item=({item, onPress, backgroundColor, color}:ItemProps)=>( //definisco la costante item a cui passo le proprietà
         <View>
             <Pressable onPress={onPress}>
                 <Image source={item.img} style={styles.immagine_categoria}/>
                 <Text style={[{backgroundColor, color}, styles.testo_categoria]}>{item.nomeCategoria}</Text>
+            </Pressable>
+        </View>
+    );
+
+    const ItemPopUp=({item, onPress, borderColor, borderWidth}:ItemPopUpProps)=>( //definisco la costante item a cui passo le proprietà
+         <View>
+            <Pressable onPress={onPress}>
+                <Image source={item.img} style={[{borderColor, borderWidth},styles.icone]}></Image>
             </Pressable>
         </View>
     );
@@ -107,6 +141,18 @@ const Categorie=()=>{
         );
     };
 
+    const [selectedIcon, setSelectedIcon] = useState("");
+    const renderItemPopUp=({item}:{item: ItemPopUp})=>{
+        const borderColor=item.img===selectedIcon?'#0057BB': '';
+            return(
+                <ItemPopUp
+                item={item}
+                onPress={()=>(setSelectedIcon(item.img))}
+                borderColor={borderColor}
+                borderWidth={2}
+                />
+            ) 
+    }
     const separator=()=>{
         return(
             <View style={styles.separator} />
@@ -124,8 +170,8 @@ const Categorie=()=>{
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
                         <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
-                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} itemDimension={30} data={['../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png','../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png',  '../assets/img/icone_minions/Minion-Bananas.png']} renderItem={({item})=>(<Image style={[{borderColor:'black', borderWidth:2, width:30, height: 30}]} source={item}></Image>)}/>
-                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> setModalVisible(!modalVisible)}/></View>
+                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} maxItemsPerRow={5} maxDimension={4} data={lista_icone} renderItem={renderItemPopUp}/>
+                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> (setModalVisible(!modalVisible))}/></View>
                     </View>
                 </Modal>
             </View>
@@ -133,6 +179,54 @@ const Categorie=()=>{
     )
 }
 
+const Tag=()=>{
+    type ItemTag={
+        name: string
+    };
+
+    const lista_tag: ItemTag[]=[
+        {name: 'regalo pippo'},
+        {name: 'regalo pluto'},
+        {name: 'regalo pippo'},
+        {name: 'regalo pluto'},
+        {name: 'regalo pippo'},
+        {name: 'regalo pluto'},
+        {name: 'regalo pippo'},
+        {name: 'regalo pluto'},
+    ];
+
+    const renderItemTag=({item}: {item: ItemTag})=>{
+        const color=selectedTag.includes(item.name)?'white':'#0057BB';
+        const backgroundcolor=selectedTag.includes(item.name)?'#0057BB': 'white';
+        return(
+            <View>
+            <Pressable onPress={()=>{
+                if(selectedTag.includes(item.name))
+                    setSelectedTag(selectedTag.replaceAll(item.name, ''));
+                else
+                    setSelectedTag(selectedTag.concat(item.name));
+            }}>
+                <Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 15, backgroundColor: backgroundcolor}]}>{item.name}</Text></Ionicons>
+                
+            </Pressable>
+            </View>
+        )
+        
+    };
+
+    const separator=()=>{
+        return(
+            <View style={styles.separator} />
+        )
+    }
+
+    const [selectedTag, setSelectedTag] = useState('');
+     return(
+        <View style={[{flex: 1}]}>
+            <FlatList data={lista_tag} renderItem={renderItemTag} ItemSeparatorComponent={separator} horizontal scrollEnabled/>
+        </View>
+     )
+}
 
 function NuovaSpesa(){
 const[fontLoaded, setFontLoaded] = useState(false);
@@ -154,6 +248,7 @@ const[fontLoaded, setFontLoaded] = useState(false);
             <ScrollView>
                 <Importo />
                 <Categorie />
+                <Tag />
             </ScrollView>
         </SafeAreaView>
     )
@@ -250,25 +345,35 @@ const styles=StyleSheet.create({
     modal: {
         backgroundColor: 'white',
         color: '#0057BB',
-        fontFamily: 'minions-font'
+        fontFamily: 'minions-font',
+        justifyContent: 'center',
+        flex:1
     },
     vista_modal: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 22
+        flexDirection:'column',
     },
     elementi_modal: {
         alignItems:'center',
         backgroundColor:'white',
-        width:300,
-        height:300
+        width: 300,
+        height:400,
+        alignSelf:'center',
+        marginTop:20,
+        borderColor:'#0057BB',
+        borderWidth:2,
+        paddingVertical:15
     },
     scritte_popup: {
         fontFamily:'minions-font',
         fontSize:15,
         color: '#0057BB',
         textAlign: 'left'
+    },
+    icone: {
+        width:50, 
+        height: 50
     }
 });
 
