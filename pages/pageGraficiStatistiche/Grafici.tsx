@@ -25,39 +25,17 @@ const Grafici = () => {
     };
 
     const chartConfigBarre = {
-        /*backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.2,
-        color: (opacity = 1) => `rgba(0, 51, 102, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
-        barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional*/
         backgroundGradientFrom: "#FDE74C", // Giallo
         backgroundGradientFromOpacity: 1,
         backgroundGradientTo: "#5CA4A9", // Blu
         backgroundGradientToOpacity: 1,
         color: (opacity = 1) => `rgba(23, 78, 139, ${opacity})`, // Blu scuro
         strokeWidth: 2,
-        barPercentage: 0.8,
+        barPercentage: 0.6,
         useShadowColorFromDataset: false,
     };
 
     const chartConfigAndamento = {
-        /*backgroundColor: "#e26a00",
-        backgroundGradientFrom: "#fb8c00",
-        backgroundGradientTo: "#ffa726",
-        decimalPlaces: 2, // optional, defaults to 2dp
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 16
-        },
-        propsForDots: {
-          r: "6",
-          strokeWidth: "2",
-          stroke: "#ffa726"
-        }*/
         backgroundGradientFrom: "#FFF3B0", // Giallo chiaro
         backgroundGradientFromOpacity: 1,
         backgroundGradientTo: "#4CAF50", // Verde
