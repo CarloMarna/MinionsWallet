@@ -49,7 +49,7 @@ const Statistiche = () => {
 
 /************ TAB BAR INFERIORE ********** */
 
-const  HomeGraficiStatistiche = () => {
+const HomeGraficiStatistiche = () => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -88,7 +88,8 @@ const  HomeGraficiStatistiche = () => {
 const styles = StyleSheet.create({
   tabBarInferiori: {
     flex: 1,
-   borderWidth:1,
+    borderWidth: 1,
+    borderTopColor: '#0057B8'
   },
 
   mainContainer: {
