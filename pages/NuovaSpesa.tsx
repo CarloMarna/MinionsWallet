@@ -1,7 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, Text, TextInput, View, Button, FlatList, SafeAreaView, StyleSheet, Image, Pressable} from 'react-native';
+import {ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { SimpleGrid } from 'react-native-super-grid';
+
 
 async function loadFonts() {
     await Font.loadAsync({
@@ -109,11 +112,23 @@ const Categorie=()=>{
             <View style={styles.separator} />
         )
     }
+    const [modalVisible, setModalVisible] = React.useState(false);
 
     return( //categorie mi restituisce la flatlist
         <View>
             <Text style={styles.scritte}>Scegli la categoria o creane una nuova</Text>
-            <FlatList data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.aggiungi_categoria} ListFooterComponent={<Button title='Aggiungi cateogoria' style={styles.aggiungi_categoria}/>}/>
+            <FlatList data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={() => setModalVisible(!modalVisible)}><Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons></Pressable></View>}/>
+            <View style={styles.vista_modal}>
+                <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
+                    <View style={styles.elementi_modal}>
+                        <Text style={styles.scritte_popup}>Nome categoria</Text>
+                        <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
+                        <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
+                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} itemDimension={30} data={['../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png','../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png', '../assets/img/icone_minions/Minion-Bananas.png',  '../assets/img/icone_minions/Minion-Bananas.png']} renderItem={({item})=>(<Image style={[{borderColor:'black', borderWidth:2, width:30, height: 30}]} source={item}></Image>)}/>
+                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> setModalVisible(!modalVisible)}/></View>
+                    </View>
+                </Modal>
+            </View>
         </View>
     )
 }
@@ -226,12 +241,34 @@ const styles=StyleSheet.create({
         width:70,
         height:70
     },
-    aggiungi_categoria: {
-        width: 200,
+    immagine_aggiunta: {
+        width: 50,
         height: 50,
-        marginTop:20,
-        alignSelf:'center',
-        
+        marginTop: 20,
+        marginLeft: 20
+    },
+    modal: {
+        backgroundColor: 'white',
+        color: '#0057BB',
+        fontFamily: 'minions-font'
+    },
+    vista_modal: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22
+    },
+    elementi_modal: {
+        alignItems:'center',
+        backgroundColor:'white',
+        width:300,
+        height:300
+    },
+    scritte_popup: {
+        fontFamily:'minions-font',
+        fontSize:15,
+        color: '#0057BB',
+        textAlign: 'left'
     }
 });
 
