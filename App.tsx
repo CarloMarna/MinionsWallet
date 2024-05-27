@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState } from 'react';
@@ -10,6 +9,8 @@ import HomePage from './pages/homePage/HomePage';
 import Uscita from './pages/Uscita';
 import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato il pacchetto @expo/vector-icons
 import Modal from 'react-native-modal';
+import * as SQLite from 'expo-sqlite';
+
 
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
