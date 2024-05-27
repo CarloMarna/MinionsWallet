@@ -46,7 +46,7 @@ const Media = () => {
                 <Picker.Item label="Mese" value="Mese" />
                 <Picker.Item label="Anno" value="Anno" />
             </Picker>
-            <Text style={styles.risultatoSpesaMedia}> {media} {valuta} </Text>
+            <Text style={styles.risultatoSpesaMedia}> {media} </Text>
         </View>);
 };
 
