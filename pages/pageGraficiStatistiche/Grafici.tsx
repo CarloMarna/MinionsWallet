@@ -47,45 +47,46 @@ const Grafici = () => {
 
     return (
         <View style={{ flex: 1, }}>
-            <View style={styles.containerGrafici}>
-                <Text style={[styles.textStyle, { color: '#0057B8' }]}>Andamenento spese in un anno:</Text>
+            <ScrollView>
+                <View style={styles.containerGrafici}>
+                    <Text style={[styles.textStyle, { color: '#0057B8' }]}>Andamenento spese in un anno:</Text>
 
-                <ScrollView horizontal>
-                    <LineChart
-                        data={dataGraficoAndamento}
-                        width={Dimensions.get("window").width} // from react-native
-                        height={screenHeight * 0.40}
-                        yAxisLabel="$"
-                        yAxisSuffix="k"
-                        yAxisInterval={1} // optional, defaults to 1
-                        chartConfig={chartConfigAndamento}
-                        bezier
-                        verticalLabelRotation={60}
-                        style={{
-                            marginVertical: 4,
-                        }}
-                    />
-                </ScrollView>
-            </View>
-            <View style={styles.containerGrafici}>
-                <Text style={[styles.textStyle, { color: '#0057B8' }]}>Spese su categorie:</Text>
-                <ScrollView horizontal>
-                    <BarChart
-                        style={{
-                            marginVertical: 4,
-                        }}
-                        data={dataGraficoABarre}
-                        width={dataGraficoABarre.datasets.length * 2 * screenWidth}
-                        height={screenHeight * 0.38}
-                        yAxisLabel={valuta = '$'}
-                        chartConfig={chartConfigBarre}
-                        verticalLabelRotation={40}
-                        showValuesOnTopOfBars
-                        fromZero
-                    />
-                </ScrollView>
-            </View>
-
+                    <ScrollView horizontal>
+                        <LineChart
+                            data={dataGraficoAndamento}
+                            width={Dimensions.get("window").width * 2} // from react-native
+                            height={screenHeight * 0.362}
+                            yAxisLabel="$"
+                            yAxisSuffix="k"
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={chartConfigAndamento}
+                            bezier
+                            verticalLabelRotation={60}
+                            style={{
+                                marginVertical: 4,
+                            }}
+                        />
+                    </ScrollView>
+                </View>
+                <View style={styles.containerGrafici}>
+                    <Text style={[styles.textStyle, { color: '#0057B8' }]}>Spese su categorie:</Text>
+                    <ScrollView horizontal>
+                        <BarChart
+                            style={{
+                                marginVertical: 4,
+                            }}
+                            data={dataGraficoABarre}
+                            width={dataGraficoABarre.datasets.length * 2 * screenWidth}
+                            height={screenHeight * 0.362}
+                            yAxisLabel={valuta = '$'}
+                            chartConfig={chartConfigBarre}
+                            verticalLabelRotation={40}
+                            showValuesOnTopOfBars
+                            fromZero
+                        />
+                    </ScrollView>
+                </View>
+            </ScrollView>
         </View>
     );
 };
