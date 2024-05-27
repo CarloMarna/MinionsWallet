@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     },
 
     containerDate: {
-        marginTop: screenHeight * 0.010,
+        marginTop: screenHeight * 0.02,
         fontFamily: 'fredoka-one',
         flexDirection: 'row',
     },
