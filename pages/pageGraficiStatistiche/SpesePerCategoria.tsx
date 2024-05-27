@@ -36,40 +36,88 @@ const SpesePerCategoria = () => {
                 { categoria: 'Gelato:', percentuale: 100 },
                 { categoria: 'Gadget:', percentuale: 5 },
                 { categoria: 'Imposta del boss:', percentuale: 10 },
-                { categoria: 'Regali:', percentuale: 5 },
-                { categoria: 'Banane:', percentuale: 30 },
+                { categoria: 'Regali:', percentuale: 5 }, { categoria: 'Banane:', percentuale: 30 },
                 { categoria: 'Scatti in giro:', percentuale: 20 },
                 { categoria: 'Cacce al tesoro:', percentuale: 15 },
                 { categoria: 'Gelato:', percentuale: 100 },
                 { categoria: 'Gadget:', percentuale: 5 },
                 { categoria: 'Imposta del boss:', percentuale: 10 },
                 { categoria: 'Regali:', percentuale: 5 },
+
             ];
             setSpesCat(spese);
         };
         caricaSpesePerCategoria();
     }, []);
 
+    const [orientation, setOrientation] = useState('portrait');
+
+    const detectOrientation = () => {
+        const { height, width } = Dimensions.get('window');
+        if (width > height) {
+            setOrientation('landscape');
+        } else {
+            setOrientation('portrait');
+        }
+    };
+
+    useEffect(() => {
+        const subscription = Dimensions.addEventListener('change', detectOrientation);
+
+        // Rileva l'orientamento iniziale
+        detectOrientation();
+
+        // Pulisci il listener quando il componente si smonta
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+    //<> ci permette di restituire più elementi senza metterli in una "div"
     return (
         <View style={styles.container}>
-            <FlatList
-                ListHeaderComponent={
-                    <>
-                        <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
-                    </>
-                }
-                data={spesaCat}
-                renderItem={renderSpeseCategoria}
-                ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-            />
-            <View style={styles.minionsContainer}>
-                <View style={styles.minion}>
-                    <Image source={require('../../assets/Image/13.png')} />
-                </View>
-                <View style={styles.minion}>
-                    <Image source={require('../../assets/Image/12.png')} />
-                </View>
-            </View>
+            {orientation === 'portrait' ? (
+                <>
+                    <FlatList
+                        ListHeaderComponent={
+                            <>
+                                <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
+                            </>
+                        }
+                        data={spesaCat}
+                        renderItem={renderSpeseCategoria}
+                        ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+                    />
+                    <View style={styles.minionsContainer}>
+                        <View style={styles.minion}>
+                            <Image source={require('../../assets/Image/13.png')} />
+                        </View>
+                        <View style={styles.minion}>
+                            <Image source={require('../../assets/Image/12.png')} />
+                        </View>
+                    </View>
+                </>
+            ) : (
+                <FlatList
+                    ListHeaderComponent={
+                        <>
+                            <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
+                        </>
+                    }
+                    data={spesaCat}
+                    renderItem={renderSpeseCategoria}
+                    ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+                    ListFooterComponent={
+                        <View style={styles.minionsContainer}>
+                            <View style={styles.minion}>
+                                <Image source={require('../../assets/Image/13.png')} />
+                            </View>
+                            <View style={styles.minion}>
+                                <Image source={require('../../assets/Image/12.png')} />
+                            </View>
+                        </View>
+                    }
+                />
+            )}
         </View>
     );
 };

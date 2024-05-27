@@ -25,10 +25,16 @@ loadFonts();
 /************************* SCHERMATA STATISTICHE ********/
 const HomeMediaMinMax = () => {
   return (
-    <View style={styles.mainContainer}>
-      <Intervallo />
-      <Media />
-    </View>
+    <>
+
+      <View style={styles.mainContainer}>
+        <ScrollView>
+          <Intervallo />
+          <Media />
+        </ScrollView>
+      </View>
+
+    </>
   );
 };
 
