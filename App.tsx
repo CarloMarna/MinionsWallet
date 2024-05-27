@@ -27,7 +27,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
-  const Menu = ({navigation}) => {
+  const Menu = ({ navigation }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
     }
@@ -87,10 +87,10 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
       </View>
     );
   }
-return (
+  return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Registration">
-      <Stack.Screen
+        <Stack.Screen
           name="Registration"
           component={Registration}
           options={{ headerShown: false }}
@@ -99,6 +99,7 @@ return (
           name="HomePage"
           component={HomePage}
           options={({ navigation }) => ({
+            title: "DashBoard",
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -113,6 +114,7 @@ return (
           name="NuovaSpesa"
           component={NuovaSpesa}
           options={({ navigation }) => ({
+            title: "Aggiungi Spesa",
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -127,6 +129,7 @@ return (
           name="HomeGraficiStatistiche"
           component={HomeGraficiStatistiche}
           options={({ navigation }) => ({
+            title: "Statistiche",
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>

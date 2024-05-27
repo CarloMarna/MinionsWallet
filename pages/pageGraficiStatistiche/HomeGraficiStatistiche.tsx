@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { View, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
 import { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AntDesign } from '@expo/vector-icons';
@@ -12,12 +10,9 @@ import Media from './Media';
 import SpesePerCategoria from './SpesePerCategoria';
 import Grafici from './Grafici';
 
-const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 //CREAZIONE TAB NAVIGATOR
 const TabTop = createMaterialTopTabNavigator();
 const TabBottom = createBottomTabNavigator();
-
-const Stack = createNativeStackNavigator();
 
 //FUNZIONE PER CARICARE FONT
 async function loadFonts() {

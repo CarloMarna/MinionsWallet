@@ -2,10 +2,7 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, Image } from 'react-native';
 import { useState } from 'react';
-
 import { Picker } from '@react-native-picker/picker';
-
-
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
