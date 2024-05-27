@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginTop: screenHeight * 0.02,
-        color: '#0057B8', // Blu chiaro
+        color: '#0057B8',
+        fontFamily: 'fredoka-one',
     },
     spesaCategoriaList: {
         marginTop: screenHeight * 0.012,
@@ -94,11 +95,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: screenHeight * 0.013,
         borderBottomWidth: 1,
-        borderBottomColor: '#0057B8', // Blu chiaro
+        borderBottomColor: '#0057B8',
     },
     spesaCategoriaText: {
         fontSize: 16,
-        color: '#0057B8' //'#2C3E50', // Blu chiaro
+        color: '#0057B8',//'#2C3E50', 
+        fontFamily: 'fredoka-one',
     },
     spesaCategoriaTextPercentuale: {
         fontWeight: 'bold',

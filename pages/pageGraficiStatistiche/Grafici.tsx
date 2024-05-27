@@ -41,8 +41,7 @@ const Grafici = () => {
         backgroundGradientTo: "#4CAF50", // Verde
         backgroundGradientToOpacity: 1,
         color: (opacity = 1) => `rgba(23, 78, 139, ${opacity})`, // Blu scuro
-        strokeWidth: 2,
-        barPercentage: 0.5,
+        strokeWidth: 3,
         useShadowColorFromDataset: false,
     };
 
@@ -96,14 +95,17 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: screenWidth * 0.05,
         paddingVertical: screenHeight * 0.01,
-        borderRadius: 16
+        borderRadius: 16,
+        backgroundColor: '#FDE74C',
     },
     textStyle: {
-        color: 'white',
+        color: '#0057B8',
         fontWeight: 'bold',
         textAlign: 'center',
-        fontFamily: 'fredoka-one'
+        fontFamily: 'fredoka-one',
+        fontSize: 20,
     },
 });
+
 
 export default Grafici;
