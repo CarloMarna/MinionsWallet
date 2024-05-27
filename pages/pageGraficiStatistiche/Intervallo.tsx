@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Pressable, Modal } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, TextInput, Pressable, Modal } from 'react-native';
 import { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
@@ -63,7 +63,9 @@ const Intervallo = () => {
                 <View style={{ alignItems: 'center', flex: 1 }}>
                     <Text style={styles.textElementDate}>Data Inizio:</Text>
                     <View style={styles.areaCalendario}>
-                        <Text style={styles.testoAreaCalendario}>{dataInizio.toLocaleDateString()} </Text>
+                        <Pressable onPress={() => toggleDatePicker(1)}>
+                            <TextInput editable={false} style={styles.testoAreaCalendario} placeholder='data' value={dataInizio.toLocaleDateString()} />
+                        </Pressable>
                         <CalendarButton onPress={() => toggleDatePicker(1)} />
                     </View>
                     <Text style={styles.labelSpesa}>Spesa minima:</Text>
@@ -72,8 +74,7 @@ const Intervallo = () => {
                         <DateTimePicker
                             value={dataInizio}
                             mode="date"
-                            display="calendar"
-                            is24Hour={true}
+                            display="spinner"
                             onChange={(event, selectedDate) => onChangeData(1, selectedDate)}
                         />
                     )}
@@ -81,7 +82,9 @@ const Intervallo = () => {
                 <View style={{ alignItems: 'center', flex: 1 }}>
                     <Text style={styles.textElementDate}>Data Fine:</Text>
                     <View style={styles.areaCalendario}>
-                        <Text style={styles.testoAreaCalendario}>{dataFine.toLocaleDateString()} </Text>
+                        <Pressable onPress={() => toggleDatePicker(1)}>
+                            <TextInput editable={false} style={styles.testoAreaCalendario} placeholder='data' value={dataFine.toLocaleDateString()} />
+                        </Pressable>
                         <CalendarButton onPress={() => toggleDatePicker(2)} />
                     </View>
                     <Text style={styles.labelSpesa}>Spesa massima:</Text>
@@ -90,8 +93,7 @@ const Intervallo = () => {
                         <DateTimePicker
                             value={dataInizio}
                             mode="date"
-                            display="calendar"
-                            is24Hour={true}
+                            display="spinner"
                             onChange={(event, selectedDate) => onChangeData(2, selectedDate)}
                         />
                     )}

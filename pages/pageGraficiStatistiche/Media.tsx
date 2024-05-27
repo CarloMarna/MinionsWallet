@@ -33,7 +33,6 @@ const Media = () => {
 
         <View style={styles.containerMedia}>
             <Image
-                style={{ marginTop: -screenHeight * 0.07, }}
                 source={require('../../assets/Image/10.png')}
             />
             <Text style={styles.titleMedia}>Calcola Spesa Media al:</Text>
@@ -54,7 +53,7 @@ export default Media;
 
 const styles = StyleSheet.create({
     containerMedia: {
-        flex: 1.1,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#FEEC47',
