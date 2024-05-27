@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { SimpleGrid } from 'react-native-super-grid';
+import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 
 
 async function loadFonts() {
@@ -16,6 +17,7 @@ async function loadFonts() {
 const Title=() => {return <Text>Inserisci una spesa</Text>}
 
 const Importo=()=>{ 
+    const [selectedValuePicker, setSelectedValuePicker] = useState("€-(EUR)");
     return(
     <View style={styles.box}>
         <Text style={styles.scritte}>Inserisci l'importo e scegli la valuta</Text>
@@ -24,7 +26,7 @@ const Importo=()=>{
                 <TextInput placeholder='0' style={styles.testo_spesa}></TextInput>
             </View>
             <View style={styles.valuta}>
-                <Picker style={styles.picker}>
+                <Picker style={styles.picker} selectedValue={selectedValuePicker} onValueChange={(itemValue) => setSelectedValuePicker(itemValue)}> 
                     <Picker.Item value="euro" label="€-(EUR)"/>
                     <Picker.Item value="dollaro_usa" label="$-(USD)"/>
                     <Picker.Item value="yen_japan" label="¥-(JPY)"/>
@@ -221,10 +223,20 @@ const Tag=()=>{
     }
 
     const [selectedTag, setSelectedTag] = useState('');
+    const [tagModalVisible, setTagModalVisible] = useState(false);
+    const [tagText, setTagText] = useState('');
+
      return(
         <View style={[{flex: 1}]}>
-            <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text>
-            <FlatList data={lista_tag} renderItem={renderItemTag} ItemSeparatorComponent={separator} horizontal scrollEnabled/>
+            <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text> 
+            <FlatList data={lista_tag} renderItem={renderItemTag} ItemSeparatorComponent={separator} ListFooterComponent={<View><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-outline' size={60} color={'#0057BB'}></Ionicons></Pressable></View>} horizontal scrollEnabled/>
+            <View style={styles.vista_modal}>
+            <Modal style={styles.modal} visible={tagModalVisible}  transparent={true}>
+                <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
+                <TextInput placeholder='nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
+                <Pressable style={styles.bottoneTag} onPress={()=>{setTagModalVisible(false); lista_tag.push({name:tagText}); setSelectedTag(selectedTag.concat(tagText));}}><Text>Aggiungi tag</Text></Pressable>
+            </Modal>
+            </View>
         </View>
      )
 }
@@ -294,7 +306,6 @@ const styles=StyleSheet.create({
         borderRadius:6,
         width: 170, 
         height:60,
-        zIndex: 2
     },
     picker: {
         fontFamily: 'minions-font',
@@ -303,7 +314,6 @@ const styles=StyleSheet.create({
         textAlign:'center', 
         backgroundColor: 'white',
         color: '#0057BB',
-        zIndex: 3
     },
     scritte: {
         fontFamily:'minions-font',
@@ -377,6 +387,13 @@ const styles=StyleSheet.create({
     icone: {
         width:50, 
         height: 50
+    },
+    bottoneTag: {
+        width: 100,
+        height:30,
+        backgroundColor: '#0057BB',
+        color: 'white',
+        fontFamily: 'minions-font'
     }
 });
 
