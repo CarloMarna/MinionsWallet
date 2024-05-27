@@ -223,6 +223,7 @@ const Tag=()=>{
     const [selectedTag, setSelectedTag] = useState('');
      return(
         <View style={[{flex: 1}]}>
+            <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text>
             <FlatList data={lista_tag} renderItem={renderItemTag} ItemSeparatorComponent={separator} horizontal scrollEnabled/>
         </View>
      )
@@ -293,6 +294,7 @@ const styles=StyleSheet.create({
         borderRadius:6,
         width: 170, 
         height:60,
+        zIndex: 2
     },
     picker: {
         fontFamily: 'minions-font',
@@ -300,7 +302,8 @@ const styles=StyleSheet.create({
         width: '100%',
         textAlign:'center', 
         backgroundColor: 'white',
-        color: '#0057BB'
+        color: '#0057BB',
+        zIndex: 3
     },
     scritte: {
         fontFamily:'minions-font',
