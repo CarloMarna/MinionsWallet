@@ -7,7 +7,7 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const Grafici = () => {
     const dataGraficoABarre = {
-        labels: ["January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June"],
+        labels: ["Gennaio", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June"],
         datasets: [
             {
                 data: [20, 45, 28, 80, 99, 43, 20, 45, 28, 43, 20, 45, 28, 80, 99, 43]
@@ -16,7 +16,7 @@ const Grafici = () => {
     };
 
     const dataGraficoAndamento = {
-        labels: ["January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June"],
+        labels: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         datasets: [
             {
                 data: [20, 45, 28, 80, 99, 43, 20, 45, 28, 43, 20, 45, 28, 80, 99, 43]
