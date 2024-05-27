@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, Text, View, Image, Dimensions, StyleSheet } from 'react-native';
+import { FlatList, Text, View, Image, Dimensions, StyleSheet, ScrollView } from 'react-native';
 import { useState, useEffect } from 'react';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
@@ -30,8 +30,6 @@ const SpesePerCategoria = () => {
                 { categoria: 'Gadget:', percentuale: 5 },
                 { categoria: 'Imposta del boss:', percentuale: 10 },
                 { categoria: 'Regali:', percentuale: 5 },
-                { categoria: 'Gadget:', percentuale: 5 },
-                { categoria: 'Imposta del boss:', percentuale: 10 },
                 { categoria: 'Banane:', percentuale: 30 },
                 { categoria: 'Scatti in giro:', percentuale: 20 },
                 { categoria: 'Cacce al tesoro:', percentuale: 15 },
@@ -39,8 +37,13 @@ const SpesePerCategoria = () => {
                 { categoria: 'Gadget:', percentuale: 5 },
                 { categoria: 'Imposta del boss:', percentuale: 10 },
                 { categoria: 'Regali:', percentuale: 5 },
+                { categoria: 'Banane:', percentuale: 30 },
+                { categoria: 'Scatti in giro:', percentuale: 20 },
+                { categoria: 'Cacce al tesoro:', percentuale: 15 },
+                { categoria: 'Gelato:', percentuale: 100 },
                 { categoria: 'Gadget:', percentuale: 5 },
                 { categoria: 'Imposta del boss:', percentuale: 10 },
+                { categoria: 'Regali:', percentuale: 5 },
             ];
             setSpesCat(spese);
         };
@@ -49,15 +52,16 @@ const SpesePerCategoria = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.speseContainer}>
-                <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
-                <FlatList
-                    style={styles.spesaCategoriaList}
-                    data={spesaCat}
-                    renderItem={renderSpeseCategoria}
-                    ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                />
-            </View>
+            <FlatList
+                ListHeaderComponent={
+                    <>
+                        <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
+                    </>
+                }
+                data={spesaCat}
+                renderItem={renderSpeseCategoria}
+                ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+            />
             <View style={styles.minionsContainer}>
                 <View style={styles.minion}>
                     <Image source={require('../../assets/Image/13.png')} />
@@ -75,9 +79,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#FEEC47', // Giallo chiaro
     },
-    speseContainer: {
-        flex: 8,
-    },
     textSchermataSpeseCategoria: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -85,9 +86,6 @@ const styles = StyleSheet.create({
         marginTop: screenHeight * 0.02,
         color: '#0057B8',
         fontFamily: 'fredoka-one',
-    },
-    spesaCategoriaList: {
-        marginTop: screenHeight * 0.012,
     },
     spesaCategoriaContainer: {
         flexDirection: 'row',
@@ -99,7 +97,7 @@ const styles = StyleSheet.create({
     },
     spesaCategoriaText: {
         fontSize: 16,
-        color: '#0057B8',//'#2C3E50', 
+        color: '#0057B8', //'#2C3E50',
         fontFamily: 'fredoka-one',
     },
     spesaCategoriaTextPercentuale: {
@@ -111,8 +109,9 @@ const styles = StyleSheet.create({
     },
     minionsContainer: {
         flexDirection: 'row',
-        flex: 1.36,
-        paddingBottom: screenHeight * 0.005
+        paddingBottom: screenHeight * 0.005,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     minion: {
         flex: 1,
