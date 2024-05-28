@@ -128,7 +128,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="HomeGraficiStatistiche"
-          component={HomeGraficiStatistiche}
+          component={() => <HomeGraficiStatistiche database={database} />}
           options={({ navigation }) => ({
             title: "Statistiche",
             headerLeft: () => (
