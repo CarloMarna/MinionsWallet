@@ -18,37 +18,35 @@ const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => {
     )
 }
 
-const SpesePerCategoria = () => {
+const SpesePerCategoria = ({ database }: { database: any }) => {
     const [spesaCat, setSpesCat] = useState<Array<SpesaCategoriaType>>([]);
-    useEffect(() => {
-        const caricaSpesePerCategoria = () => {
-            const spese = [
-                { categoria: 'Banane:', percentuale: 30 },
-                { categoria: 'Scatti in giro:', percentuale: 20 },
-                { categoria: 'Cacce al tesoro:', percentuale: 15 },
-                { categoria: 'Gelato:', percentuale: 100 },
-                { categoria: 'Gadget:', percentuale: 5 },
-                { categoria: 'Imposta del boss:', percentuale: 10 },
-                { categoria: 'Regali:', percentuale: 5 },
-                { categoria: 'Banane:', percentuale: 30 },
-                { categoria: 'Scatti in giro:', percentuale: 20 },
-                { categoria: 'Cacce al tesoro:', percentuale: 15 },
-                { categoria: 'Gelato:', percentuale: 100 },
-                { categoria: 'Gadget:', percentuale: 5 },
-                { categoria: 'Imposta del boss:', percentuale: 10 },
-                { categoria: 'Regali:', percentuale: 5 }, { categoria: 'Banane:', percentuale: 30 },
-                { categoria: 'Scatti in giro:', percentuale: 20 },
-                { categoria: 'Cacce al tesoro:', percentuale: 15 },
-                { categoria: 'Gelato:', percentuale: 100 },
-                { categoria: 'Gadget:', percentuale: 5 },
-                { categoria: 'Imposta del boss:', percentuale: 10 },
-                { categoria: 'Regali:', percentuale: 5 },
+    const caricaSpesePerCategoria = async () => {
+        try {
+            const result = await database.getAllAsync(`
+              SELECT categoria, SUM(importo) AS totale_spesa 
+              FROM spesa 
+              WHERE id_conto = 1 
+              GROUP BY categoria
+              ORDER BY totale_spesa Desc
+            `);
 
-            ];
-            setSpesCat(spese);
-        };
+            let totaleSpesa = 0;
+            result.forEach(item => totaleSpesa += item.totale_spesa);
+
+            const spesePerCategoria = result.map(item => ({
+                categoria: item.categoria,
+                percentuale: ((item.totale_spesa / totaleSpesa) * 100).toFixed(2)
+            }));
+            setSpesCat(spesePerCategoria);
+        } catch (error) {
+            console.error("Errore durante il recupero delle spese:", error);
+        }
+    };
+
+    useEffect(() => {
         caricaSpesePerCategoria();
     }, []);
+
 
     const [orientation, setOrientation] = useState('portrait');
 
