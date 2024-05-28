@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, TouchableOpacity, TextInput, Pressable, Modal } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -12,26 +12,69 @@ const CalendarButton = ({ onPress }) => (
     </TouchableOpacity>
 );
 
-const calcolaSpesaMinMax = (dataInizio, dataFine) => {
-    const min = Math.floor(Math.random() * 100);
-    const max = Math.floor(Math.random() * 100);
-    const categoriaMax = Math.floor(Math.random() * 100);
-    const categoriaMin = Math.floor(Math.random() * 100);
-    return { min, max, categoriaMax, categoriaMin };
-};
 
-const Intervallo = () => {
+const Intervallo = ({ database }: { database: any }) => {
     const [dataInizio, setDataInizio] = useState(new Date());
     const [dataFine, setDataFine] = useState(new Date());
     const [showDatePickerInizio, setShowDatePickerInizio] = useState(false);
     const [showDatePickerFine, setShowDatePickerFine] = useState(false);
-    const [spesaMinima, setSpesaMinima] = useState(calcolaSpesaMinMax(new Date(), new Date()).min);
-    const [spesaMassima, setSpesaMassima] = useState(calcolaSpesaMinMax(new Date(), new Date()).max);
-    const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState(calcolaSpesaMinMax(new Date(), new Date()).categoriaMax);
-    const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState(calcolaSpesaMinMax(new Date(), new Date()).categoriaMin);
+    const [spesaMinima, setSpesaMinima] = useState(0);
+    const [spesaMassima, setSpesaMassima] = useState(0);
+    const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState('N/A');
+    const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState('N/A');
     const [valuta, setValuta] = useState('€');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
     const [modalVisibleMassimo, setModalVisibleMassimo] = useState(false);
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    const calcolaSpesaMinMax = async (database: any, dataInizio: Date, dataFine: Date) => {
+        try {
+            const formattedDataInizio = formatDate(dataInizio);
+            const formattedDataFine = formatDate(dataFine);
+
+            const resultMin = await database.getFirstAsync(`
+                SELECT importo, categoria
+                FROM spesa
+                WHERE data BETWEEN ? AND ? AND id_conto = 1
+                ORDER BY importo ASC
+                LIMIT 1
+            `, [formattedDataInizio, formattedDataFine]);
+
+            const resultMax = await database.getFirstAsync(`
+                SELECT importo, categoria
+                FROM spesa
+                WHERE data BETWEEN ? AND ? AND id_conto = 1
+                ORDER BY importo DESC
+                LIMIT 1
+            `, [formattedDataInizio, formattedDataFine]);
+
+            return {
+                min: resultMin ? resultMin.importo : 0,
+                max: resultMax ? resultMax.importo : 0,
+                categoriaMin: resultMin ? resultMin.categoria : 'N/A',
+                categoriaMax: resultMax ? resultMax.categoria : 'N/A',
+            };
+        } catch (error) {
+            console.error("Errore durante il calcolo delle spese minime e massime:", error);
+            return { min: 0, max: 0, categoriaMin: 'N/A', categoriaMax: 'N/A' };
+        }
+    };
+
+    useEffect(() => {
+        const fetchSpese = async () => {
+            const { min, max, categoriaMin, categoriaMax } = await calcolaSpesaMinMax(database, dataInizio, dataFine);
+            setSpesaMinima(min);
+            setSpesaMassima(max);
+            setCategoriaSpesaMinima(categoriaMin);
+            setCategoriaSpesaMassima(categoriaMax);
+        };
+
+        fetchSpese();
+    }, [database, dataInizio, dataFine]);
+
 
     const toggleDatePicker = (flag) => {
         if (flag === 1)
@@ -50,7 +93,7 @@ const Intervallo = () => {
             setShowDatePickerFine(false);
             setDataFine(currentDate);
         }
-        const { min, max, categoriaMin, categoriaMax } = calcolaSpesaMinMax(dataInizio, dataFine);
+        const { min, max, categoriaMin, categoriaMax } = calcolaSpesaMinMax(database, dataInizio, dataFine);
         setSpesaMinima(min);
         setSpesaMassima(max);
         setCategoriaSpesaMassima(categoriaMax);
@@ -82,7 +125,7 @@ const Intervallo = () => {
                 <View style={{ alignItems: 'center', flex: 1 }}>
                     <Text style={styles.textElementDate}>Data Fine:</Text>
                     <View style={styles.areaCalendario}>
-                        <Pressable onPress={() => toggleDatePicker(1)}>
+                        <Pressable onPress={() => toggleDatePicker(2)}>
                             <TextInput editable={false} style={styles.testoAreaCalendario} placeholder='data' value={dataFine.toLocaleDateString()} />
                         </Pressable>
                         <CalendarButton onPress={() => toggleDatePicker(2)} />
@@ -91,7 +134,7 @@ const Intervallo = () => {
                     <Text style={styles.risultatoSpesaMedia}>{spesaMassima}  {valuta}</Text>
                     {showDatePickerFine && (
                         <DateTimePicker
-                            value={dataInizio}
+                            value={dataFine}
                             mode="date"
                             display="spinner"
                             onChange={(event, selectedDate) => onChangeData(2, selectedDate)}
@@ -151,9 +194,7 @@ const Intervallo = () => {
                         onPress={() => setModalVisibleMassimo(true)}>
                         <Text style={styles.textStyle}>Imm Cat</Text>
                     </Pressable>
-
                 </View>
-
             </View>
         </View >
     );
