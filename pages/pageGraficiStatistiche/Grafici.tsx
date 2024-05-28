@@ -5,7 +5,7 @@ import { BarChart, LineChart } from 'react-native-chart-kit';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 
-const Grafici = () => {
+const Grafici = ({ database }: { database: any }) => {
     const dataGraficoABarre = {
         labels: ["Gennaio", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June", "January", "February", "March", "April", "May", "June"],
         datasets: [
