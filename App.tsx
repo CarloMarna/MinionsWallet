@@ -102,7 +102,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
-                  <Ionicons name="menu-outline" size={24} color="black" style={{ marginLeft: 15 }} />
+                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
                 <Menu navigation={navigation} />
               </View>
@@ -117,7 +117,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
-                  <Ionicons name="menu-outline" size={24} color="black" style={{ marginLeft: 15 }} />
+                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
                 <Menu navigation={navigation} />
               </View>
@@ -132,7 +132,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
-                  <Ionicons name="menu-outline" size={24} color="black" style={{ marginLeft: 15 }} />
+                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
                 <Menu navigation={navigation} />
               </View>
@@ -146,7 +146,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
-                  <Ionicons name="menu-outline" size={24} color="black" style={{ marginLeft: 15 }} />
+                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
                 <Menu navigation={navigation} />
               </View>

@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { SimpleGrid } from 'react-native-super-grid';
+import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 
 
 async function loadFonts() {
@@ -16,6 +17,7 @@ async function loadFonts() {
 const Title=() => {return <Text>Inserisci una spesa</Text>}
 
 const Importo=()=>{ 
+    const [selectedValuePicker, setSelectedValuePicker] = useState("€-(EUR)");
     return(
     <View style={styles.box}>
         <Text style={styles.scritte}>Inserisci l'importo e scegli la valuta</Text>
@@ -24,7 +26,7 @@ const Importo=()=>{
                 <TextInput placeholder='0' style={styles.testo_spesa}></TextInput>
             </View>
             <View style={styles.valuta}>
-                <Picker style={styles.picker}>
+                <Picker style={styles.picker} selectedValue={selectedValuePicker} onValueChange={(itemValue) => setSelectedValuePicker(itemValue)}> 
                     <Picker.Item value="euro" label="€-(EUR)"/>
                     <Picker.Item value="dollaro_usa" label="$-(USD)"/>
                     <Picker.Item value="yen_japan" label="¥-(JPY)"/>
@@ -163,7 +165,7 @@ const Categorie=()=>{
     return( //categorie mi restituisce la flatlist
         <View>
             <Text style={styles.scritte}>Scegli la categoria o creane una nuova</Text>
-            <FlatList data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={() => setModalVisible(!modalVisible)}><Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons></Pressable></View>}/>
+            <FlatList data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={() => setModalVisible(!modalVisible)}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
@@ -198,6 +200,7 @@ const Tag=()=>{
     const renderItemTag=({item}: {item: ItemTag})=>{
         const color=selectedTag.includes(item.name)?'white':'#0057BB';
         const backgroundcolor=selectedTag.includes(item.name)?'#0057BB': 'white';
+        const bordercolor=selectedTag.includes(item.name)?'white':'#0057BB';
         return(
             <View>
             <Pressable onPress={()=>{
@@ -206,7 +209,7 @@ const Tag=()=>{
                 else
                     setSelectedTag(selectedTag.concat(item.name));
             }}>
-                <Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 15, backgroundColor: backgroundcolor}]}>{item.name}</Text></Ionicons>
+                <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item.name}</Text></Ionicons></View>
                 
             </Pressable>
             </View>
@@ -221,9 +224,22 @@ const Tag=()=>{
     }
 
     const [selectedTag, setSelectedTag] = useState('');
+    const [tagModalVisible, setTagModalVisible] = useState(false);
+    const [tagText, setTagText] = useState('');
+
      return(
         <View style={[{flex: 1}]}>
-            <FlatList data={lista_tag} renderItem={renderItemTag} ItemSeparatorComponent={separator} horizontal scrollEnabled/>
+            <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text> 
+            <FlatList data={lista_tag} renderItem={renderItemTag} ListHeaderComponentStyle={[{alignSelf:'center'}]} ListHeaderComponent={<View style={[{backgroundColor: 'white',  borderRadius: 30}]}><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-circle-outline' size={50} color='#0057BB'></Ionicons></Pressable></View>} horizontal scrollEnabled/>
+            <View style={styles.vista_modal}>
+            <Modal style={styles.modal} visible={tagModalVisible}  transparent={true}>
+                <View style={styles.elementi_tag_modal}>
+                    <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
+                    <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
+                    <Pressable onPress={()=>{setTagModalVisible(false); lista_tag.push({name:tagText}); setSelectedTag(selectedTag.concat(tagText));}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                </View>
+            </Modal>
+            </View>
         </View>
      )
 }
@@ -262,7 +278,7 @@ const styles=StyleSheet.create({
     spesa_valuta: {
         marginVertical: 30,
         flexDirection: 'row',
-        width: 250,
+        width: 304,
         alignSelf: 'center'
     },
     testo_spesa: {
@@ -291,16 +307,16 @@ const styles=StyleSheet.create({
         borderTopWidth:2,
         borderRightWidth:2,
         borderRadius:6,
-        width: 170, 
+        width: 200, 
         height:60,
     },
     picker: {
         fontFamily: 'minions-font',
         flex: 1,
-        width: '100%',
+        width: 150,
         textAlign:'center', 
         backgroundColor: 'white',
-        color: '#0057BB'
+        color: '#0057BB',
     },
     scritte: {
         fontFamily:'minions-font',
@@ -347,7 +363,7 @@ const styles=StyleSheet.create({
         color: '#0057BB',
         fontFamily: 'minions-font',
         justifyContent: 'center',
-        flex:1
+        flex:1,
     },
     vista_modal: {
         justifyContent: 'center',
@@ -365,6 +381,17 @@ const styles=StyleSheet.create({
         borderWidth:2,
         paddingVertical:15
     },
+    elementi_tag_modal: {
+        width: 270,
+        height: 200,
+        alignSelf:'center',
+        marginTop:20,
+        borderColor:'#0057BB',
+        borderWidth:2,
+        paddingVertical:15,
+        alignItems:'center',
+        backgroundColor:'white',
+    },
     scritte_popup: {
         fontFamily:'minions-font',
         fontSize:15,
@@ -374,6 +401,15 @@ const styles=StyleSheet.create({
     icone: {
         width:50, 
         height: 50
+    },
+    testo_bottone_tag: {
+        backgroundColor: '#0057BB',
+        color: 'white',
+        fontFamily: 'minions-font',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        width: 100,
+        height:40,
     }
 });
 
