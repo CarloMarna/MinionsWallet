@@ -36,20 +36,20 @@ const Intervallo = ({ database }: { database: any }) => {
             const formattedDataFine = formatDate(dataFine);
 
             const resultMin = await database.getFirstAsync(`
-                SELECT importo, categoria
-                FROM spesa
-                WHERE data BETWEEN ? AND ? AND id_conto = 1
-                ORDER BY importo ASC
-                LIMIT 1
-            `, [formattedDataInizio, formattedDataFine]);
+                    SELECT importo, categoria
+                    FROM spesa
+                    WHERE data BETWEEN ? AND ? AND id_conto = 1
+                    ORDER BY importo ASC
+                    LIMIT 1
+                `, [formattedDataInizio, formattedDataFine]);
 
             const resultMax = await database.getFirstAsync(`
-                SELECT importo, categoria
-                FROM spesa
-                WHERE data BETWEEN ? AND ? AND id_conto = 1
-                ORDER BY importo DESC
-                LIMIT 1
-            `, [formattedDataInizio, formattedDataFine]);
+                    SELECT importo, categoria
+                    FROM spesa
+                    WHERE data BETWEEN ? AND ? AND id_conto = 1
+                    ORDER BY importo DESC
+                    LIMIT 1
+                `, [formattedDataInizio, formattedDataFine]);
 
             return {
                 min: resultMin ? resultMin.importo : 0,
@@ -199,7 +199,6 @@ const Intervallo = ({ database }: { database: any }) => {
         </View >
     );
 };
-export default Intervallo;
 
 const styles = StyleSheet.create({
     tabBarInferiori: {
@@ -318,3 +317,4 @@ const styles = StyleSheet.create({
         fontFamily: 'fredoka-one'
     }
 });
+export default Intervallo;
