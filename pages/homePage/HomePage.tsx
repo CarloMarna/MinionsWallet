@@ -16,7 +16,7 @@ const HomePage = () => {
   React.useEffect(() => {
     async function prepareDB() {
       const db = await dbPromise;
-      await db.execAsync('CREATE TABLE IF NOT EXISTS utenti (matricola INTEGER PRIMARY KEY NOT NULL, nome TEXT, eta INTEGER, ruolo TEXT);');
+      await db.execAsync('CREATE TABLE IF NOT EXISTS prova (matricola INTEGER PRIMARY KEY NOT NULL, nome TEXT, eta INTEGER, ruolo TEXT);');
     }
     prepareDB();
   }, []);
@@ -25,7 +25,7 @@ const HomePage = () => {
     try {
       const db = await dbPromise;
       //const matricola = 0;
-      await db.execAsync(`INSERT INTO utenti (matricola, nome, eta, ruolo) VALUES (78, 'pluto', 25, 'prova')`);
+      await db.execAsync(`INSERT INTO prova (matricola, nome, eta, ruolo) VALUES (78, 'pluto', 25, 'prova')`);
       //setResult(`Aggiunto Pluto con matricola: ${matricola}`);
     } catch (error) {
       console.log(error);
@@ -39,7 +39,7 @@ const HomePage = () => {
       var results = await db.getAllAsync('SELECT * FROM utenti');
       for (const row of results) {
         console.log(row.matricola, row.nome, row.eta, row.ruolo);
-        setResult(""+row.matricola+" "+row.nome+" "+row.eta+" "+row.ruolo);
+        setResult("" + row.matricola + " " + row.nome + " " + row.eta + " " + row.ruolo);
       }
     } catch (error) {
       console.log(error);

@@ -9,7 +9,7 @@ import HomePage from './pages/homePage/HomePage';
 import Uscita from './pages/Uscita';
 import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato il pacchetto @expo/vector-icons
 import Modal from 'react-native-modal';
-
+import useDatabase from './db/createDB';
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
@@ -22,6 +22,8 @@ const { width, height } = Dimensions.get('window');
 /*<Stack.Screen name='Registration' component={Registration} options={{ headerShown: false }}/>*/
 
 const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da navigator, passo navigation come parametro
+  const database = useDatabase();
+
   const [isMenuVisible, setMenuVisible] = useState(false);
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
