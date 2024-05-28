@@ -6,7 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-const Media = () => {
+const Media = ({ database }: { database: any }) => {
     const [opzione, setOpzione] = useState('Giorno');
 
     const calcolaMedia = (opzione) => {
