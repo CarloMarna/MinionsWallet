@@ -9,8 +9,6 @@ import HomePage from './pages/homePage/HomePage';
 import Uscita from './pages/Uscita';
 import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato il pacchetto @expo/vector-icons
 import Modal from 'react-native-modal';
-import * as SQLite from 'expo-sqlite';
-
 
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
@@ -101,9 +99,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           component={HomePage}
           options={({ navigation }) => ({
             title: "DashBoard",
-            headerStyle: {
-              height: 80, // Regola l'altezza secondo le tue necessità
-            },
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -119,9 +114,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           component={NuovaSpesa}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
-            headerStyle: {
-              height: 80, // Regola l'altezza secondo le tue necessità
-            },
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -137,9 +129,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           component={HomeGraficiStatistiche}
           options={({ navigation }) => ({
             title: "Statistiche",
-            headerStyle: {
-              height: 80, // Regola l'altezza secondo le tue necessità
-            },
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -154,9 +143,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           name="Uscita"
           component={Uscita}
           options={({ navigation }) => ({
-            headerStyle: {
-              height: 80, // Regola l'altezza secondo le tue necessità
-            },
             headerLeft: () => (
               <View>
                 <TouchableOpacity onPress={() => handleMenuClick()}>
@@ -175,12 +161,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
 
 
 const styles = StyleSheet.create({
-  cosostrano:{
-    marginTop:0,
-    padding:0,
-    borderWidth: 2,
-    borderColor: 'red'
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',

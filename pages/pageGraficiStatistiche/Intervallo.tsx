@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: '#FEEC47',
+
     },
 
     containerDate: {

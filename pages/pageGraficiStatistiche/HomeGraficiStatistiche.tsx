@@ -26,13 +26,12 @@ loadFonts();
 const HomeMediaMinMax = () => {
   return (
     <>
-
-      <View style={styles.mainContainer}>
-        <ScrollView>
+      <ScrollView>
+        <View style={styles.mainContainer}>
           <Intervallo />
           <Media />
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
 
     </>
   );
