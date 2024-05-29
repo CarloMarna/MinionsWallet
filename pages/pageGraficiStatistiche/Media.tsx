@@ -1,33 +1,52 @@
 
 import * as React from 'react';
 import { Text, View, StyleSheet, Dimensions, Image } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const Media = ({ database }: { database: any }) => {
     const [opzione, setOpzione] = useState('Giorno');
+    const [media, setMedia] = useState('0.000');
 
-    const calcolaMedia = (opzione) => {
-        let mediaCalcolata = 0;
-        if (opzione === 'Giorno') {
-            mediaCalcolata = 50;
-        } else if (opzione === 'Mese') {
-            mediaCalcolata = 150;
-        } else if (opzione === 'Anno') {
-            mediaCalcolata = 1000;
+    const calcolaMedia = async (opzione: string) => {
+        try {
+            let query = '';
+            if (opzione === 'Giorno') {
+                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE date(data) = date("now")';
+            } else if (opzione === 'Mese') {
+                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now")';
+            } else if (opzione === 'Anno') {
+                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now")';
+            }
+
+            const result = await database.getFirstAsync(query);
+            if (result && result.media !== null) {
+                return result.media.toString();
+            }
+        } catch (error) {
+            console.error("Errore durante il calcolo della media:", error);
         }
-        return mediaCalcolata;
+        return '0.000';
     };
 
-    const onChange = (opzione) => {
+
+    const onChange = async (opzione: string) => {
         setOpzione(opzione);
-        const mediaCalcolata = calcolaMedia(opzione);
+        const mediaCalcolata = await calcolaMedia(opzione);
         setMedia(mediaCalcolata);
     };
 
-    const [media, setMedia] = useState(calcolaMedia('Giorno'));
+
+    useEffect(() => {
+        const fetchInitialMedia = async () => {
+            const mediaIniziale = await calcolaMedia(opzione);
+            setMedia(mediaIniziale);
+        };
+        fetchInitialMedia();
+    }, []);
+
 
     return (
 

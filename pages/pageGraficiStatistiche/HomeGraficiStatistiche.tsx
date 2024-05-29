@@ -23,13 +23,13 @@ async function loadFonts() {
 loadFonts();
 
 /************************* SCHERMATA STATISTICHE ********/
-const HomeMediaMinMax = () => {
+const HomeMediaMinMax = ({ database }: { database: any }) => {
   return (
     <>
       <ScrollView>
         <View style={styles.mainContainer}>
-          <Intervallo />
-          <Media />
+          <Intervallo database={database} />
+          <Media database={database} />
         </View>
       </ScrollView>
 
@@ -38,20 +38,23 @@ const HomeMediaMinMax = () => {
 };
 
 /****************TAB BAR SUPERIORE**************/
-const Statistiche = () => {
+const Statistiche = ({ database }: { database: any }) => {
   return (
     <TabTop.Navigator>
-      <TabTop.Screen name="Intervallo di Spesa" component={HomeMediaMinMax} />
-      <TabTop.Screen name="Spese per Categoria" component={SpesePerCategoria} />
-    </TabTop.Navigator>
+      <TabTop.Screen name="Intervallo di Spesa">
+        {() => <HomeMediaMinMax database={database} />}
+      </TabTop.Screen>
+      <TabTop.Screen name="Spese per Categoria" >
+        {() => <SpesePerCategoria database={database} />}
+      </TabTop.Screen>
+    </TabTop.Navigator >
   )
 };
 
 /************ TAB BAR INFERIORE ********** */
 
-const HomeGraficiStatistiche = () => {
+const HomeGraficiStatistiche = ({ database }: { database: any }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
-
   useEffect(() => {
     async function loadApp() {
       await loadFonts();
@@ -71,12 +74,16 @@ const HomeGraficiStatistiche = () => {
           headerShown: false, tabBarIcon: ({ color, size }) => (
             <AntDesign name="linechart" size={size} color={color} />
           ),
-        }} component={Statistiche} />
+        }}>
+          {() => <Statistiche database={database} />}
+        </TabBottom.Screen>
         <TabBottom.Screen name="Grafici" options={{
           headerShown: false, tabBarIcon: ({ color, size }) => (
             <AntDesign name="barchart" size={size} color={color} />
           ),
-        }} component={Grafici} />
+        }}>
+          {() => <Grafici database={database} />}
+        </TabBottom.Screen>
       </TabBottom.Navigator>
     </SafeAreaView>
   );

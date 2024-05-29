@@ -111,6 +111,10 @@ const useDatabase = () => {
                      `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
                              (50.75, 'Spesa settimanale', 'Alimentazione', 1),
                              (20.00, 'Biglietto del treno', 'Trasporti', 1);`,
+
+                    `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
+                    (50.75, 'Spesa settimanale', 'Alimentazione', 1),
+                     (20.00, 'Biglietto del treno', 'Droga', 1);`,
  
                      // Inserimento dati nella tabella 'tag'
                      `INSERT INTO tag (nome) VALUES 

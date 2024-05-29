@@ -14,7 +14,8 @@ const CalendarButton = ({ onPress }) => (
 
 
 const Intervallo = ({ database }: { database: any }) => {
-    const [dataInizio, setDataInizio] = useState(new Date());
+    const today = new Date();
+    const [dataInizio, setDataInizio] = useState(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
     const [dataFine, setDataFine] = useState(new Date());
     const [showDatePickerInizio, setShowDatePickerInizio] = useState(false);
     const [showDatePickerFine, setShowDatePickerFine] = useState(false);
