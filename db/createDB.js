@@ -77,7 +77,7 @@ const useDatabase = () => {
                 }
 
                 // Lo script di popolamento dei dati
-                /* const insertCommands = [
+               /*  const insertCommands = [
                      // Inserimento dati nella tabella 'icona'
                      `INSERT INTO icona (path) VALUES 
                              ('/icons/icon1.png'),
@@ -129,7 +129,7 @@ const useDatabase = () => {
                      // Inserimento dati nella tabella 'utente'
                      `INSERT INTO utente (username, mail, pwd, id_conto) VALUES 
                              ('john_doe', 'john@example.com', 'password123', 1),
-                             ('jane_doe', 'jane@example.com', 'password456', 2);`
+                             ('jane_doe', 'jane@example.com', 'password456', 2);`,
                         `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
                         -- Categorie 'Cibo'
                         (50.00, '2024-01-20', 'Spesa settimanale', 'Cibo', 1),
