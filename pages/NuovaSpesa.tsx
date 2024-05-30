@@ -16,7 +16,7 @@ async function loadFonts() {
 
 const Title=() => {return <Text>Inserisci una spesa</Text>}
 
-const Importo=()=>{ 
+const Importo=({database}:{database:any})=>{ 
     const [selectedValuePicker, setSelectedValuePicker] = useState("€-(EUR)");
     return(
     <View style={styles.box}>
@@ -57,7 +57,7 @@ const Importo=()=>{
     
 )}
 
-const Categorie=()=>{
+const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:string[]})=>{
     const [selectedCategory, setSelectedCategory]=useState("");
 
     type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
@@ -65,9 +65,9 @@ const Categorie=()=>{
         nomeCategoria: string;
       };
     
-    type ItemPopUp={
+    /*type ItemPopUp={    //definisco il tipo delle icone
         img: string;
-    };
+    };*/
 
     type ItemProps={    //proprietà dell'item
         item: ItemCategoria;    //item di tipo ItemCategoria
@@ -77,7 +77,7 @@ const Categorie=()=>{
     };
 
     type ItemPopUpProps={    //proprietà dell'item
-        item: ItemCategoria;    //item di tipo ItemCategoria
+        item: string;    //item di tipo ItemPopUp
         onPress: ()=>void;  //funzione di tipo void
         borderColor: string;
         borderWidth: number;
@@ -98,20 +98,6 @@ const Categorie=()=>{
         nomeCategoria: 'bollette'},
     ];
 
-    const lista_icone: ItemPopUp[]=[
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png')},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png')},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png')},
-    ];
     
     const Item=({item, onPress, backgroundColor, color}:ItemProps)=>( //definisco la costante item a cui passo le proprietà
         <View>
@@ -125,7 +111,14 @@ const Categorie=()=>{
     const ItemPopUp=({item, onPress, borderColor, borderWidth}:ItemPopUpProps)=>( //definisco la costante item a cui passo le proprietà
          <View>
             <Pressable onPress={onPress}>
-                <Image source={item.img} style={[{borderColor, borderWidth},styles.icone]}></Image>
+            {readIcone(database).map((imageName:string, index:number) => (
+                <Image
+                    key={index}
+                    source={{ uri: imageName }}
+                    style={[{borderColor, borderWidth},styles.icone]}
+                />
+            ))}
+                
             </Pressable>
         </View>
     );
@@ -144,12 +137,12 @@ const Categorie=()=>{
     };
 
     const [selectedIcon, setSelectedIcon] = useState("");
-    const renderItemPopUp=({item}:{item: ItemPopUp})=>{
-        const borderColor=item.img===selectedIcon?'#0057BB': '';
+    const renderItemPopUp=({item}:{item: string})=>{
+        const borderColor=item===selectedIcon?'#0057BB': '';
             return(
                 <ItemPopUp
                 item={item}
-                onPress={()=>(setSelectedIcon(item.img))}
+                onPress={()=>(setSelectedIcon(item))}
                 borderColor={borderColor}
                 borderWidth={2}
                 />
@@ -162,17 +155,18 @@ const Categorie=()=>{
     }
     const [modalVisible, setModalVisible] = React.useState(false);
 
+    
     return( //categorie mi restituisce la flatlist
         <View>
             <Text style={styles.scritte}>Scegli la categoria o creane una nuova</Text>
-            <FlatList data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={() => setModalVisible(!modalVisible)}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
+            <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
                         <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
-                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} maxItemsPerRow={5} maxDimension={4} data={lista_icone} renderItem={renderItemPopUp}/>
+                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} maxItemsPerRow={5} maxDimension={4} data={listaIcone} renderItem={renderItemPopUp}/>
                         <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> (setModalVisible(!modalVisible))}/></View>
                     </View>
                 </Modal>
@@ -181,7 +175,7 @@ const Categorie=()=>{
     )
 }
 
-const Tag=()=>{
+const Tag=({database}:{database:any})=>{
     type ItemTag={
         name: string
     };
@@ -244,9 +238,46 @@ const Tag=()=>{
      )
 }
 
-function NuovaSpesa(){
+const NuovaSpesa=({ database }: { database: any })=>{
+    const[listaIcone, setListaIcone]=useState<string[]>([]);
+    useEffect(() => {
+        const readIcone= async(database: any)=>{
+            try{
+                const icone= await database.getAllAsync(
+                    'SELECT path FROM icona;'
+                );
+                const lista_icone: string[]=[];
+                for (const row of icone) {
+                    let x:string='';
+                    x='..'+row.path;
+                    lista_icone.push(x);
+                  }
+                return{lista_icone};
+                //console.log(lista_icone);
+            }
+            catch(error){
+                console.error("Errore nel prelievo delle icone", error);
+                const lista_icone: string[]=[];
+                return {lista_icone};
+            }
+        }
+        
+        const caricaDatiDatabase = async () => {
+            try {
+                const icone = await readIcone(database);
+                for (const item of icone) {
+                    setListaIcone(listaIcone.concat(item));
+                }
+            } catch (error) {
+                console.log("Errore caricamento dati");
+            }
+        };
+    
+        caricaDatiDatabase();
+    }, [database]);
+    
 const[fontLoaded, setFontLoaded] = useState(false);
-
+    console.log(database);
     useEffect(() => {
         async function loadApp() {
           await loadFonts();
@@ -261,10 +292,10 @@ const[fontLoaded, setFontLoaded] = useState(false);
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
-            <ScrollView>
-                <Importo />
-                <Categorie />
-                <Tag />
+            <ScrollView nestedScrollEnabled>
+                <Importo database={database}/>
+                <Categorie database={database} listaIcone={listaIcone}/>
+                <Tag database={database}/>
             </ScrollView>
         </SafeAreaView>
     )

@@ -68,6 +68,7 @@ const Uscita = () => {
                         style={styles.picker}
                         selectedValue={category}
                         onValueChange={(itemValue) => setCategory(itemValue)}>
+                        {/*onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}*/}
                         <Picker.Item label="Tutte" value="Tutte" />
                         <Picker.Item label="Categoria 1" value="Categoria 1" />
                         <Picker.Item label="Categoria 2" value="Categoria 2" />

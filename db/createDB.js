@@ -9,6 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
+                //await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
@@ -23,11 +24,18 @@ const useDatabase = () => {
                         path_icona VARCHAR(100) NOT NULL,
                         FOREIGN KEY (path_icona) REFERENCES icona (path)
                     );`,
+                    `CREATE TABLE IF NOT EXISTS utente (
+                        username VARCHAR(50) PRIMARY KEY NOT NULL,
+                        mail VARCHAR(100) NOT NULL UNIQUE,
+                        pwd VARCHAR(255) NOT NULL
+                    );`,
                     `CREATE TABLE IF NOT EXISTS conto (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         nome_conto VARCHAR(50) NOT NULL,
                         data_apertura DATE NOT NULL DEFAULT (CURRENT_TIMESTAMP),
                         sigla CHAR(3) NOT NULL,
+                        username varchar(50)  NOT NULL,
+                        FOREIGN KEY (username) REFERENCES utente (username) ON DELETE CASCADE ON UPDATE CASCADE
                         FOREIGN KEY (sigla) REFERENCES valuta (sigla)
                     );`,
                     `CREATE TABLE IF NOT EXISTS spesa (
@@ -49,21 +57,12 @@ const useDatabase = () => {
                         PRIMARY KEY (id_spesa, nome_tag),
                         FOREIGN KEY (id_spesa) REFERENCES spesa (id) ON DELETE CASCADE ON UPDATE CASCADE,
                         FOREIGN KEY (nome_tag) REFERENCES tag (nome)
-                    );`,
-                    `CREATE TABLE IF NOT EXISTS utente (
-                        username VARCHAR(50) PRIMARY KEY NOT NULL,
-                        mail VARCHAR(100) NOT NULL UNIQUE,
-                        pwd VARCHAR(255) NOT NULL,
-                        id_conto INTEGER NOT NULL,
-                        FOREIGN KEY (id_conto) REFERENCES conto (id) ON DELETE CASCADE ON UPDATE CASCADE
                     );`
-
                 ];
-
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                
+                //await popolaDB(db)
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -153,20 +152,6 @@ export const popolaDB = async (db) => {
         ('TRY', 'Lira turca', '₺'),
         ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
 
-        // Inserimento dati nella tabella 'conto'
-        `INSERT INTO conto (nome_conto, sigla) VALUES 
-                ('Conto Corrente', 'EUR'),
-                ('Conto Risparmio', 'USD');`,
-
-        // Inserimento dati nella tabella 'spesa'
-        `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
-                (50.75, 'Spesa settimanale', 'Alimentazione', 1),
-                (20.00, 'Biglietto del treno', 'Trasporti', 1);`,
-
-        `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
-        (50.75, 'Spesa settimanale', 'Alimentazione', 1),
-        (20.00, 'Biglietto del treno', 'Droga', 1);`,
-
         // Inserimento dati nella tabella 'tag'
         `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
@@ -175,16 +160,25 @@ export const popolaDB = async (db) => {
                 ('Spesa settimanale'),
                 ('Croccantini Fido');`,
 
-
-        // Inserimento dati nella tabella 'tag_spesa'
-        `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
-                (1, 'Croccantini Fido'),
-                (2, 'Urgente');`,
-
         // Inserimento dati nella tabella 'utente'
-        `INSERT INTO utente (username, mail, pwd, id_conto) VALUES 
-                ('john_doe', 'john@example.com', 'password123', 1),
-                ('jane_doe', 'jane@example.com', 'password456', 2);`,
+        `INSERT INTO utente (username, mail, pwd) VALUES 
+                ('john_doe', 'john@example.com', 'password123'),
+                ('jane_doe', 'jane@example.com', 'password456');`,
+
+
+        // Inserimento dati nella tabella 'conto'
+        `INSERT INTO conto (nome_conto, sigla,username) VALUES 
+                ('Conto Corrente', 'EUR', 'jane_doe'),
+                ('Conto Risparmio', 'USD', 'john_doe');`,
+
+        // Inserimento dati nella tabella 'spesa'
+        `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
+        (50.75, 'Spesa settimanale', 'Alimentazione', 1),
+        (20.00, 'Biglietto del treno', 'Trasporti', 1);`,
+
+        `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
+        (50.75, 'Spesa settimanale', 'Alimentazione', 1),
+        (20.00, 'Biglietto del treno', 'Droga', 1);`,
 
         `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
             -- Categorie 'Cibo'
@@ -325,7 +319,12 @@ export const popolaDB = async (db) => {
             (40.75, '2024-09-05', 'Assicurazione', 'Altro', 1),
             (25.50, '2024-10-30', 'Spese bancarie', 'Altro', 1),
             (38.75, '2024-11-25', 'Donazione beneficenza', 'Altro', 1),
-            (30.20, '2024-12-15', 'Spese varie', 'Altro', 1);`
+            (30.20, '2024-12-15', 'Spese varie', 'Altro', 1);`,
+
+        // Inserimento dati nella tabella 'tag_spesa'
+        `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
+        (1, 'Croccantini Fido'),
+        (2, 'Urgente');`
     ];
     console.log("Caricamento effettuato");
     for (const command of insertCommands) {
