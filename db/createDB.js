@@ -9,7 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
-                //await deleteTable(db);
+                await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
@@ -62,7 +62,7 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                //await popolaDB(db)
+                await popolaDB(db)
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -108,7 +108,7 @@ export const popolaDB = async (db) => {
         ('/assets/img/icone_minions/Minions-Vacay.png'),
         ('/assets/img/icone_minions/Minions-Toy.png'),
         ('/assets/img/icone_minions/Minions-Woman.png'),
-        ('/assets/img/icone_minions/Minions-Transport-Golf.png'),
+        ('/assets/img/icone_minions/Minions-Transport.png'),
         ('/assets/img/icone_minions/Minions-Technology.png'),
         ('/assets/img/icone_minions/Minions-NewYork.png'),
         ('/assets/img/icone_minions/Minions-Jewels.png'),
@@ -117,7 +117,6 @@ export const popolaDB = async (db) => {
 
         // Inserimento dati nella tabella 'categoria'
         `INSERT INTO categoria (nome, path_icona) VALUES 
-<<<<<<< HEAD
                 ('Alimentazione', '/assets/img/icone_minions/Minion-Fruits.png'),
                 ('Trasporti', '/assets/img/icone_minions/Minion-Playing-Golf.png'),
                 ('Regali', '/assets/img/icone_minions/Minion-Crazy.png'),
@@ -129,22 +128,6 @@ export const popolaDB = async (db) => {
                 ('Intrattenimento', '/assets/img/icone_minions/Minion-Reading.png'),
                 ('Salute', '/assets/img/icone_minions/Minion-Bananas.png'),
                 ('Casa', '/assets/img/icone_minions/Minion-Shy.png');`,
-=======
-                ('Alimentazione', '/assets/Image/img/icone_minions/Minion-Fruits.png'),
-                ('Trasporti', '/assets/Image/img/icone_minions/Minion-Playing-Golf.png'),
-                ('Regali', '/assets/Image/img/icone_minions/Minion-Crazy.png'),
-                ('Viaggi', '/assets/Image/img/icone_minions/Minion-Duck.png'),
-                ('Svago', '/assets/Image/img/icone_minions/Minion-Dancing.png'),
-                ('Altro', '/assets/Image/img/icone_minions/Minion-Evil.png'),
-                ('Cibo', '/assets/Image/img/icone_minions/Minion-Cake.png'),
-                ('Abbigliamento', '/assets/Image/img/icone_minions/Minion-Shout.png'),
-                ('Intrattenimento', '/assets/Image/img/icone_minions/Minion-Reading.png'),
-                
-                ('Salute', '/assets/Image/img/icone_minions/Minion-Bananas.png'),
-                
-                ('Casa', '/assets/Image/img/icone_minions/Minion-Shy.png');`,
-                
->>>>>>> 285fee35f82ffb537c20c21b1b72d0a26f8f08a1
 
         // Inserimento dati nella tabella 'valuta'
         `INSERT INTO valuta (sigla, nome, simbolo) VALUES 

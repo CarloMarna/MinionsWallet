@@ -20,12 +20,10 @@ const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => {
 
 const MinionComponent = () => {
     return (
+
         <View style={styles.minionsContainer}>
             <View style={styles.minion}>
-                <Image source={require('../../assets/Image/13.png')} style={styles.imageSpeseList} />
-            </View>
-            <View style={styles.minion}>
-                <Image source={require('../../assets/Image/12.png')} style={styles.imageSpeseList} />
+                <Image source={require('../../assets/Image/stupid.png')} style={styles.imageSpeseList} />
             </View>
         </View>
     );
@@ -48,8 +46,6 @@ const SpesePerCategoria = ({ database }: { database: any }) => {
         };
         caricaSpese();
     }, []);
-
-
 
 
     const detectOrientation = () => {
@@ -149,13 +145,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
     },
     minionsContainer: {
-        flexDirection: 'row',
-        paddingBottom: screenHeight * 0.005,
         justifyContent: 'center',
         alignItems: 'center',
     },
     minion: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -183,8 +176,8 @@ const styles = StyleSheet.create({
     },
 
     imageSpeseList: {
-        width: screenWidth * 0.3,
-        height: screenHeight * 0.2,
+        width: screenWidth * 0.8,
+        height: screenHeight * 0.22,
         resizeMode: 'contain',
     },
 
