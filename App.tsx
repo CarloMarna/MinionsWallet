@@ -10,6 +10,7 @@ import Uscita from './pages/Uscita';
 import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato il pacchetto @expo/vector-icons
 import Modal from 'react-native-modal';
 import useDatabase from './db/createDB';
+
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
