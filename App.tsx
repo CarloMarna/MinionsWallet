@@ -100,9 +100,9 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />*/}
         <Stack.Screen
           name="Registration"
-          component={Registration}
+          component={() => <Registration database={database} navigation={navigation} />}
           options={{ headerShown: false }}
-          initialParams={{ database: database }}/>
+        />
         <Stack.Screen
           name="HomePage"
           component={HomePage}

@@ -12,12 +12,10 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Registration = ({ navigation }) => {
-  
-  const route = useRoute();
-  const  database  = route.params;
+const Registration = ({ navigation, database }) => {
+
   console.log(database);
-  
+
   const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
     "CHF", "CNY", "SEK", "NZD", "INR", "RUB", "KRW", "MXN",
     "BRL", "ZAR", "THB", "SAR", "TRY", "AED"];
@@ -93,17 +91,17 @@ const Registration = ({ navigation }) => {
 
   }
 
-  const registrazioneUtente = async(database: any, accountName: any, selectedCurrency: any) =>{
-    const{messaggio}='';
-      try{
-        const command=`INSERT INTO conto (nome_conto, sigla) VALUES ('${accountName}', '${selectedCurrency}');`;
-        await database.executeSql(command);
-        return {messaggio:'tutto ok'};
-      }catch (error){
-        console.error("Errore durante la registrazione: ", error);
+  const registrazioneUtente = async (database: any, accountName: any, selectedCurrency: any) => {
+    const messaggio = '';
+    try {
+      const command = `INSERT INTO conto (nome_conto, sigla) VALUES ('${accountName}', '${selectedCurrency}');`;
+      await database.execAsync(command);
+      return { messaggio: 'tutto ok' };
+    } catch (error) {
+      console.error("Errore durante la registrazione: ", error);
 
-        return {messaggio:'errore'};
-      }
+      return { messaggio: 'errore' };
+    }
   };
   /*`INSERT INTO conto (nome_conto, sigla) VALUES 
                 ('Conto Corrente', 'EUR'),
@@ -114,7 +112,7 @@ const Registration = ({ navigation }) => {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
     }
-    const registrationResult= registrazioneUtente(database,accountName,selectedCurrency);
+    const registrationResult = registrazioneUtente(database, accountName, selectedCurrency);
     console.log(registrationResult);
     Alert.alert(
       'Registrazione eseguita',
