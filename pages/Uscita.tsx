@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Platform } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -11,8 +11,13 @@ const Uscita = ({ database }) => {
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
     const [categories, setCategories] = useState([]);
-    
-    
+    const [spese, setSpese] = useState([]);
+
+    //aggiunte
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    //fine aggiunte
+    //gestione picker categoria da db
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -29,6 +34,7 @@ const Uscita = ({ database }) => {
     const formatDate = (date: Date) => {
         return date.toISOString().split('T')[0];
     };
+    //gestione calcolo totale dinamico da db
     useEffect(() => {
         const calculateTotal = async () =>{
             try{
@@ -51,6 +57,44 @@ const Uscita = ({ database }) => {
         calculateTotal();
     },[database,category, startDate, endDate]);
 
+    //gestione lista spese dinamica da db
+    useEffect(() => {
+        const fetchSpese = async () => {
+            try {
+                let query;
+                let params;
+        
+                if (category === 'Tutte') {
+                    query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ?";
+                    params = [formatDate(endDate), formatDate(startDate)];
+                } else {
+                    query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
+                    params = [formatDate(endDate), formatDate(startDate), category];
+                }
+        
+                const result = await database.getAllAsync(query, params);
+                setSpese(result);
+              
+                
+            } catch (error) {
+                console.error("Errore nel recupero delle spese:", error);
+            }
+        };
+        fetchSpese();
+    }, [database, category, startDate, endDate]);
+
+
+    /*useEffect(() => {
+        console.log("Spese ordinate:", spese);
+    }, [spese]);*/
+    useEffect(() => {
+        console.log("Spese ordinate:");
+        spese.forEach(spesa => {
+            console.log(`Categoria: ${spesa.categoria}, Data: ${new Date(spesa.data)}, Importo: ${spesa.importo}, Descrizione: ${spesa.descrizione}`);
+        });
+    }, [spese]);
+    
+    
     const toggleStartDatePicker = () => {
         setShowStartPicker(!showStartPicker);
     };
@@ -82,7 +126,72 @@ const Uscita = ({ database }) => {
             toggleEndDatePicker();
         }
     };
+    //aggiunte
+    
+    /*const deleteSpesa = async (spesaToDelete) => {
+        try {
+            await database.execAsync(
+                "DELETE FROM spesa WHERE id = ?",
+                [spesaToDelete.id] 
+            );
+    
+            // Aggiorna lo stato delle spese, rimuovendo la spesa eliminata
+            setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
+    
+            // Ricalcola il totale delle spese dopo l'eliminazione
+            const result = await calculateTotal();
+            setTotal(result);
+            
+            // Chiudi il modal
+            toggleModal();
+        } catch (error) {
+            console.error("Errore durante l'eliminazione della spesa:", error);
+        }
+    };*/
 
+    const toggleModal = () => {
+        setModalVisible(!modalVisible);
+    };
+
+    const renderModal = () => {
+        if (!selectedItem) return null;
+
+        return (
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    toggleModal();
+                }}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Dettagli Spesa</Text>
+                        <Text style={styles.modalText}>Descrizione: {selectedItem.descrizione}</Text>
+                        <Text style={styles.modalText}>Categoria: {selectedItem.categoria}</Text>
+                        <Text style={styles.modalText}>Importo: {selectedItem.importo}</Text>
+                        <Text style={styles.modalText}>Data: {new Date(selectedItem.data).toLocaleDateString('it-IT')}</Text>
+                        <Text style={styles.modalText}>ID: {selectedItem.id}</Text>
+                        <Button title="Elimina" onPress={() => {
+                        Alert.alert(
+                            'Elimina Spesa',
+                            'Sei sicuro di voler eliminare questa spesa?',
+                            [
+                                { text: 'Annulla', style: 'cancel' },
+                                //{ text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
+                            ],
+                            { cancelable: false }
+                        );
+                    }} />
+                        <Button title="Chiudi" onPress={toggleModal} />
+                    </View>
+                </View>
+            </Modal>
+        );
+    };
+
+    //fine aggiunte
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Totale Uscite</Text>
@@ -126,6 +235,7 @@ const Uscita = ({ database }) => {
                             <TextInput editable={false} placeholder='data' value={startDate.toDateString()} style={styles.input} />
                         </Pressable>
                     )}
+                
                 </View>
 
                 <View style={styles.datePicker}>
@@ -145,6 +255,34 @@ const Uscita = ({ database }) => {
                     )}
                 </View>
             </View>
+            <FlatList
+                data={spese}
+                renderItem={({ item }) => (
+                    //aggiunte
+                    <Pressable
+                        onPress={() => {
+                            setSelectedItem(item);
+                            toggleModal();
+                        }}
+                    >
+                    {/*fine Aggiunte */}
+                    
+                    <View style={styles.spesaItem}>
+                        <Text style={styles.spesaItemText}>Descrizione: {item.descrizione}</Text>
+                        <Text style={styles.spesaItemText}>Categoria: {item.categoria}</Text>
+                        <Text style={styles.spesaItemText}>Importo: {item.importo}</Text>
+                        <Text style={styles.spesaItemText}>Data: {new Date(item.data).toLocaleDateString('it-IT')}</Text>
+                        
+                    </View>
+                    {/* Aggiunte */}
+                    </Pressable>
+                    
+                )}
+                keyExtractor={(item, index) => index.toString()}
+
+                
+            />
+            {renderModal()}
         </View>
     );
 };
@@ -213,6 +351,7 @@ const styles = StyleSheet.create({
     },
     dateContainer: {
         flexDirection: 'row',
+        marginBottom: 20,
     },
     datePicker: {
         flex: 1,
@@ -225,6 +364,37 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         color: '#0057BB',
     },
+    spesaItem: {
+        backgroundColor: '#EFEFEF',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 20,
+    },
+    spesaItemText: {
+        fontSize: 16,
+        color: '#0057BB',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 5,
+    }
 });
 
 export default Uscita;
