@@ -98,27 +98,72 @@ export const popolaDB = async (database) => {
     const insertCommands = [
         // Inserimento dati nella tabella 'icona'
         `INSERT INTO icona (path) VALUES 
-                ('/icons/icon1.png'),
-                ('/icons/icon2.png');`,
+                ('/assets/Image/img/icone_minions/Minion-Bananas.png'),
+                ('/assets/Image/img/icone_minions/Minion-Cake.png'),
+                ('/assets/Image/img/icone_minions/Minion-Crazy.png'),
+                ('/assets/Image/img/icone_minions/Minion-Dancing.png'),
+                ('/assets/Image/img/icone_minions/Minion-Duck.png'),
+                ('/assets/Image/img/icone_minions/Minion-Evil.png'),
+                ('/assets/Image/img/icone_minions/Minion-Fruits.png'),
+                ('/assets/Image/img/icone_minions/Minion-Kungfu.png'),
+                ('/assets/Image/img/icone_minions/Minion-Maid.png'),
+                ('/assets/Image/img/icone_minions/Minion-Playing-Golf.png')
+                ('/assets/Image/img/icone_minions/Minion-Reading.png'),
+                ('/assets/Image/img/icone_minions/Minion-Sad.png'),
+                ('/assets/Image/img/icone_minions/Minion-Shout.png'),
+                ('/assets/Image/img/icone_minions/Minion-Shy.png'),
+                ('/assets/Image/img/icone_minions/Minions-Chitarra.png'),
+                ('/assets/Image/img/icone_minions/Minions-Festa.png'),
+                ('/assets/Image/img/icone_minions/Minions-Spa.png'),
+                ('/assets/Image/img/icone_minions/Minions-Pillola.png'),
+                ('/assets/Image/img/icone_minions/Minions-Christmas.png'),
+                ('/assets/Image/img/icone_minions/Minions-Chef.png'),
+                ('/assets/Image/img/icone_minions/Minions-Vacay.png'),
+                ('/assets/Image/img/icone_minions/Minions-Toy.png'),
+                ('/assets/Image/img/icone_minions/Minions-Woman.png'),
+                ('/assets/Image/img/icone_minions/Minions-Transport-Golf.png')
+                ('/assets/Image/img/icone_minions/Minions-Technology.png'),
+                ('/assets/Image/img/icone_minions/Minions-NewYork.png'),
+                ('/assets/Image/img/icone_minions/Minions-Jewels.png'),
+                ('/assets/Image/img/icone_minions/Minions-Sad-Christmas.png');`,
+                
 
         // Inserimento dati nella tabella 'categoria'
         `INSERT INTO categoria (nome, path_icona) VALUES 
-                ('Alimentazione', '/icons/icon1.png'),
-                ('Trasporti', '/icons/icon2.png'),
-                ('Regali', '/icons/icon9.png'),
-                ('Viaggi', '/icons/icon10.png'),
-                ('Svago', '/icons/icon11.png'),
-                ('Altro', '/icons/icon12.png'),
-                ('Cibo', '/icons/icon3.png'),
-                ('Abbigliamento', '/icons/icon4.png'),
-                ('Intrattenimento', '/icons/icon6.png'),
-                ('Salute', '/icons/icon7.png'),
-                ('Casa', '/icons/icon8.png');`,
+                ('Alimentazione', '/assets/Image/img/icone_minions/Minion-Fruits.png'),
+                ('Trasporti', '/assets/Image/img/icone_minions/Minion-Playing-Golf.png'),
+                ('Regali', '/assets/Image/img/icone_minions/Minion-Crazy.png'),
+                ('Viaggi', '/assets/Image/img/icone_minions/Minion-Duck.png'),
+                ('Svago', '/assets/Image/img/icone_minions/Minion-Dancing.png'),
+                ('Altro', '/assets/Image/img/icone_minions/Minion-Evil.png'),
+                ('Cibo', '/assets/Image/img/icone_minions/Minion-Cake.png'),
+                ('Abbigliamento', '/assets/Image/img/icone_minions/Minion-Shout.png'),
+                ('Intrattenimento', '/assets/Image/img/icone_minions/Minion-Reading.png'),
+                ('Salute', '/assets/Image/img/icone_minions/Minion-Bananas.png'),
+                ('Casa', '/assets/Image/img/icone_minions/Minion-Shy.png');`,
 
         // Inserimento dati nella tabella 'valuta'
         `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
-                ('USD', 'Dollar', '$'),
-                ('EUR', 'Euro', '€');`,
+            ('EUR', 'Euro', '€')
+            ('USD', 'Dollar', '$')
+            ('JPY', 'Yen', '¥')
+            ('GBP', 'Sterlina', '£')
+            ('AUD', 'Dollaro australiano', '$')
+            ('CAD', 'Dollaro canadese', '$')
+            ('CHF', 'Franco svizzero', 'CHF')
+            ('CNY', 'Yuan cinese', '¥')
+            ('SEK', 'Corona svedese', 'kr')
+            ('NZD', 'Dollaro neozelandese', '$')
+            ('INR', 'Rupia indiana', '₹')
+            ('RUB', 'Rublo russo', '₽')
+            ('KRW', 'Won sudcoreano', '₩')
+            ('MXN', 'Peso messicano', '$')
+            ('BRL', 'Real brasiliano', 'R$')
+            ('ZAR', 'Rand sudafricano', 'R')
+            ('THB', 'Baht thailandese', '฿')
+            ('SAR', 'Riyal saudita', '﷼')
+            ('TRY', 'Lira turca', '₺')
+            ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
 
         // Inserimento dati nella tabella 'conto'
         `INSERT INTO conto (nome_conto, sigla) VALUES 
@@ -137,12 +182,16 @@ export const popolaDB = async (database) => {
         // Inserimento dati nella tabella 'tag'
         `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
-                ('Da Rivedere');`,
+                ('Concerto'),
+                ('Regalo fidanzato/a'),
+                ('Spesa settimanale'),
+                ('Croccantini Fido');`,
+                
 
         // Inserimento dati nella tabella 'tag_spesa'
         `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
-                (1, 'Urgente'),
-                (2, 'Da Rivedere');`,
+                (1, 'Croccantini Fido'),
+                (2, 'Urgente');`,
 
         // Inserimento dati nella tabella 'utente'
         `INSERT INTO utente (username, mail, pwd, id_conto) VALUES 
