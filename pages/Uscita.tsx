@@ -1,21 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Registration from './Registration';
 
-
-const Uscita = () => {
-    
+const Uscita = ({ database }) => {
     const [total, setTotal] = useState(100);
     const [category, setCategory] = useState('Tutte');
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
-
+    const [categories, setCategories] = useState([]);
     
+    
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const result = await database.getAllAsync(`SELECT nome FROM categoria`);
+                setCategories(result);
+            } catch (error) {
+                console.error("Errore nel recupero delle categorie:", error);
+            }
+        };
+        fetchCategories();
+    }, [database]);
+
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
+    useEffect(() => {
+        const calculateTotal = async () =>{
+            try{
+            if(category === 'Tutte'){
+            let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ?";
+            let params = [formatDate(endDate), formatDate(startDate)];
+            const result1 = await database.getAllAsync(query, params);
+            setTotal(result1[0].total|| 0);
+            }else{
+            let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
+            let params = [formatDate(endDate), formatDate(startDate),category];
+            const result2 = await database.getAllAsync(query, params);
+            setTotal(result2[0].total || 0);
+            }
+            
+        }catch(error){
+            console.error("Errore il calcolo delle uscite: ", error);
+        }
+        };
+        calculateTotal();
+    },[database,category, startDate, endDate]);
+
     const toggleStartDatePicker = () => {
         setShowStartPicker(!showStartPicker);
     };
@@ -49,8 +84,6 @@ const Uscita = () => {
     };
 
     return (
-        
-           
         <View style={styles.container}>
             <Text style={styles.title}>Totale Uscite</Text>
 
@@ -67,14 +100,16 @@ const Uscita = () => {
                     <Picker
                         style={styles.picker}
                         selectedValue={category}
-                        onValueChange={(itemValue) => setCategory(itemValue)}>
+                        onValueChange={(itemValue) => setCategory(itemValue)}
+                    >
                         <Picker.Item label="Tutte" value="Tutte" />
-                        <Picker.Item label="Categoria 1" value="Categoria 1" />
-                        <Picker.Item label="Categoria 2" value="Categoria 2" />
+                        {categories.map((cat, index) => (
+                            <Picker.Item key={index} label={cat.nome} value={cat.nome} />
+                        ))}
                     </Picker>
                 </View>
             </View>
-                
+
             <View style={styles.dateContainer}>
                 <View style={styles.datePicker}>
                     <Text style={styles.label}>Data Inizio:</Text>
@@ -101,7 +136,6 @@ const Uscita = () => {
                             display='spinner'
                             value={endDate}
                             onChange={onEndChange}
-                            
                         />
                     )}
                     {!showEndPicker && (
@@ -112,23 +146,21 @@ const Uscita = () => {
                 </View>
             </View>
         </View>
-        
-        
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#FEEC47', // Giallo pastello
+        backgroundColor: '#FEEC47',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#0057BB', // Blu scuro
+        color: '#0057BB',
     },
     totalContainer: {
         flexDirection: 'row',
@@ -138,22 +170,22 @@ const styles = StyleSheet.create({
     totalLabel: {
         fontSize: 18,
         marginRight: 10,
-        color: '#0057BB', // Blu scuro
+        color: '#0057BB',
     },
     totalValue: {
         fontSize: 18,
         borderWidth: 1,
-        borderColor: '#0057BB', // Blu scuro
+        borderColor: '#0057BB',
         paddingHorizontal: 10,
         paddingVertical: 5,
-        color: '#0057BB', // Blu scuro
+        color: '#0057BB',
     },
     filter: {
         alignSelf: 'flex-start',
         fontSize: 20,
         marginBottom: 10,
-        color: '#0057BB', // Blu scuro
-        fontWeight: 'bold'
+        color: '#0057BB',
+        fontWeight: 'bold',
     },
     filterContainer: {
         flexDirection: 'row',
@@ -164,20 +196,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginRight: 10,
         lineHeight: 40,
-        fontWeight: 'bold', // Grassetto aggiunto
-        color: '#0057BB', // Blu scuro
+        fontWeight: 'bold',
+        color: '#0057BB',
     },
     pickerContainer: {
         flex: 1,
         borderWidth: 1,
-        borderColor: '#0057BB', // Blu scuro
+        borderColor: '#0057BB',
         height: 40,
         justifyContent: 'center',
     },
     picker: {
         flex: 1,
         textAlign: 'center',
-        color: '#0057BB', // Blu scuro
+        color: '#0057BB',
     },
     dateContainer: {
         flexDirection: 'row',
@@ -188,10 +220,10 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: '#0057BB', // Blu scuro
+        borderColor: '#0057BB',
         paddingHorizontal: 10,
         paddingVertical: 5,
-        color: '#0057BB', // Blu scuro
+        color: '#0057BB',
     },
 });
 
