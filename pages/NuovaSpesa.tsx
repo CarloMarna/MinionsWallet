@@ -3,7 +3,6 @@ import {ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleS
 import { Picker } from '@react-native-picker/picker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { SimpleGrid } from 'react-native-super-grid';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 
 
@@ -57,17 +56,48 @@ const Importo=({database}:{database:any})=>{
     
 )}
 
-const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:string[]})=>{
+const Categorie=({database}: {database:any})=>{
+    const [icone, setIcone] = useState<string[]>([]);
+    useEffect(() => {
+        const readIcone= async (database: any)=>{
+            try{
+                const icone=await database.getAllAsync(
+                    'SELECT path FROM icona;'
+                );
+                const lista_icone: string[]=[];
+                for (const row of icone) {
+                    let x:string='';
+                    x='..'+row.path;
+                    lista_icone.push(x);
+                  }
+                return {lista_icone};
+            }
+            catch(error){
+                console.error("Errore nel prelievo delle icone", error);
+                return [];
+            }
+        }
+        
+        const fetchIcone = async () => {
+            try {
+                const result = await readIcone(database);
+                setIcone(result.lista_icone);
+            } catch (error) {
+                console.error("Errore nel prelievo delle icone", error);
+            }
+        };
+
+        fetchIcone();
+    }, [database]);
+
+
     const [selectedCategory, setSelectedCategory]=useState("");
 
     type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
         img: string;
         nomeCategoria: string;
       };
-    
-    /*type ItemPopUp={    //definisco il tipo delle icone
-        img: string;
-    };*/
+
 
     type ItemProps={    //proprietà dell'item
         item: ItemCategoria;    //item di tipo ItemCategoria
@@ -80,7 +110,7 @@ const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:stri
         item: string;    //item di tipo ItemPopUp
         onPress: ()=>void;  //funzione di tipo void
         borderColor: string;
-        borderWidth: number;
+        //borderWidth: number;
     };
 
     const lista_categorie: ItemCategoria[]=[    //lista categorie di tipo ItemCategoria
@@ -108,20 +138,6 @@ const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:stri
         </View>
     );
 
-    const ItemPopUp=({item, onPress, borderColor, borderWidth}:ItemPopUpProps)=>( //definisco la costante item a cui passo le proprietà
-         <View>
-            <Pressable onPress={onPress}>
-            {readIcone(database).map((imageName:string, index:number) => (
-                <Image
-                    key={index}
-                    source={{ uri: imageName }}
-                    style={[{borderColor, borderWidth},styles.icone]}
-                />
-            ))}
-                
-            </Pressable>
-        </View>
-    );
 
     const renderItem=({item}:{item: ItemCategoria}) => {    //destrutturazione per estrapolare la proprietà item
         const backgroundColor = item.nomeCategoria === selectedCategory ? '#0057BB' : 'white';
@@ -136,6 +152,14 @@ const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:stri
         );
     };
 
+    const ItemPopUp=({item, onPress, borderColor}:ItemPopUpProps)=>( //definisco la costante item a cui passo le proprietà    
+            <View>
+                <Pressable onPress={onPress} style={styles.icone}>
+                    <Image source={{uri:item}} style={[{borderColor, borderWidth:1},styles.icone]}/>
+                </Pressable>
+            </View>
+    );
+    
     const [selectedIcon, setSelectedIcon] = useState("");
     const renderItemPopUp=({item}:{item: string})=>{
         const borderColor=item===selectedIcon?'#0057BB': '';
@@ -144,10 +168,19 @@ const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:stri
                 item={item}
                 onPress={()=>(setSelectedIcon(item))}
                 borderColor={borderColor}
-                borderWidth={2}
                 />
             ) 
     }
+
+    /*const renderItemPopUp=({item}:{item:string})=>{
+        const borderColor=item.toString()===selectedIcon?'#0057BB': '';
+            return(<View>
+                <Pressable onPress={()=>(setSelectedIcon(item.toString()))}>
+                    <Image source={{uri: item}} style={[{borderColor, borderWidth:1},styles.icone]}/>
+                </Pressable>
+            </View>)
+    }*/
+
     const separator=()=>{
         return(
             <View style={styles.separator} />
@@ -157,23 +190,23 @@ const Categorie=async ({database}: {database:any}, {listaIcone}:{listaIcone:stri
 
     
     return( //categorie mi restituisce la flatlist
-        <View>
+        <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria o creane una nuova</Text>
-            <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
+            <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View style={[{width: 300}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
                         <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
-                        <SimpleGrid style={[{flexWrap: 'wrap', flexDirection: 'row'}]} maxItemsPerRow={5} maxDimension={4} data={listaIcone} renderItem={renderItemPopUp}/>
+                        <FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/>
                         <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> (setModalVisible(!modalVisible))}/></View>
                     </View>
                 </Modal>
             </View>
-        </View>
+        </SafeAreaView>
     )
-}
+};
 
 const Tag=({database}:{database:any})=>{
     type ItemTag={
@@ -236,46 +269,10 @@ const Tag=({database}:{database:any})=>{
             </View>
         </View>
      )
-}
+};
 
 const NuovaSpesa=({ database }: { database: any })=>{
-    const[listaIcone, setListaIcone]=useState<string[]>([]);
-    useEffect(() => {
-        const readIcone= async(database: any)=>{
-            try{
-                const icone= await database.getAllAsync(
-                    'SELECT path FROM icona;'
-                );
-                const lista_icone: string[]=[];
-                for (const row of icone) {
-                    let x:string='';
-                    x='..'+row.path;
-                    lista_icone.push(x);
-                  }
-                return{lista_icone};
-                //console.log(lista_icone);
-            }
-            catch(error){
-                console.error("Errore nel prelievo delle icone", error);
-                const lista_icone: string[]=[];
-                return {lista_icone};
-            }
-        }
-        
-        const caricaDatiDatabase = async () => {
-            try {
-                const icone = await readIcone(database);
-                for (const item of icone) {
-                    setListaIcone(listaIcone.concat(item));
-                }
-            } catch (error) {
-                console.log("Errore caricamento dati");
-            }
-        };
-    
-        caricaDatiDatabase();
-    }, [database]);
-    
+
 const[fontLoaded, setFontLoaded] = useState(false);
     console.log(database);
     useEffect(() => {
@@ -294,12 +291,12 @@ const[fontLoaded, setFontLoaded] = useState(false);
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
             <ScrollView nestedScrollEnabled>
                 <Importo database={database}/>
-                <Categorie database={database} listaIcone={listaIcone}/>
+                <Categorie database={database}/>
                 <Tag database={database}/>
             </ScrollView>
         </SafeAreaView>
     )
-}
+};
 
 const styles=StyleSheet.create({
     box: {
