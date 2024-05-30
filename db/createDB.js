@@ -62,7 +62,7 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                await popolaDB(db)
+                await popolaDBParziale(db);
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -81,7 +81,7 @@ const useDatabase = () => {
 };
 
 
-export const popolaDB = async (db) => {
+export const popolaDBCompleto = async (db) => {
     const insertCommands = [
         // Inserimento dati nella tabella 'icona'
         `INSERT INTO icona (path) VALUES 
@@ -325,6 +325,48 @@ export const popolaDB = async (db) => {
         `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
         (1, 'Croccantini Fido'),
         (2, 'Urgente');`
+    ];
+    console.log("Caricamento completo effettuato");
+    for (const command of insertCommands) {
+        await db.execAsync(command);
+    }
+};
+
+export const popolaDBParziale = async (db) => {
+    const insertCommands = [
+        // Inserimento dati nella tabella 'valuta'
+        `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
+        ('EUR', 'Euro', '€'),
+        ('USD', 'Dollar', '$'),
+        ('JPY', 'Yen', '¥'),
+        ('GBP', 'Sterlina', '£'),
+        ('AUD', 'Dollaro australiano', '$'),
+        ('CAD', 'Dollaro canadese', '$'),
+        ('CHF', 'Franco svizzero', 'CHF'),
+        ('CNY', 'Yuan cinese', '¥'),
+        ('SEK', 'Corona svedese', 'kr'),
+        ('NZD', 'Dollaro neozelandese', '$'),
+        ('INR', 'Rupia indiana', '₹'),
+        ('RUB', 'Rublo russo', '₽'),
+        ('KRW', 'Won sudcoreano', '₩'),
+        ('MXN', 'Peso messicano', '$'),
+        ('BRL', 'Real brasiliano', 'R$'),
+        ('ZAR', 'Rand sudafricano', 'R'),
+        ('THB', 'Baht thailandese', '฿'),
+        ('SAR', 'Riyal saudita', '﷼'),
+        ('TRY', 'Lira turca', '₺'),
+        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
+
+        // Inserimento dati nella tabella 'utente'
+        `INSERT INTO utente (username, mail, pwd) VALUES 
+                ('john_doe', 'john@example.com', 'password123'),
+                ('jane_doe', 'jane@example.com', 'password456');`,
+
+
+        // Inserimento dati nella tabella 'conto'
+        `INSERT INTO conto (nome_conto, sigla,username) VALUES 
+                ('Conto Corrente', 'EUR', 'jane_doe'),
+                ('Conto Risparmio', 'USD', 'john_doe');`,
     ];
     console.log("Caricamento effettuato");
     for (const command of insertCommands) {
