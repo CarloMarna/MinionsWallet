@@ -14,7 +14,6 @@ loadFonts();
 
 const Registration = ({ navigation, database }) => {
 
-  console.log(database);
 
   const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
     "CHF", "CNY", "SEK", "NZD", "INR", "RUB", "KRW", "MXN",
@@ -91,7 +90,7 @@ const Registration = ({ navigation, database }) => {
 
   }
 
-  const registrazioneUtente = async (database: any, accountName: any, selectedCurrency: any) => {
+  const registrazioneUtente = async () => {
     const messaggio = '';
     try {
       const command = `INSERT INTO conto (nome_conto, sigla) VALUES ('${accountName}', '${selectedCurrency}');`;
@@ -106,13 +105,13 @@ const Registration = ({ navigation, database }) => {
   /*`INSERT INTO conto (nome_conto, sigla) VALUES 
                 ('Conto Corrente', 'EUR'),
                 ('Conto Risparmio', 'USD');` */
-  const handleRegistration = () => {
+  const handleRegistration = async () => {
     //logica registrazione
     if (!username || !email || !password || !accountName) {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
     }
-    const registrationResult = registrazioneUtente(database, accountName, selectedCurrency);
+    const registrationResult = await registrazioneUtente(database, accountName, selectedCurrency);
     console.log(registrationResult);
     Alert.alert(
       'Registrazione eseguita',
@@ -180,7 +179,7 @@ const Registration = ({ navigation, database }) => {
           <Picker.Item key={currency} label={`${currency} ${currencySymbols(currency)}`} value={currency} />
         ))}
       </Picker>
-      <Button title="Registrati" onPress={handleRegistration} />
+      <Button title="Registrati" onPress={() => handleRegistration(database)} />
       <TouchableOpacity onPress={handleGoToLogin}>
         <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
       </TouchableOpacity>
