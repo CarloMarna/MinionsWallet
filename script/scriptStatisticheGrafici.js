@@ -95,12 +95,11 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
 
-        if (resultMax) {
-            resultMax.path_icona = resultMax.path_icona;
-        }
-        if (resultMin) {
-            resultMin.path_icona = resultMin.path_icona;
-        }
+
+
+        console.log(resultMax);
+        console.log(resultMin);
+
         return {
             min: resultMin ? resultMin.importo : 0,
             max: resultMax ? resultMax.importo : 0,
@@ -150,7 +149,7 @@ export const caricaSpesePerCategoriaSezione = async (database) => {
             FROM spesa 
             WHERE id_conto = 1 
             GROUP BY categoria
-            ORDER BY totale_spesa Desc
+            ORDER BY totale_spesa Desc;
         `);
 
         let totaleSpesa = 0;

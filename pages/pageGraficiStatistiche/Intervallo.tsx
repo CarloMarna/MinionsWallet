@@ -39,7 +39,7 @@ const ModalContent = ({ modalVisible, onClose, content }) => {
 };
 
 const Intervallo = ({ database }) => {
-    const today = new Date();
+
     const [dataInizio, setDataInizio] = useState(new Date());
     const [dataFine, setDataFine] = useState(new Date());
     const [showDatePickerInizio, setShowDatePickerInizio] = useState(false);
@@ -175,12 +175,12 @@ const Intervallo = ({ database }) => {
             <ModalContent
                 modalVisible={modalVisibleMinimo}
                 onClose={() => setModalVisibleMinimo(false)}
-                content={categoriaSpesaMinima}
+                content={categoriaSpesaMassima}
             />
             <ModalContent
                 modalVisible={modalVisibleMassimo}
                 onClose={() => setModalVisibleMassimo(false)}
-                content={categoriaSpesaMassima}
+                content={categoriaSpesaMinima}
             />
         </View >
     );
@@ -269,10 +269,12 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
         textAlign: 'center',
+        fontSize: screenWidth * 0.05
     },
     modalText: {
         marginBottom: 15,
         textAlign: 'center',
+        fontSize: screenWidth * 0.06
     }
 });
 
