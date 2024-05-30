@@ -5,15 +5,16 @@ import {
   Button,
   View,
   Text,
+  ScrollView,
 } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 
-const dbPromise = SQLite.openDatabaseAsync('mio_database.db');
+//const dbPromise = SQLite.openDatabaseAsync('mio_database.db');
 
 const HomePage = () => {
   const [result, setResult] = React.useState('');
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     async function prepareDB() {
       const db = await dbPromise;
       await db.execAsync('CREATE TABLE IF NOT EXISTS prova (matricola INTEGER PRIMARY KEY NOT NULL, nome TEXT, eta INTEGER, ruolo TEXT);');
@@ -66,11 +67,25 @@ const HomePage = () => {
         <Text style={styles.resultText}>{result}</Text>
       </View>
     </SafeAreaView>
+  );*/
+
+  return (
+    <ScrollView>
+      <View style={styles.cerchioEsterno}>
+        <View style={styles.cerchioInterno}>
+          <Text style={styles.testo}>saldo conto</Text>
+        </View>
+      </View>
+    </ScrollView>
   );
+
+
+
+
 };
 
 const styles = StyleSheet.create({
-  container: {
+  /*container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -78,6 +93,27 @@ const styles = StyleSheet.create({
   },
   resultText: {
     marginTop: 20,
+  },*/
+  cerchioEsterno: {
+    width: 150, // larghezza del cerchio
+    height: 150, // altezza del cerchio
+    borderRadius: 75, // metà della larghezza e altezza per ottenere un cerchio
+    backgroundColor: '#4CAF50', // colore di sfondo del cerchio
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cerchioInterno: {
+    width: 150, // larghezza del cerchio
+    height: 150, // altezza del cerchio
+    borderRadius: 75, // metà della larghezza e altezza per ottenere un cerchio
+    backgroundColor: '#4CAF50', // colore di sfondo del cerchio
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  testo: {
+    color: '#fff', // colore del testo
+    fontSize: 18, // dimensione del testo
+    fontWeight: 'bold',
   },
 });
 
