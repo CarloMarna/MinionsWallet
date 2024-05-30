@@ -10,7 +10,7 @@ import Uscita from './pages/Uscita';
 import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato il pacchetto @expo/vector-icons
 import Modal from 'react-native-modal';
 import useDatabase from './db/createDB';
-
+import Login from './pages/Login';
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
@@ -98,7 +98,21 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           component={(props) => <Registration {...props} database={database} />}
         />
 
-
+        <Stack.Screen
+          name="Login"
+          component={()=><Login database={database}/>}
+          options={({ navigation }) => ({
+            title: "Login",
+            headerLeft: () => (
+              <View>
+                <TouchableOpacity onPress={() => handleMenuClick()}>
+                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
+                </TouchableOpacity>
+                <Menu navigation={navigation} />
+              </View>
+            ),
+          })}
+        />
         <Stack.Screen
           name="HomePage"
           component={HomePage}
@@ -146,7 +160,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="Uscita"
-          component={Uscita}
+          component={()=><Uscita database={database}/>}
           options={({ navigation }) => ({
             headerLeft: () => (
               <View>

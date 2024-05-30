@@ -80,7 +80,7 @@ const Registration = ({ navigation, database }) => {
         {
           text: 'OK',
           onPress: () => {
-            navigation.navigate("Uscita")
+            navigation.navigate("Login")
           },
           style: 'default',
         },

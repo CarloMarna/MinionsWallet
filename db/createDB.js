@@ -126,8 +126,11 @@ export const popolaDB = async (db) => {
                 ('Cibo', '/assets/Image/img/icone_minions/Minion-Cake.png'),
                 ('Abbigliamento', '/assets/Image/img/icone_minions/Minion-Shout.png'),
                 ('Intrattenimento', '/assets/Image/img/icone_minions/Minion-Reading.png'),
+                
                 ('Salute', '/assets/Image/img/icone_minions/Minion-Bananas.png'),
+                
                 ('Casa', '/assets/Image/img/icone_minions/Minion-Shy.png');`,
+                
 
         // Inserimento dati nella tabella 'valuta'
         `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
