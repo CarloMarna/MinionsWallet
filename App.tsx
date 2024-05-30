@@ -94,9 +94,11 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
       <Stack.Navigator initialRouteName="Registration">
         <Stack.Screen
           name="Registration"
-          component={Registration}
           options={{ headerShown: false }}
+          component={(props) => <Registration {...props} database={database} />}
         />
+
+
         <Stack.Screen
           name="HomePage"
           component={HomePage}
