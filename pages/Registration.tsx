@@ -91,12 +91,29 @@ const Registration = ({ navigation, database }) => {
   }
 
   const registrazioneUtente = async () => {
-    const messaggio = '';
+    let messaggio1 = '';
+    let messaggio2 = '';
     try {
-      const command = `INSERT INTO conto (nome_conto, sigla) VALUES ('${accountName}', '${selectedCurrency}');`;
-      await database.execAsync(command);
-      return { messaggio: 'tutto ok' };
-    } catch (error) {
+    const checkExistingUsername = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${username}';`);
+    console.log(checkExistingUsername);
+if (checkExistingUsername.length>0) {
+    console.log('Sono entrato in checkExisting');
+    return { messaggio: 'usernameDuplicato' };}
+    else{
+    console.log('Sono entrato nell else non ce username duplicato');
+      const command1 = `INSERT INTO utente (username,mail,pwd) VALUES ('${username}', '${email}','${password}');`;
+      const command2 = `INSERT INTO conto (nome_conto, sigla,username) VALUES ('${accountName}', '${selectedCurrency}','${username}');`;
+      
+      await database.execAsync(command1);
+      await database.execAsync(command2);
+      messaggio1= await database.getAllAsync('Select * from utente');
+      messaggio2=await database.getAllAsync('Select * from conto');
+      console.log(messaggio1);
+      console.log(messaggio2);
+      const mergedMessages = [...messaggio1, ...messaggio2];
+      
+      return {mergedMessages};
+    }} catch (error) {
       console.error("Errore durante la registrazione: ", error);
 
       return { messaggio: 'errore' };
@@ -110,9 +127,31 @@ const Registration = ({ navigation, database }) => {
     if (!username || !email || !password || !accountName) {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
+      
     }
-    const registrationResult = await registrazioneUtente(database, accountName, selectedCurrency);
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) {
+      Alert.alert('Errore', 'Inserire un indirizzo email valido');
+      return;
+    }
+    const registrationResult = await registrazioneUtente();
+
     console.log(registrationResult);
+
+    if(registrationResult.messaggio === 'usernameDuplicato'){
+    Alert.alert(
+          'Registrazione non eseguita',
+          'Username già esistente',
+          [
+            {
+              text: 'OK',
+              style: 'default',
+            },
+          ],
+          { cancelable: false }
+        );
+      }else{
+    
     Alert.alert(
       'Registrazione eseguita',
       'La registrazione è stata completata con successo!',
@@ -127,7 +166,7 @@ const Registration = ({ navigation, database }) => {
       ],
       { cancelable: false }
     );
-  };
+  }};
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -179,7 +218,7 @@ const Registration = ({ navigation, database }) => {
           <Picker.Item key={currency} label={`${currency} ${currencySymbols(currency)}`} value={currency} />
         ))}
       </Picker>
-      <Button title="Registrati" onPress={() => handleRegistration(database)} />
+      <Button title="Registrati" onPress={() => handleRegistration()} />
       <TouchableOpacity onPress={handleGoToLogin}>
         <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
       </TouchableOpacity>
