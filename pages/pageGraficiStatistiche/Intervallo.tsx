@@ -3,17 +3,36 @@ import { Text, View, StyleSheet, Dimensions, TouchableOpacity, TextInput, Pressa
 import { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AntDesign } from '@expo/vector-icons';
+import { calcolaSpesaMinMax, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const CalendarButton = ({ onPress }) => (
     <TouchableOpacity onPress={onPress} >
-        <AntDesign name="calendar" size={24} color="white" />
+        <AntDesign name="calendar" size={screenWidth * 0.07} color="white" />
     </TouchableOpacity>
 );
 
+const ModalContent = ({ modalVisible, onClose, content }) => (
+    <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={onClose}>
+        <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+                <Text style={styles.modalText}>{content}</Text>
+                <Pressable
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={onClose}>
+                    <Text style={styles.textStyle}>Nascondi</Text>
+                </Pressable>
+            </View>
+        </View>
+    </Modal>
+);
 
-const Intervallo = ({ database }: { database: any }) => {
+const Intervallo = ({ database }) => {
     const today = new Date();
     const [dataInizio, setDataInizio] = useState(new Date(today.getFullYear(), today.getMonth() - 1, today.getDate()));
     const [dataFine, setDataFine] = useState(new Date());
@@ -23,46 +42,9 @@ const Intervallo = ({ database }: { database: any }) => {
     const [spesaMassima, setSpesaMassima] = useState(0);
     const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState('N/A');
     const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState('N/A');
-    const [valuta, setValuta] = useState('€');
+    const [valuta, setValuta] = useState('');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
     const [modalVisibleMassimo, setModalVisibleMassimo] = useState(false);
-
-    const formatDate = (date: Date) => {
-        return date.toISOString().split('T')[0];
-    };
-
-    const calcolaSpesaMinMax = async (database: any, dataInizio: Date, dataFine: Date) => {
-        try {
-            const formattedDataInizio = formatDate(dataInizio);
-            const formattedDataFine = formatDate(dataFine);
-
-            const resultMin = await database.getFirstAsync(`
-                    SELECT importo, categoria
-                    FROM spesa
-                    WHERE data BETWEEN ? AND ? AND id_conto = 1
-                    ORDER BY importo ASC
-                    LIMIT 1
-                `, [formattedDataInizio, formattedDataFine]);
-
-            const resultMax = await database.getFirstAsync(`
-                    SELECT importo, categoria
-                    FROM spesa
-                    WHERE data BETWEEN ? AND ? AND id_conto = 1
-                    ORDER BY importo DESC
-                    LIMIT 1
-                `, [formattedDataInizio, formattedDataFine]);
-
-            return {
-                min: resultMin ? resultMin.importo : 0,
-                max: resultMax ? resultMax.importo : 0,
-                categoriaMin: resultMin ? resultMin.categoria : 'N/A',
-                categoriaMax: resultMax ? resultMax.categoria : 'N/A',
-            };
-        } catch (error) {
-            console.error("Errore durante il calcolo delle spese minime e massime:", error);
-            return { min: 0, max: 0, categoriaMin: 'N/A', categoriaMax: 'N/A' };
-        }
-    };
 
     useEffect(() => {
         const fetchSpese = async () => {
@@ -71,11 +53,11 @@ const Intervallo = ({ database }: { database: any }) => {
             setSpesaMassima(max);
             setCategoriaSpesaMinima(categoriaMin);
             setCategoriaSpesaMassima(categoriaMax);
+            setValuta(await ottieniValuta(database))
         };
 
         fetchSpese();
     }, [database, dataInizio, dataFine]);
-
 
     const toggleDatePicker = (flag) => {
         if (flag === 1)
@@ -84,7 +66,7 @@ const Intervallo = ({ database }: { database: any }) => {
             setShowDatePickerFine(!showDatePickerFine);
     };
 
-    const onChangeData = (flag, selectedDate) => {
+    const onChangeData = async (flag, selectedDate) => {
         if (flag === 1) {
             const currentDate = selectedDate || dataInizio;
             setShowDatePickerInizio(false);
@@ -94,11 +76,18 @@ const Intervallo = ({ database }: { database: any }) => {
             setShowDatePickerFine(false);
             setDataFine(currentDate);
         }
-        const { min, max, categoriaMin, categoriaMax } = calcolaSpesaMinMax(database, dataInizio, dataFine);
+        const { min, max, categoriaMin, categoriaMax } = await calcolaSpesaMinMax(database, dataInizio, dataFine);
         setSpesaMinima(min);
         setSpesaMassima(max);
         setCategoriaSpesaMassima(categoriaMax);
         setCategoriaSpesaMinima(categoriaMin);
+    };
+
+    const toggleModal = (flag) => {
+        if (flag === 1)
+            setModalVisibleMinimo(!modalVisibleMinimo);
+        else
+            setModalVisibleMassimo(!modalVisibleMassimo);
     };
 
     return (
@@ -146,60 +135,35 @@ const Intervallo = ({ database }: { database: any }) => {
             <View style={styles.containerCategoriaMinMax}>
                 <View style={styles.contanerInernoCategoriaMinMax}>
                     <Text style={styles.textElementDate}>Categoria per spesa massima:</Text>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisibleMinimo}
-                        onRequestClose={() => {
-                            setModalVisibleMinimo(!modalVisibleMinimo);
-                        }}>
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}>{categoriaSpesaMinima}</Text>
-                                <Pressable
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => setModalVisibleMinimo(!modalVisibleMinimo)}>
-                                    <Text style={styles.textStyle}>Nascondi</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                    </Modal>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => setModalVisibleMinimo(true)}>
+                        onPress={() => toggleModal(1)}>
                         <Text style={styles.textStyle}>Imm Cat</Text>
                     </Pressable>
                 </View>
                 <View style={[styles.contanerInernoCategoriaMinMax, { marginVertical: screenHeight * 0.04, }]}>
                     <Text style={styles.textElementDate}>Categoria per spesa minima:</Text>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisibleMassimo}
-                        onRequestClose={() => {
-                            setModalVisibleMassimo(!modalVisibleMassimo);
-                        }}>
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}>{categoriaSpesaMassima}</Text>
-                                <Pressable
-                                    style={[styles.button, styles.buttonClose]}
-                                    onPress={() => setModalVisibleMassimo(!modalVisibleMassimo)}>
-                                    <Text style={styles.textStyle}>Nascondi</Text>
-                                </Pressable>
-                            </View>
-                        </View>
-                    </Modal>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => setModalVisibleMassimo(true)}>
+                        onPress={() => toggleModal(2)}>
                         <Text style={styles.textStyle}>Imm Cat</Text>
                     </Pressable>
                 </View>
             </View>
-        </View >
+            <ModalContent
+                modalVisible={modalVisibleMinimo}
+                onClose={() => setModalVisibleMinimo(false)}
+                content={categoriaSpesaMinima}
+            />
+            <ModalContent
+                modalVisible={modalVisibleMassimo}
+                onClose={() => setModalVisibleMassimo(false)}
+                content={categoriaSpesaMassima}
+            />
+        </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     tabBarInferiori: {
@@ -222,7 +186,7 @@ const styles = StyleSheet.create({
     },
 
     textElementDate: {
-        fontSize: 18,
+        fontSize: screenWidth * 0.05,
         marginBottom: screenHeight * 0.01,
         color: '#0057B8',
         fontFamily: 'fredoka-one'
@@ -239,20 +203,20 @@ const styles = StyleSheet.create({
     },
 
     testoAreaCalendario: {
-        fontSize: 16,
+        fontSize: screenWidth * 0.04,
         color: '#FFF',
         fontFamily: 'fredoka-one',
         width: screenWidth * 0.23
     },
 
     labelSpesa: {
-        fontSize: 16,
+        fontSize: screenWidth * 0.04,
         color: '#0057B8', // Blu Minions
         marginTop: screenHeight * 0.01,
     },
 
     risultatoSpesaMedia: {
-        fontSize: 16,
+        fontSize: screenWidth * 0.04,
         marginTop: 4,
         color: '#0057B8',
         fontFamily: 'fredoka-one'

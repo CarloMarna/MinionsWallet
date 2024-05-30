@@ -1,6 +1,5 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { useState, useEffect } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AntDesign } from '@expo/vector-icons';
@@ -10,35 +9,31 @@ import Media from './Media';
 import SpesePerCategoria from './SpesePerCategoria';
 import Grafici from './Grafici';
 
-//CREAZIONE TAB NAVIGATOR
 const TabTop = createMaterialTopTabNavigator();
 const TabBottom = createBottomTabNavigator();
 
-//FUNZIONE PER CARICARE FONT
 async function loadFonts() {
   await Font.loadAsync({
     'fredoka-one': require('../../assets/fonts/Fredoka-VariableFont_wdth,wght.ttf'),
   });
 }
-loadFonts();
 
-/************************* SCHERMATA STATISTICHE ********/
-const HomeMediaMinMax = ({ database }: { database: any }) => {
+const HomeMediaMinMax = ({ database }) => {
   return (
-    <>
-      <ScrollView>
-        <View style={styles.mainContainer}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.mainContainer}>
+        <View style={styles.metaContainer}>
           <Intervallo database={database} />
+        </View>
+        <View style={styles.metaContainer}>
           <Media database={database} />
         </View>
-      </ScrollView>
-
-    </>
+      </View>
+    </ScrollView>
   );
 };
 
-/****************TAB BAR SUPERIORE**************/
-const Statistiche = ({ database }: { database: any }) => {
+const Statistiche = ({ database }) => {
   return (
     <TabTop.Navigator>
       <TabTop.Screen name="Intervallo di Spesa">
@@ -51,10 +46,9 @@ const Statistiche = ({ database }: { database: any }) => {
   )
 };
 
-/************ TAB BAR INFERIORE ********** */
-
-const HomeGraficiStatistiche = ({ database }: { database: any }) => {
+const HomeGraficiStatistiche = ({ database }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
+
   useEffect(() => {
     async function loadApp() {
       await loadFonts();
@@ -89,9 +83,6 @@ const HomeGraficiStatistiche = ({ database }: { database: any }) => {
   );
 }
 
-
-
-/*********************** STILE PRIMA PAGINA ************************ */
 const styles = StyleSheet.create({
   tabBarInferiori: {
     flex: 1,
@@ -105,8 +96,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FEEC47',
   },
+  scrollContainer: {
+    flexGrow: 1,
+  },
 
-
+  metaContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default HomeGraficiStatistiche;
