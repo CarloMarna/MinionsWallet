@@ -92,9 +92,15 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Registration">
+        {/*<Stack.Screen
+          name="Registration"
+          //component={Registration}
+          component={Registration}
+          options={{ headerShown: false }}
+        />*/}
         <Stack.Screen
           name="Registration"
-          component={Registration}
+          component={() => <Registration database={database} navigation={navigation} />}
           options={{ headerShown: false }}
         />
         <Stack.Screen
