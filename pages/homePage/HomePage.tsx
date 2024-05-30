@@ -8,271 +8,160 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  FlatList
+  FlatList,
+  Image,
+  Dimensions
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
+import Modal from 'react-native-modal';
 //import * as SQLite from 'expo-sqlite';
+
+
+const { width, height } = Dimensions.get('window');
 
 //const dbPromise = SQLite.openDatabaseAsync('mio_database.db');
 
-const HomePage = () => {
-  const [result, setResult] = React.useState('');
-  const saldoConto = 200;
-  const valuta = '€';
-  const [selectedValue, setSelectedValue] = React.useState("opzione1");
+interface Spesa {
+  id: string;
+  descrizione: string;
+  data: string;
+  importo: string;
+}
 
-  /*React.useEffect(() => {
-    async function prepareDB() {
-      const db = await dbPromise;
-      await db.execAsync('CREATE TABLE IF NOT EXISTS prova (matricola INTEGER PRIMARY KEY NOT NULL, nome TEXT, eta INTEGER, ruolo TEXT);');
-    }
-    prepareDB();
-  }, []);
-
-  const handleAddUser = async () => {
-    try {
-      const db = await dbPromise;
-      //const matricola = 0;
-      await db.execAsync(`INSERT INTO prova (matricola, nome, eta, ruolo) VALUES (78, 'pluto', 25, 'prova')`);
-      //setResult(`Aggiunto Pluto con matricola: ${matricola}`);
-    } catch (error) {
-      console.log(error);
-      setResult('Errore nell\'aggiungere Pluto.');
-    }
-  };
-
-  const readUser = async () => {
-    try {
-      const db = await dbPromise;
-      var results = await db.getAllAsync('SELECT * FROM utenti');
-      for (const row of results) {
-        console.log(row.matricola, row.nome, row.eta, row.ruolo);
-        setResult("" + row.matricola + " " + row.nome + " " + row.eta + " " + row.ruolo);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const readUserDB = async () => {
-    try {
-      const db = await dbPromise;
-      await db.execAsync(`DELETE FROM utenti`);
-      console.log("funzion nda fess e mammt");
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <Button title="Aggiungi Pluto" onPress={handleAddUser} />
-        <Button title="Fai una select" onPress={readUser} />
-        <Button title="Svuota db" onPress={readUserDB} />
-        <Text style={styles.resultText}>{result}</Text>
-      </View>
-    </SafeAreaView>
-  );*/
-
-  const [currentTodo, setCurrentTodo] = React.useState<string>('');
-  const [todos, setTodos] = React.useState<TodoType[]>([]);
-  
-  const renderTodo = ({item}: {item: TodoType}) => {
-    return (
-      <View style={styles.todoView}>
-        <Text style={styles.todoText}>{item.todo}</Text>
-        <Button
-          title="Fatto"
-          onPress={() => {
-            const updateTodos = [...todos];
-            updateTodos.splice(updateTodos.findIndex((e) => e.id == item.id), 1);
-            setTodos(updateTodos);
-          }}
-        />
-      </View>
-    )
+const truncateText = (text: string, length: number = 30) => {
+  if (text.length > length) {
+    return text.substring(0, length) + '...';
   }
+  return text;
+};
+
+const HomePage = () => {
+  const [selectedValue, setSelectedValue] = React.useState("10");
+  const [saldoConto, setSaldoConto] = React.useState(600);
+  const [valuta, setValuta] = React.useState("$");
+  const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
+  const [spese, setSpese] = React.useState([
+    { id: '1', descrizione: 'Pagamento Bonifico Istantaneo', data: '27/05/2023', importo: '-300€' },
+    { id: '2', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
+    { id: '3', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' },
+    { id: '4', descrizione: 'Pagamento Bonifico Istantaneodsb fmns fmnds nfbdsmnfb sdnmbf dsb fndsbf bdskfb hds', data: '27/05/2023', importo: '-300€' },
+    { id: '5', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
+    { id: '6', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' },
+    { id: '7', descrizione: 'Pagamento Bonifico Istantaneodsb fmns fmnds nfbdsmnfb sdnmbf dsb fndsbf bdskfb hds', data: '27/05/2023', importo: '-300€' },
+    { id: '8', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
+    { id: '9', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' }
+  ]);
+
+  const openRiepilogoSpesa = (spesa: Spesa) => {
+    setSelectedSpesa(spesa);
+    setModalVisible(true);
+  };
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
+  const renderSpese = ({ item }: { item: Spesa }) => {
+    return (
+      <TouchableOpacity onPress={() => openRiepilogoSpesa(item)}>
+        <View style={styles.rigaSpesa}>
+          <View style={styles.categoriaSpesa}>
+            <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+          </View>
+          <View style={styles.descrizioneSpesa}>
+            <View style={styles.testoDescrizioneSpesa}>
+              <Text>{truncateText(item.descrizione)}</Text>
+            </View>
+            <View style={styles.dataDescrizioneSpesa}>
+              <Text>{item.data}</Text>
+            </View>
+          </View>
+          <View style={styles.importoSpesa}>
+            <Text style={styles.testoImportoSpesa}>{item.importo}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView nestedScrollEnabled >
-        <View style={styles.containerSaldoConto}>
-          <View style={styles.cerchioEsterno}>
-            <View style={styles.cerchioInterno}>
-              <Text style={styles.testo}>Saldo Conto {saldoConto + valuta}</Text>
-            </View>
+      <View style={styles.containerSaldoConto}>
+        <View style={styles.cerchioEsterno}>
+          <View style={styles.cerchioInterno}>
+            <Text style={styles.testo}>Saldo Conto {saldoConto + valuta}</Text>
           </View>
         </View>
-        <View style={styles.containerVisualizzaElementi}>
-          <View style={styles.visualizzaElementi}>
-            <View style={styles.viewPicker}>
-              <Picker
-                selectedValue={selectedValue}
-                style={styles.picker}
-                onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-              >
-                <Picker.Item label="10" value="10" />
-                <Picker.Item label="25" value="25" />
-                <Picker.Item label="50" value="50" />
-                <Picker.Item label="100" value="100" />
-              </Picker>
-            </View>
-            <View style={styles.spaceBtnChsEl} />
-            <TouchableOpacity style={styles.nuovaSpesaBtn}>
-              <Text style={styles.nuovaSpesaBtnText}>Nuova Spesa</Text>
-            </TouchableOpacity>
+      </View>
+      <View style={styles.containerVisualizzaElementi}>
+        <View style={styles.visualizzaElementi}>
+          <View style={styles.viewPicker}>
+            <Picker
+              selectedValue={selectedValue}
+              style={styles.picker}
+              onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+            >
+              <Picker.Item label="10" value="10" />
+              <Picker.Item label="25" value="25" />
+              <Picker.Item label="50" value="50" />
+              <Picker.Item label="100" value="100" />
+            </Picker>
           </View>
+          <View style={styles.spaceBtnChsEl} />
+          <TouchableOpacity style={styles.nuovaSpesaBtn}>
+            <Text style={styles.nuovaSpesaBtnText}>Nuova Spesa</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.containerListaSpesa}>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
+      </View>
+      <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
+      <Modal
+  isVisible={modalVisible}
+  animationIn="slideInLeft"
+  animationOut="slideOutLeft"
+  backdropOpacity={0.5}
+  onBackdropPress={closeModal}
+  style={styles.modalContainer} // Aggiungi questo stile
+>
+  <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.modalReviewSpesaContainer}>
+            <View style={styles.modalReviewSpesaContent}>
+              <View style={styles.modalReviewSpesaHeader}>
+                <Text style={styles.modalReviewSpesaTitle}>Dettagli Spesa</Text>
+                <View style={styles.modalReviewSpesaSpace}></View>
+                <Ionicons name="close-circle-outline" size={30}color={'#cc0000'} onPress={closeModal}></Ionicons>
               </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
+              {selectedSpesa && (
+                <>
+                  <View style={styles.categoriaRow}>
+                    <Image
+                      source={require('../../assets/user/user-image.png')} // Imposta il percorso dell'immagine utente
+                      style={styles.categoriaImage}
+                    />
+                    <Text style={styles.denominazioneCategoria}>Denominazione Categoria</Text>
+                  </View>
+                  <View style={styles.modalAreaDescrizione}>
+                    <Text>{selectedSpesa.descrizione}</Text>
+                  </View>
+                  <View style={styles.modalAreaDataImporto}>
+                    <View>
+                      <Text style={styles.modalTestoImporto}>Data</Text>
+                      <Text style={styles.modalTestoImporto}>{selectedSpesa.data}</Text>
+                    </View>
+
+                    <View style={styles.modalAreaSpace} />
+
+                    <View>
+                      <Text style={styles.modalTestoImporto}>Importo</Text>
+                      <Text style={styles.modalTestoImporto}>{selectedSpesa.importo}</Text>
+                    </View>
+                  </View>
+                </>
+              )}
             </View>
           </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-          <View style={styles.rigaSpesa}>
-            <View style={styles.categoriaSpesa}>
-              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
-            </View>
-            <View style={styles.descrizioneSpesa}>
-              <View style={styles.testoDescrizioneSpesa}>
-                <Text>Pagamento Bonifico Istantaneo</Text>
-              </View>
-              <View style={styles.dataDescrizioneSpesa}>
-                <Text>27/05/2023</Text>
-              </View>
-            </View>
-            <View style={styles.importoSpesa}>
-              <Text>-300€</Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </Modal>
     </SafeAreaView>
   );
 
@@ -320,6 +209,7 @@ const styles = StyleSheet.create({
   },
   containerVisualizzaElementi: {
     padding: 15,
+    marginBottom: 15,
     alignItems: 'center',
     borderTopWidth: 2,
     borderBottomWidth: 2,
@@ -350,13 +240,13 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-  containerListaSpesa:{
+  flatList: {
     paddingTop: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingBottom: 20,
+    paddingBottom: 20
   },
-  rigaSpesa:{
+  rigaSpesa: {
     marginBottom: 15,
     borderBottomWidth: 1,
     borderBottomColor: 'black',
@@ -364,24 +254,99 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Per distribuire gli elementi lungo l'asse principale (orizzontale) con spazio tra di essi
     alignItems: 'center', // Per allineare verticalmente gli elementi al centro
   },
-  categoriaSpesa:{
+  categoriaSpesa: {
 
   },
-  descrizioneSpesa:{
+  descrizioneSpesa: {
     marginLeft: 10,
     flexDirection: 'column'
   },
-  testoDescrizioneSpesa:{
+  testoDescrizioneSpesa: {
 
   },
-  dataDescrizioneSpesa:{
+  dataDescrizioneSpesa: {
     marginTop: 10
   },
-  importoSpesa:{
-    borderWidth: 1,
-    borderColor: 'black',
-    verticalAlign: 'top',
+  importoSpesa: {
     marginLeft: 'auto',
+  },
+  testoImportoSpesa: {
+    fontWeight: 'bold'
+  },
+
+
+
+
+  modalContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 0,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  modalReviewSpesaContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent'
+  },
+  modalReviewSpesaContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: 'black'
+  },
+  modalReviewSpesaHeader: {
+    flexDirection: 'row',
+  },
+  modalReviewSpesaTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalReviewSpesaSpace: {
+    flex: 1
+  },
+  categoriaRow: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  categoriaImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  denominazioneCategoria: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalAreaDescrizione: {
+    /*borderWidth: 2,
+    borderColor: 'black',*/
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    textAlign: 'justify',
+    marginBottom: 10
+  },
+  modalAreaDataImporto: {
+    flexDirection: 'row'
+  },
+  modalTestoData: {
+    fontWeight: 'bold'
+  },
+  modalAreaSpace: {
+    flex: 1
+  },
+  modalTestoImporto: {
+    fontWeight: 'bold'
   },
 });
 
