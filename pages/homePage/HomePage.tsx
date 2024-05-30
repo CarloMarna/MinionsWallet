@@ -11,7 +11,8 @@ import {
   FlatList
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import * as SQLite from 'expo-sqlite';
+import { Ionicons } from '@expo/vector-icons';
+//import * as SQLite from 'expo-sqlite';
 
 //const dbPromise = SQLite.openDatabaseAsync('mio_database.db');
 
@@ -96,8 +97,8 @@ const HomePage = () => {
   }
 
   return (
-    <SafeAreaView >
-      <ScrollView nestedScrollEnabled style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView nestedScrollEnabled >
         <View style={styles.containerSaldoConto}>
           <View style={styles.cerchioEsterno}>
             <View style={styles.cerchioInterno}>
@@ -125,21 +126,149 @@ const HomePage = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.containerListaSpese}>
+        <View style={styles.containerListaSpesa}>
           <View style={styles.rigaSpesa}>
             <View style={styles.categoriaSpesa}>
-
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
             </View>
             <View style={styles.descrizioneSpesa}>
               <View style={styles.testoDescrizioneSpesa}>
-
+                <Text>Pagamento Bonifico Istantaneo</Text>
               </View>
               <View style={styles.dataDescrizioneSpesa}>
-
+                <Text>27/05/2023</Text>
               </View>
             </View>
             <View style={styles.importoSpesa}>
-
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
+            </View>
+          </View>
+          <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+              <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            </View>
+            <View style={styles.descrizioneSpesa}>
+              <View style={styles.testoDescrizioneSpesa}>
+                <Text>Pagamento Bonifico Istantaneo</Text>
+              </View>
+              <View style={styles.dataDescrizioneSpesa}>
+                <Text>27/05/2023</Text>
+              </View>
+            </View>
+            <View style={styles.importoSpesa}>
+              <Text>-300€</Text>
             </View>
           </View>
         </View>
@@ -151,11 +280,12 @@ const HomePage = () => {
 
 const styles = StyleSheet.create({
   container: {
-    /*flex: 1,
+    /*
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,*/
-    backgroundColor: 'white'
+    flex: 1,
+    backgroundColor: 'white',
   },
   containerSaldoConto: {
     alignItems: 'center',
@@ -219,7 +349,40 @@ const styles = StyleSheet.create({
   nuovaSpesaBtnText: {
     color: 'white',
     textAlign: 'center',
-  }
+  },
+  containerListaSpesa:{
+    paddingTop: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 20,
+  },
+  rigaSpesa:{
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+    flexDirection: 'row', // Per allineare gli elementi in orizzontale
+    justifyContent: 'space-between', // Per distribuire gli elementi lungo l'asse principale (orizzontale) con spazio tra di essi
+    alignItems: 'center', // Per allineare verticalmente gli elementi al centro
+  },
+  categoriaSpesa:{
+
+  },
+  descrizioneSpesa:{
+    marginLeft: 10,
+    flexDirection: 'column'
+  },
+  testoDescrizioneSpesa:{
+
+  },
+  dataDescrizioneSpesa:{
+    marginTop: 10
+  },
+  importoSpesa:{
+    borderWidth: 1,
+    borderColor: 'black',
+    verticalAlign: 'top',
+    marginLeft: 'auto',
+  },
 });
 
 export default HomePage;
