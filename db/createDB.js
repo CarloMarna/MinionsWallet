@@ -76,6 +76,7 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
+                
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);

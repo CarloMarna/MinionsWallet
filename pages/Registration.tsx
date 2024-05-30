@@ -4,6 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
+import { useRoute } from '@react-navigation/native';
 async function loadFonts() {
   await Font.loadAsync({
     'minions-font': require('../assets/fonts/Fredoka-VariableFont_wdth,wght.ttf'),
@@ -12,6 +13,11 @@ async function loadFonts() {
 loadFonts();
 
 const Registration = ({ navigation }) => {
+  
+  const route = useRoute();
+  const  database  = route.params;
+  console.log(database);
+  
   const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
     "CHF", "CNY", "SEK", "NZD", "INR", "RUB", "KRW", "MXN",
     "BRL", "ZAR", "THB", "SAR", "TRY", "AED"];
@@ -86,13 +92,30 @@ const Registration = ({ navigation }) => {
     );
 
   }
+
+  const registrazioneUtente = async(database: any, accountName: any, selectedCurrency: any) =>{
+    const{messaggio}='';
+      try{
+        const command=`INSERT INTO conto (nome_conto, sigla) VALUES ('${accountName}', '${selectedCurrency}');`;
+        await database.executeSql(command);
+        return {messaggio:'tutto ok'};
+      }catch (error){
+        console.error("Errore durante la registrazione: ", error);
+
+        return {messaggio:'errore'};
+      }
+  };
+  /*`INSERT INTO conto (nome_conto, sigla) VALUES 
+                ('Conto Corrente', 'EUR'),
+                ('Conto Risparmio', 'USD');` */
   const handleRegistration = () => {
     //logica registrazione
     if (!username || !email || !password || !accountName) {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
     }
-
+    const registrationResult= registrazioneUtente(database,accountName,selectedCurrency);
+    console.log(registrationResult);
     Alert.alert(
       'Registrazione eseguita',
       'La registrazione è stata completata con successo!',
