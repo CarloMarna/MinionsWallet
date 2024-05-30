@@ -1,123 +1,112 @@
-
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Dimensions, Image } from 'react-native';
-import { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
+import { calcolaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-const Media = ({ database }: { database: any }) => {
+const Media = ({ database }) => {
     const [opzione, setOpzione] = useState('Giorno');
     const [media, setMedia] = useState('0.000');
+    const [valuta, setValuta] = useState('0.000');
 
-    const calcolaMedia = async (opzione: string) => {
-        try {
-            let query = '';
-            if (opzione === 'Giorno') {
-                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE date(data) = date("now")';
-            } else if (opzione === 'Mese') {
-                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now")';
-            } else if (opzione === 'Anno') {
-                query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now")';
-            }
-
-            const result = await database.getFirstAsync(query);
-            if (result && result.media !== null) {
-                return result.media.toString();
-            }
-        } catch (error) {
-            console.error("Errore durante il calcolo della media:", error);
-        }
-        return '0.000';
-    };
-
-
-    const onChange = async (opzione: string) => {
+    const onChange = async (opzione) => {
         setOpzione(opzione);
-        const mediaCalcolata = await calcolaMedia(opzione);
+        const mediaCalcolata = await calcolaMedia(database, opzione);
         setMedia(mediaCalcolata);
     };
 
-
     useEffect(() => {
-        const fetchInitialMedia = async () => {
-            const mediaIniziale = await calcolaMedia(opzione);
+        const fetchInizialelMedia = async () => {
+            const [mediaIniziale, valuta] = await Promise.all([calcolaMedia(database, opzione), ottieniValuta(database)]);
             setMedia(mediaIniziale);
+            setValuta(valuta);
         };
-        fetchInitialMedia();
-    }, []);
-
+        fetchInizialelMedia();
+    }, [database, opzione]);
 
     return (
-
         <View style={styles.containerMedia}>
             <Image
-                style={{
-                    position: 'absolute',
-                    top: -screenHeight * 0.007,
-                    left: -screenWidth * 0.05,
-                }}
-                source={require('../../assets/Image/10.png')}
+                style={styles.backgroundImage}
+                source={require('../../assets/Image/miniAppesi.png')}
             />
-
             <Text style={styles.titleMedia}>Calcola Spesa Media al:</Text>
             <Picker
                 selectedValue={opzione}
-                onValueChange={(itemValue) => onChange(itemValue)}
-                style={styles.tendinaMedia}
+                onValueChange={onChange}
+                style={styles.picker}
+                itemStyle={styles.pickerItem}
             >
                 <Picker.Item label="Giorno" value="Giorno" />
                 <Picker.Item label="Mese" value="Mese" />
                 <Picker.Item label="Anno" value="Anno" />
             </Picker>
-            <Text style={styles.risultatoSpesaMedia}> {media}  </Text>
+            <Text style={styles.risultatoSpesaMedia}>{media} {valuta}</Text>
             <Image
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                }}
+                style={styles.miniPazzoImage}
                 source={require('../../assets/Image/MiniPazzo.png')}
             />
-        </View>);
+        </View>
+    );
 };
-
-export default Media;
 
 const styles = StyleSheet.create({
     containerMedia: {
         flex: 1,
         alignItems: 'center',
-        // justifyContent: 'center',
         backgroundColor: '#FEEC47',
         borderTopWidth: 1,
         borderColor: '#003366',
         width: screenWidth,
-        height: screenHeight * 0.386
+        height: screenHeight * 0.386,
+        position: 'relative'
     },
-
+    backgroundImage: {
+        position: 'absolute',
+        top: -screenHeight * 0.002,
+        left: 0,
+        width: screenWidth * 0.27,
+        height: screenHeight * 0.35,
+        resizeMode: 'contain'
+    },
     titleMedia: {
-        fontSize: 20,
+        fontSize: screenWidth * 0.04,
         marginBottom: 8,
         color: '#0057B8',
         fontFamily: 'fredoka-one',
         fontWeight: 'bold',
         marginTop: screenHeight * 0.02,
         paddingLeft: 10
-        // marginTop: -screenHeight * (0.15)
     },
-
-    tendinaMedia: {
-        height: 50,
-        width: 200,
+    picker: {
+        height: screenHeight * 0.1,
+        width: screenWidth * 0.4,
         marginBottom: 20,
         color: '#0057B8',
     },
 
+    pickerItem: {
+        fontSize: screenWidth,
+        fontFamily: 'fredoka-one',
+
+    },
+
     risultatoSpesaMedia: {
-        fontSize: 16,
+        fontSize: screenHeight * 0.020,
         marginTop: 4,
         color: '#0057B8',
         fontFamily: 'fredoka-one'
     },
+    miniPazzoImage: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        width: screenWidth * 0.40,
+        height: screenHeight * 0.18,
+        resizeMode: 'contain'
+
+    }
 });
+
+export default Media;

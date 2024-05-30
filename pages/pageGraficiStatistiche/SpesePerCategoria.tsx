@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { FlatList, Text, View, Image, Dimensions, StyleSheet, ScrollView } from 'react-native';
+import { FlatList, Text, View, Image, Dimensions, StyleSheet, ActivityIndicator, ImageComponent } from 'react-native';
 import { useState, useEffect } from 'react';
-
+import { caricaSpesePerCategoriaSezione } from '../../script/scriptStatisticheGrafici';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 type SpesaCategoriaType = {
@@ -16,39 +16,41 @@ const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => {
             <Text style={[styles.spesaCategoriaText, styles.spesaCategoriaTextPercentuale]}>{item.percentuale}%</Text>
         </View>
     )
-}
+};
+
+const MinionComponent = () => {
+    return (
+        <View style={styles.minionsContainer}>
+            <View style={styles.minion}>
+                <Image source={require('../../assets/Image/13.png')} style={styles.imageSpeseList} />
+            </View>
+            <View style={styles.minion}>
+                <Image source={require('../../assets/Image/12.png')} style={styles.imageSpeseList} />
+            </View>
+        </View>
+    );
+};
 
 const SpesePerCategoria = ({ database }: { database: any }) => {
     const [spesaCat, setSpesCat] = useState<Array<SpesaCategoriaType>>([]);
-    const caricaSpesePerCategoria = async () => {
-        try {
-            const result = await database.getAllAsync(`
-              SELECT categoria, SUM(importo) AS totale_spesa 
-              FROM spesa 
-              WHERE id_conto = 1 
-              GROUP BY categoria
-              ORDER BY totale_spesa Desc
-            `);
-
-            let totaleSpesa = 0;
-            result.forEach(item => totaleSpesa += item.totale_spesa);
-
-            const spesePerCategoria = result.map(item => ({
-                categoria: item.categoria,
-                percentuale: ((item.totale_spesa / totaleSpesa) * 100).toFixed(2)
-            }));
-            setSpesCat(spesePerCategoria);
-        } catch (error) {
-            console.error("Errore durante il recupero delle spese:", error);
-        }
-    };
+    const [isLoading, setIsLoading] = useState(false);
+    const [orientation, setOrientation] = useState('portrait');
+    const [screenDimensions, setScreenDimensions] = useState({
+        screenHeight: Dimensions.get('window').height,
+        screenWidth: Dimensions.get('window').width
+    });
 
     useEffect(() => {
-        caricaSpesePerCategoria();
+        const caricaSpese = async () => {
+            const spesePerCategoria = await caricaSpesePerCategoriaSezione(database);
+            setSpesCat(spesePerCategoria);
+            setIsLoading(true);
+        };
+        caricaSpese();
     }, []);
 
 
-    const [orientation, setOrientation] = useState('portrait');
+
 
     const detectOrientation = () => {
         const { height, width } = Dimensions.get('window');
@@ -57,64 +59,57 @@ const SpesePerCategoria = ({ database }: { database: any }) => {
         } else {
             setOrientation('portrait');
         }
+        setScreenDimensions({ screenHeight: height, screenWidth: width });
     };
 
     useEffect(() => {
         const subscription = Dimensions.addEventListener('change', detectOrientation);
-
-        // Rileva l'orientamento iniziale
         detectOrientation();
-
-        // Pulisci il listener quando il componente si smonta
         return () => {
             subscription.remove();
         };
     }, []);
+
+    if (!isLoading) {
+        return (
+            <View style={styles.containerCaricamento}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+            </View>
+        );
+    }
     //<> ci permette di restituire più elementi senza metterli in una "div"
+
     return (
         <View style={styles.container}>
-            {orientation === 'portrait' ? (
+            {spesaCat.length === 0 ? (
+                <>
+                    {orientation === 'portrait' ? (
+                        <View style={styles.noSpeseContainer}>
+                            <Text style={styles.noSpeseText}>Nessuna spesa disponibile</Text>
+                            <View style={styles.containerImageNoSpesa}>
+                                <Image source={require('../../assets/Image/miniSorprese.png')} style={styles.imageSpese} />
+                            </View>
+
+                        </View>) :
+                        <View style={[styles.noSpeseContainer, { flexDirection: 'row' }]}>
+                            <Text style={styles.noSpeseText}>Nessuna spesa disponibile</Text>
+                        </View>
+                    }
+                </>
+            ) : (
                 <>
                     <FlatList
                         ListHeaderComponent={
-                            <>
-                                <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
-                            </>
+                            <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
                         }
                         data={spesaCat}
                         renderItem={renderSpeseCategoria}
                         ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+                        ListFooterComponent={() => (orientation !== 'portrait' ? <MinionComponent /> : null)}
                     />
-                    <View style={styles.minionsContainer}>
-                        <View style={styles.minion}>
-                            <Image source={require('../../assets/Image/13.png')} />
-                        </View>
-                        <View style={styles.minion}>
-                            <Image source={require('../../assets/Image/12.png')} />
-                        </View>
-                    </View>
+                    {orientation === 'portrait' && <MinionComponent />}
                 </>
-            ) : (
-                <FlatList
-                    ListHeaderComponent={
-                        <>
-                            <Text style={styles.textSchermataSpeseCategoria}>Divisione Spese Per Categoria:</Text>
-                        </>
-                    }
-                    data={spesaCat}
-                    renderItem={renderSpeseCategoria}
-                    ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-                    ListFooterComponent={
-                        <View style={styles.minionsContainer}>
-                            <View style={styles.minion}>
-                                <Image source={require('../../assets/Image/13.png')} />
-                            </View>
-                            <View style={styles.minion}>
-                                <Image source={require('../../assets/Image/12.png')} />
-                            </View>
-                        </View>
-                    }
-                />
             )}
         </View>
     );
@@ -163,6 +158,45 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    containerCaricamento: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5E642',
+    },
+    textContainerCaricamento: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 20,
+        color: '#3B3B3B',
+    },
+
+    noSpeseContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noSpeseText: {
+        color: 'red',
+        fontSize: 20,
+    },
+
+    imageSpeseList: {
+        width: screenWidth * 0.3,
+        height: screenHeight * 0.2,
+        resizeMode: 'contain',
+    },
+
+    containerImageNoSpesa: {
+        position: 'absolute',
+        bottom: 0
+    },
+
+    imageSpese: {
+        width: screenWidth * 0.9,
+        height: screenHeight * 0.25,
+        resizeMode: 'contain',
     },
 });
 
