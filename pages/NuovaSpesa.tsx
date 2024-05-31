@@ -167,7 +167,7 @@ const Categorie=({database})=>{
         return (    //restituisco l'item con le proprietà settate
             <Item
               item={item}
-              onPress={() => {setSelectedCategory(item.nomeCategoria); inserimento.img_cat=item.img; inserimento.nome_cat=item.nomeCategoria;}}
+              onPress={() => {setSelectedCategory(item.nomeCategoria); inserimento.nome_cat=item.nomeCategoria;}}
               backgroundColor={backgroundColor}
               color={color}
             />
@@ -194,15 +194,6 @@ const Categorie=({database})=>{
                 />
             ) 
     }
-
-    /*const renderItemPopUp=({item}:{item:string})=>{
-        const borderColor=item.toString()===selectedIcon?'#0057BB': '';
-            return(<View>
-                <Pressable onPress={()=>(setSelectedIcon(item.toString()))}>
-                    <Image source={{uri: item}} style={[{borderColor, borderWidth:1},styles.icone]}/>
-                </Pressable>
-            </View>)
-    }*/
 
     const separator=()=>{
         return(
@@ -276,10 +267,19 @@ const Tag=({database})=>{
         return(
             <View>
             <Pressable onPress={()=>{
-                if(selectedTag.includes(item))
+                if(selectedTag.includes(item)){
                     setSelectedTag(selectedTag.replaceAll(item, ''));
-                else
+                    console.log(selectedTag);
+                    inserimento.tag=selectedTag;
+                    console.log(inserimento.tag);
+                }
+                    
+                else{
                     setSelectedTag(selectedTag.concat(item));
+                    console.log(selectedTag);
+                    inserimento.tag=selectedTag;
+                    console.log(inserimento.tag);
+                }
             }}>
                 <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
                 
@@ -373,7 +373,6 @@ let inserimento: ins={
     v_simbolo: '',
     v_nome:'',
     v_sigla:'',
-    img_cat:'',
     nome_cat:'',
     descrizione: '',
     data:'',
