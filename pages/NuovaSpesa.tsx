@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
+import { getImageFromPath } from '../script/minionImage';
 
 
 async function loadFonts() {
@@ -14,7 +14,7 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Importo=({database, isLoadingPage, setIsLoadingPage})=>{ 
+const Importo=({database})=>{ 
     type itemValuta={
         sigla:string,
         nome:string,
@@ -30,26 +30,31 @@ const Importo=({database, isLoadingPage, setIsLoadingPage})=>{
             for(const row of valute){
                 lista_valute.push(row);
             }
-            console.log(lista_valute);
             return{lista_valute};
         };
 
         const set_valute=async()=>{
             const result=await load_valute();
-            console.log(result);
             setListaValute(result.lista_valute);
-            console.log(listaValute);
         };
 
         set_valute();
         setLoadingImporto(true);    
-        isLoadingPage.push(loadingImporto);
-        setIsLoadingPage(isLoadingPage);
     }, [database]);
 
     
 
     const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>();
+
+    if(!loadingImporto){
+        return (
+            <View style={styles.containerCaricamento}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={[styles.textContainerCaricamento, {color:'#0057BB'}]}>Caricamento...</Text>
+            </View>
+        );
+    }
+
     return(
     <View style={styles.box}>
         <Text style={styles.scritte}>Inserisci l'importo e scegli la valuta</Text>
@@ -70,9 +75,9 @@ const Importo=({database, isLoadingPage, setIsLoadingPage})=>{
     
 )}
 
-const Categorie=({database}: {database:any})=>{
+const Categorie=({database})=>{
     const [icone, setIcone] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingCategorie, setIsLoadingCategorie] = useState(false);
 
     useEffect(() => {
         const readIcone= async (database: any)=>{
@@ -104,7 +109,9 @@ const Categorie=({database}: {database:any})=>{
         };
 
         fetchIcone();
-        setIsLoading(true);
+        setIsLoadingCategorie(true);
+        /*isLoadingPage.push(isLoadingCategorie);
+        setIsLoadingPage(isLoadingPage);*/
     }, [database]);
 
 
@@ -172,7 +179,7 @@ const Categorie=({database}: {database:any})=>{
     const ItemPopUp=({item, onPress, borderColor}:ItemPopUpProps)=>( //definisco la costante item a cui passo le proprietà    
             <View>
                 <Pressable onPress={onPress} style={styles.icone}>
-                    <Image source={{uri:item}} style={[{borderColor, borderWidth:1},styles.icone]}/>
+                    <Image source={item} style={[{borderColor, borderWidth:1},styles.icone]}/>
                 </Pressable>
             </View>
     );
@@ -180,9 +187,10 @@ const Categorie=({database}: {database:any})=>{
     const [selectedIcon, setSelectedIcon] = useState("");
     const renderItemPopUp=({item}:{item: string})=>{
         const borderColor=item===selectedIcon?'#0057BB': '';
+        const path=getImageFromPath(item);
             return(
                 <ItemPopUp
-                item={item}
+                item={path}
                 onPress={()=>(setSelectedIcon(item))}
                 borderColor={borderColor}
                 />
@@ -204,17 +212,17 @@ const Categorie=({database}: {database:any})=>{
         )
     }
     const [modalVisible, setModalVisible] = React.useState(false);
-
-    if (!isLoading) {
+    if(!isLoadingCategorie){
         return (
             <View style={styles.containerCaricamento}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+                <Text style={[styles.textContainerCaricamento, {color:'#0057BB'}]}>Caricamento...</Text>
             </View>
         );
     }
+    /**/
     
-    return( //categorie mi restituisce la flatlist
+    return( 
         <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria</Text>
             <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View style={[{width: 300}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
@@ -233,9 +241,9 @@ const Categorie=({database}: {database:any})=>{
     )
 };
 
-const Tag=({database}:{database:any})=>{
+const Tag=({database})=>{
     const[tag, setTag]=useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingTag, setIsLoadingTag] = useState(false);
     useEffect(()=>{
         const readTag=async()=>{
             try{
@@ -244,7 +252,7 @@ const Tag=({database}:{database:any})=>{
                 for(const row of lista_tag){
                     lista.push(row.nome);
                 }
-                setIsLoading(true);
+                setIsLoadingTag(true);
                 return{lista};
             }
             catch(error){
@@ -258,22 +266,6 @@ const Tag=({database}:{database:any})=>{
         }
         setListaTag();
     }, [database]);
-
-    /*type ItemTag={
-        name: string
-    };
-
-
-    const lista_tag: ItemTag[]=[
-        {name: 'regalo pippo'},
-        {name: 'regalo pluto'},
-        {name: 'regalo pippo'},
-        {name: 'regalo pluto'},
-        {name: 'regalo pippo'},
-        {name: 'regalo pluto'},
-        {name: 'regalo pippo'},
-        {name: 'regalo pluto'},
-    ];*/
 
     const renderItemTag=({item}: {item: string})=>{
         const color=selectedTag.includes(item)?'white':'#0057BB';
@@ -305,11 +297,11 @@ const Tag=({database}:{database:any})=>{
     const [tagModalVisible, setTagModalVisible] = useState(false);
     const [tagText, setTagText] = useState('');
 
-    if (!isLoading) {
+    if(!isLoadingTag){
         return (
             <View style={styles.containerCaricamento}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+                <Text style={[styles.textContainerCaricamento, {color:'#0057BB'}]}>Caricamento...</Text>
             </View>
         );
     }
@@ -377,24 +369,24 @@ const BottoneAggiuntaSpesa=({database}:{database:any})=>{
 const NuovaSpesa=({ database }: { database: any })=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
+const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
     useEffect(() => {
         async function loadApp() {
           await loadFonts();
           setFontLoaded(true);
         }
         loadApp();
-      }, []);
+    }, []);
+
     
-      if (!fontLoaded) {
+    if (!fontLoaded) {
         return null;
     }
-    
-    const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
             <ScrollView nestedScrollEnabled>
-                <Importo database={database} isLoadingPage={isLoadingPage} setIsLoadingPage={setIsLoadingPage}/>
+                <Importo database={database}/>
                 <Categorie database={database}/>
                 <Descrizione database={database}/>
                 <Data database={database}/>
@@ -403,6 +395,7 @@ const[fontLoaded, setFontLoaded] = useState(false);
             </ScrollView>
         </SafeAreaView>
     )
+
 };
 
 const styles=StyleSheet.create({
