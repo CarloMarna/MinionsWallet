@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getImageFromPath } from '../../script/minionImage';
 
 //import * as SQLite from 'expo-sqlite';
 
@@ -29,6 +30,7 @@ interface Spesa {
   data: string;
   importo: string;
   categoria: string;
+  path_categoria: string;
 }
 
 interface Categoria {
@@ -66,7 +68,7 @@ const HomePage = ({ navigation, database }: { navigation: any; database: any }) 
 
   React.useEffect(()=>{
     const load_spese=async()=>{
-        const query=await database.getAllAsync('SELECT spesa.* FROM spesa JOIN categoria ON spesa.categoria=categoria.nome;');
+        const query=await database.getAllAsync('SELECT spesa.*,categoria.path_icona AS path FROM spesa JOIN categoria ON spesa.categoria=categoria.nome;');
         
         console.log(query);
 
@@ -126,11 +128,12 @@ const HomePage = ({ navigation, database }: { navigation: any; database: any }) 
   };
 
   const renderSpese = ({ item }: { item: Spesa }) => {
+    const path = getImageFromPath(item.path)
     return (
       <TouchableOpacity onPress={() => openRiepilogoSpesa(item)}>
         <View style={styles.rigaSpesa}>
           <View style={styles.categoriaSpesa}>
-            <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            <Image style={[{width:50, height:50}]} source={path}/>
           </View>
           <View style={styles.descrizioneSpesa}>
             <View style={styles.testoDescrizioneSpesa}>
