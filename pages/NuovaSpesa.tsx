@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button} from 'react-native';
+import {ActivityIndicator, ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
@@ -11,47 +11,60 @@ async function loadFonts() {
     await Font.loadAsync({
       'minions-font': require('../assets/fonts/Fredoka-VariableFont_wdth,wght.ttf'),
     });
-  }
-  loadFonts();
+}
+loadFonts();
 
-const Title=() => {return <Text>Inserisci una spesa</Text>}
+const Importo=({database, isLoadingPage, setIsLoadingPage})=>{ 
+    type itemValuta={
+        sigla:string,
+        nome:string,
+        simbolo:string;
+    };
+    const [loadingImporto, setLoadingImporto]=useState(false);
+    const [listaValute, setListaValute]=useState<itemValuta[]>([]);
 
-const Importo=({database}:{database:any})=>{ 
-    const [selectedValuePicker, setSelectedValuePicker] = useState("€-(EUR)");
+    useEffect(()=>{
+        const load_valute=async()=>{
+            const valute=await database.getAllAsync('SELECT sigla, nome, simbolo FROM valuta;');
+            const lista_valute:itemValuta[]=[];
+            for(const row of valute){
+                lista_valute.push(row);
+            }
+            console.log(lista_valute);
+            return{lista_valute};
+        };
+
+        const set_valute=async()=>{
+            const result=await load_valute();
+            console.log(result);
+            setListaValute(result.lista_valute);
+            console.log(listaValute);
+        };
+
+        set_valute();
+        setLoadingImporto(true);    
+        isLoadingPage.push(loadingImporto);
+        setIsLoadingPage(isLoadingPage);
+    }, [database]);
+
+    
+
+    const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>();
     return(
     <View style={styles.box}>
         <Text style={styles.scritte}>Inserisci l'importo e scegli la valuta</Text>
         <View style={styles.spesa_valuta}>
             <View style={styles.spesa}>
-                <TextInput placeholder='0' style={styles.testo_spesa}></TextInput>
+                <TextInput placeholder='0' style={styles.testo_spesa} keyboardType='numeric' inputMode='numeric'></TextInput>
             </View>
             <View style={styles.valuta}>
                 <Picker style={styles.picker} selectedValue={selectedValuePicker} onValueChange={(itemValue) => setSelectedValuePicker(itemValue)}> 
-                    <Picker.Item value="euro" label="€-(EUR)"/>
-                    <Picker.Item value="dollaro_usa" label="$-(USD)"/>
-                    <Picker.Item value="yen_japan" label="¥-(JPY)"/>
-                    <Picker.Item value="sterlina" label="£-(GBP)"/>
-                    <Picker.Item value="dollaro_australia" label="$-(AUD)"/>
-                    <Picker.Item value="dollaro_canada" label="$-(CAD)"/>
-                    <Picker.Item value="franco_svizzero" label="CHF-(CHF)"/>
-                    <Picker.Item value="yuan_cina" label="¥-(CNY)"/>
-                    <Picker.Item value="corona_svezia" label="kr-(SEK)"/>
-                    <Picker.Item value="dollaro_nuova_zelanda" label="$-(NZD)"/>
-                    <Picker.Item value="rupia_india" label="₹-(INR)"/>
-                    <Picker.Item value="rublo _russo" label="₽-(RUB)"/>
-                    <Picker.Item value="won_sudcorea" label="₩-(KRW)"/>
-                    <Picker.Item value="peso_messico" label="$-(MXN)"/>
-                    <Picker.Item value="real_brasile" label="R$-(BRL)"/>
-                    <Picker.Item value="rand_sudafrica" label="R-(ZAR)"/>
-                    <Picker.Item value="baht_thailandia" label="฿-(THB)"/>
-                    <Picker.Item value="riyal_saudi" label="﷼-(SAR)"/>
-                    <Picker.Item value="lira_turchia" label="₺-(TRY)"/>
-                    <Picker.Item value="dirham_Emirati_Arabi_Uniti" label="د.إ-(AED)"/>
+                    {listaValute.map((item, index) => (
+                        <Picker.Item key={index} label={item.simbolo+'-'+item.nome+'('+item.sigla+')'} value={item} />
+                    ))}
+                    
                 </Picker>
             </View>
-        </View>
-        <View>
-            
         </View>
     </View>
     
@@ -59,6 +72,8 @@ const Importo=({database}:{database:any})=>{
 
 const Categorie=({database}: {database:any})=>{
     const [icone, setIcone] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         const readIcone= async (database: any)=>{
             try{
@@ -89,6 +104,7 @@ const Categorie=({database}: {database:any})=>{
         };
 
         fetchIcone();
+        setIsLoading(true);
     }, [database]);
 
 
@@ -189,6 +205,14 @@ const Categorie=({database}: {database:any})=>{
     }
     const [modalVisible, setModalVisible] = React.useState(false);
 
+    if (!isLoading) {
+        return (
+            <View style={styles.containerCaricamento}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+            </View>
+        );
+    }
     
     return( //categorie mi restituisce la flatlist
         <SafeAreaView>
@@ -210,9 +234,35 @@ const Categorie=({database}: {database:any})=>{
 };
 
 const Tag=({database}:{database:any})=>{
-    type ItemTag={
+    const[tag, setTag]=useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    useEffect(()=>{
+        const readTag=async()=>{
+            try{
+                const lista_tag=await database.getAllAsync('SELECT nome FROM tag;');
+                const lista: String[]=[];
+                for(const row of lista_tag){
+                    lista.push(row.nome);
+                }
+                setIsLoading(true);
+                return{lista};
+            }
+            catch(error){
+                console.error("Errore nel prelievo delle icone", error);
+                return [];
+            }
+        }
+        const setListaTag=async()=>{
+            const result=await readTag();
+            setTag(result.lista);
+        }
+        setListaTag();
+    }, [database]);
+
+    /*type ItemTag={
         name: string
     };
+
 
     const lista_tag: ItemTag[]=[
         {name: 'regalo pippo'},
@@ -223,21 +273,21 @@ const Tag=({database}:{database:any})=>{
         {name: 'regalo pluto'},
         {name: 'regalo pippo'},
         {name: 'regalo pluto'},
-    ];
+    ];*/
 
-    const renderItemTag=({item}: {item: ItemTag})=>{
-        const color=selectedTag.includes(item.name)?'white':'#0057BB';
-        const backgroundcolor=selectedTag.includes(item.name)?'#0057BB': 'white';
-        const bordercolor=selectedTag.includes(item.name)?'white':'#0057BB';
+    const renderItemTag=({item}: {item: string})=>{
+        const color=selectedTag.includes(item)?'white':'#0057BB';
+        const backgroundcolor=selectedTag.includes(item)?'#0057BB': 'white';
+        const bordercolor=selectedTag.includes(item)?'white':'#0057BB';
         return(
             <View>
             <Pressable onPress={()=>{
-                if(selectedTag.includes(item.name))
-                    setSelectedTag(selectedTag.replaceAll(item.name, ''));
+                if(selectedTag.includes(item))
+                    setSelectedTag(selectedTag.replaceAll(item, ''));
                 else
-                    setSelectedTag(selectedTag.concat(item.name));
+                    setSelectedTag(selectedTag.concat(item));
             }}>
-                <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item.name}</Text></Ionicons></View>
+                <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
                 
             </Pressable>
             </View>
@@ -245,26 +295,35 @@ const Tag=({database}:{database:any})=>{
         
     };
 
-    const separator=()=>{
+    /*const separator=()=>{
         return(
             <View style={styles.separator} />
         )
-    }
+    }*/
 
     const [selectedTag, setSelectedTag] = useState('');
     const [tagModalVisible, setTagModalVisible] = useState(false);
     const [tagText, setTagText] = useState('');
 
+    if (!isLoading) {
+        return (
+            <View style={styles.containerCaricamento}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+            </View>
+        );
+    }
+
      return(
         <View style={[{flex: 1}]}>
             <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text> 
-            <FlatList style={[{marginVertical:5}]} data={lista_tag} renderItem={renderItemTag} ListHeaderComponentStyle={[{alignSelf:'center'}]} ListHeaderComponent={<View style={[{backgroundColor: 'white',  borderRadius: 30}]}><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-circle-outline' size={50} color='#0057BB'></Ionicons></Pressable></View>} horizontal scrollEnabled/>
+            <FlatList style={[{marginVertical:5}]} data={tag} renderItem={renderItemTag} ListHeaderComponentStyle={[{alignSelf:'center'}]} ListHeaderComponent={<View style={[{backgroundColor: 'white',  borderRadius: 30}]}><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-circle-outline' size={50} color='#0057BB'></Ionicons></Pressable></View>} horizontal scrollEnabled/>
             <View style={styles.vista_modal}>
             <Modal style={styles.modal} visible={tagModalVisible}  transparent={true}>
                 <View style={styles.elementi_tag_modal}>
                     <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                     <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
-                    <Pressable onPress={()=>{setTagModalVisible(false); lista_tag.push({name:tagText}); setSelectedTag(selectedTag.concat(tagText));}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText));}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                 </View>
             </Modal>
             </View>
@@ -294,7 +353,7 @@ const Data=({database}:{database:any})=>{
                     <View style={[{backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor:'#0057BB', borderWidth:1}]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{alignSelf: 'center'}]}/></View>
                 </Pressable>
                 {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false)}}></DateTimePicker>}
-                <Text style={styles.scrittaData}>Hai effettuato la spesa il {data.getDate()}/{data.getMonth()}/{data.getFullYear()}</Text>
+                <Text style={styles.scrittaData}>Hai effettuato la spesa il {data.toLocaleDateString()}</Text>
             </View>
         </View>
         
@@ -318,7 +377,6 @@ const BottoneAggiuntaSpesa=({database}:{database:any})=>{
 const NuovaSpesa=({ database }: { database: any })=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
-    console.log(database);
     useEffect(() => {
         async function loadApp() {
           await loadFonts();
@@ -330,11 +388,13 @@ const[fontLoaded, setFontLoaded] = useState(false);
       if (!fontLoaded) {
         return null;
     }
+    
+    const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
             <ScrollView nestedScrollEnabled>
-                <Importo database={database}/>
+                <Importo database={database} isLoadingPage={isLoadingPage} setIsLoadingPage={setIsLoadingPage}/>
                 <Categorie database={database}/>
                 <Descrizione database={database}/>
                 <Data database={database}/>
@@ -503,7 +563,19 @@ const styles=StyleSheet.create({
         height: 100,
         textAlignVertical:'top',
         padding: 10
-    }
+    },
+    containerCaricamento: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5E642',
+    },
+    textContainerCaricamento: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 20,
+        color: '#3B3B3B',
+    },
 });
 
 export default NuovaSpesa;
