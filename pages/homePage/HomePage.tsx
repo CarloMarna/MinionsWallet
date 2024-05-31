@@ -27,6 +27,12 @@ interface Spesa {
   descrizione: string;
   data: string;
   importo: string;
+  categoria: string;
+}
+
+interface Categoria {
+  nome: string;
+  path: string;
 }
 
 const truncateText = (text: string, length: number = 30) => {
@@ -36,11 +42,16 @@ const truncateText = (text: string, length: number = 30) => {
   return text;
 };
 
+const aggiungiSpesa = () => {
+  console.log();
+};
+
 const HomePage = () => {
   const [selectedValue, setSelectedValue] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState(600);
   const [valuta, setValuta] = React.useState("$");
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
   const [spese, setSpese] = React.useState([
     { id: '1', descrizione: 'Pagamento Bonifico Istantaneo', data: '27/05/2023', importo: '-300€' },
@@ -54,6 +65,12 @@ const HomePage = () => {
     { id: '9', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' }
   ]);
 
+  const openNuovaSpesa = () => {
+    setSpesaModalVisible(true);
+  };
+  const closeSpesaModal = () => {
+    setSpesaModalVisible(false);
+  };
   const openRiepilogoSpesa = (spesa: Spesa) => {
     setSelectedSpesa(spesa);
     setModalVisible(true);
@@ -109,27 +126,71 @@ const HomePage = () => {
             </Picker>
           </View>
           <View style={styles.spaceBtnChsEl} />
-          <TouchableOpacity style={styles.nuovaSpesaBtn}>
+          <TouchableOpacity style={styles.nuovaSpesaBtn} onPress={() => openNuovaSpesa()}>
             <Text style={styles.nuovaSpesaBtnText}>Nuova Spesa</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <Modal
+        isVisible={spesaModalVisible}
+        animationIn="slideInLeft"
+        animationOut="slideOutLeft"
+        backdropOpacity={0.5}
+        onBackdropPress={closeSpesaModal}
+        style={styles.modalNuovaSpesaContainer} // Aggiungi questo stile
+      >
+        <View style={styles.modalViewNuovaSpesa}>
+          <View style={styles.modalNuovaSpesaHeader}>
+            <Text style={styles.titleNuovaSpesaHeader}>Inserisci Nuova Spesa</Text>
+            <View style={styles.modalViewSpaceSeparator}></View>
+            <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeSpesaModal}></Ionicons>
+          </View>
+          <View style={styles.nuovaSpesaCausale}>
+            <TextInput>Causale</TextInput>
+          </View>
+          <View style={styles.nuovaSpesaCategoriaData}>
+            <View>
+              <Text style={styles.labelNuovaSpesa}>Categoria</Text>
+              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            </View>
+            <View style={styles.modalViewSpaceSeparator} />
+            <View>
+              <Text style={styles.labelNuovaSpesa}>Data</Text>
+              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            </View>
+          </View>
+          <View style={styles.nuovaSpesaImportoValuta}>
+            <View>
+              <Text style={styles.labelNuovaSpesa}>Importo</Text>
+              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            </View>
+            <View style={styles.modalViewSpaceSeparator} />
+            <View>
+              <Text style={styles.labelNuovaSpesa}>Valuta</Text>
+              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.btnNuovaSpesa} onPress={() => aggiungiSpesa()}>
+            <Text style={styles.testoBtnNuovaSpesa}>Conferma</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
       <Modal
-  isVisible={modalVisible}
-  animationIn="slideInLeft"
-  animationOut="slideOutLeft"
-  backdropOpacity={0.5}
-  onBackdropPress={closeModal}
-  style={styles.modalContainer} // Aggiungi questo stile
->
-  <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        isVisible={modalVisible}
+        animationIn="slideInLeft"
+        animationOut="slideOutLeft"
+        backdropOpacity={0.5}
+        onBackdropPress={closeModal}
+        style={styles.modalSpesaContainer} // Aggiungi questo stile
+      >
+        <ScrollView contentContainerStyle={styles.scrollViewSpesaContent}>
           <View style={styles.modalReviewSpesaContainer}>
             <View style={styles.modalReviewSpesaContent}>
               <View style={styles.modalReviewSpesaHeader}>
                 <Text style={styles.modalReviewSpesaTitle}>Dettagli Spesa</Text>
                 <View style={styles.modalReviewSpesaSpace}></View>
-                <Ionicons name="close-circle-outline" size={30}color={'#cc0000'} onPress={closeModal}></Ionicons>
+                <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeModal}></Ionicons>
               </View>
               {selectedSpesa && (
                 <>
@@ -277,12 +338,75 @@ const styles = StyleSheet.create({
 
 
 
-  modalContainer: {
+  // Modal nuova Spesa
+  modalNuovaSpesaContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalViewNuovaSpesa: {
+    flexGrow: 1,
+    backgroundColor: 'white',
+    width: width,
+    height: height,
+    padding: 20,
+  },
+  modalNuovaSpesaHeader: {
+    flexDirection: 'row',
+    marginTop: 5,
+    marginBottom: 25
+  },
+  titleNuovaSpesaHeader: {
+    fontWeight: 'bold',
+    fontSize: 20
+  },
+  modalViewSpaceSeparator: {
+    flex: 1
+  },
+  nuovaSpesaCausale: {
+    padding: 15,
+    borderWidth: 2,
+    borderColor: 'black',
+    height: height / 4
+  },
+  nuovaSpesaCategoriaData: {
+    flexDirection: 'row'
+  },
+  nuovaSpesaImportoValuta: {
+    flexDirection: 'row'
+  },
+  btnNuovaSpesa: {
+    backgroundColor: 'blue',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+    marginTop: 25,
+  },
+  testoBtnNuovaSpesa: {
+    fontSize: 18,
+    color: 'white',
+    textAlign: 'center'
+  },
+  labelNuovaSpesa: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginTop: 10,
+  },
+  inputNuovaSpesa: {
+    borderWidth: 2,
+    borderColor: 'black',
+    width: 150
+  },
+
+
+
+
+  // Modal per la row della flatlist
+  modalSpesaContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     margin: 0,
   },
-  scrollViewContent: {
+  scrollViewSpesaContent: {
     flexGrow: 1,
     justifyContent: 'center',
   },
