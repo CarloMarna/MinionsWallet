@@ -128,26 +128,32 @@ const Uscita = ({ database }) => {
     };
     //aggiunte
     
-    /*const deleteSpesa = async (spesaToDelete) => {
+    const deleteSpesa = async (spesaToDelete) => {
         try {
+            console.log(spesaToDelete.id);
             await database.execAsync(
                 "DELETE FROM spesa WHERE id = ?",
-                [spesaToDelete.id] 
+                [spesaToDelete.id]
             );
+            console.log('Eliminazione effettuata');
+            const result = await database.getAllAsync(
+                "Select * from spesa where categoria= ? order by id asc", [spesaToDelete.categoria]
+            );
+            console.log(result);
     
             // Aggiorna lo stato delle spese, rimuovendo la spesa eliminata
-            setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
+            /*setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
     
             // Ricalcola il totale delle spese dopo l'eliminazione
             const result = await calculateTotal();
-            setTotal(result);
+            setTotal(result);*/
             
             // Chiudi il modal
             toggleModal();
         } catch (error) {
             console.error("Errore durante l'eliminazione della spesa:", error);
         }
-    };*/
+    }
 
     const toggleModal = () => {
         setModalVisible(!modalVisible);
@@ -179,7 +185,7 @@ const Uscita = ({ database }) => {
                             'Sei sicuro di voler eliminare questa spesa?',
                             [
                                 { text: 'Annulla', style: 'cancel' },
-                                //{ text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
+                                { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
                             ],
                             { cancelable: false }
                         );
