@@ -73,20 +73,7 @@ const Registration = ({ navigation, database }) => {
   const [accountName, setAccountName] = useState<string>('');
   const [selectedCurrency, setSelectedCurrency] = useState('EUR');
   const handleGoToLogin = () => {  //reindirizzamento a login da modificare
-    Alert.alert(
-      'Reindirizzamento alla pagina di Login',
-      '',
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.navigate("Login")
-          },
-          style: 'default',
-        },
-      ],
-      { cancelable: false }
-    );
+    navigation.navigate("Login");
 
   }
 
@@ -94,26 +81,40 @@ const Registration = ({ navigation, database }) => {
     let messaggio1 = '';
     let messaggio2 = '';
     try {
-    const checkExistingUsername = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${username}';`);
-    console.log(checkExistingUsername);
+    const lowercaseUsername = username.toLowerCase();
+    const lowercaseEmail = email.toLowerCase();
+    const checkExistingUsername = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${lowercaseUsername}';`);
+    
+    
 if (checkExistingUsername.length>0) {
-    console.log('Sono entrato in checkExisting');
+    
     return { messaggio: 'usernameDuplicato' };}
     else{
-    console.log('Sono entrato nell else non ce username duplicato');
-      const command1 = `INSERT INTO utente (username,mail,pwd) VALUES ('${username}', '${email}','${password}');`;
-      const command2 = `INSERT INTO conto (nome_conto, sigla,username) VALUES ('${accountName}', '${selectedCurrency}','${username}');`;
+      
+      
+    const checkExistingEmail = await database.getAllAsync(`SELECT * FROM utente WHERE mail = '${lowercaseEmail}';`);
+    
+   
+    if(checkExistingEmail.length>0){
+      
+      return{messaggio: 'emailDuplicato'};}
+    else{
+    
+      const command1 = `INSERT INTO utente (username,mail,pwd) VALUES ('${lowercaseUsername}', '${lowercaseEmail}','${password}');`;
+      const command2 = `INSERT INTO conto (nome_conto, sigla,username) VALUES ('${accountName}', '${selectedCurrency}','${lowercaseUsername}');`;
       
       await database.execAsync(command1);
       await database.execAsync(command2);
       messaggio1= await database.getAllAsync('Select * from utente');
       messaggio2=await database.getAllAsync('Select * from conto');
-      console.log(messaggio1);
-      console.log(messaggio2);
+      
       const mergedMessages = [...messaggio1, ...messaggio2];
       
       return {mergedMessages};
-    }} catch (error) {
+    }
+  
+  }
+ } catch (error) {
       console.error("Errore durante la registrazione: ", error);
 
       return { messaggio: 'errore' };
@@ -142,6 +143,19 @@ if (checkExistingUsername.length>0) {
     Alert.alert(
           'Registrazione non eseguita',
           'Username già esistente',
+          [
+            {
+              text: 'OK',
+              style: 'default',
+            },
+          ],
+          { cancelable: false }
+        );
+      }else if(registrationResult.messaggio === 'emailDuplicato'){
+        
+        Alert.alert(
+          'Registrazione non eseguita',
+          'Email già esistente',
           [
             {
               text: 'OK',
