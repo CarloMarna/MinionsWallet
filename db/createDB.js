@@ -9,7 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
-                //await deleteTable(db);
+                await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
@@ -62,7 +62,8 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                //await popolaDB(db)
+                await popolaDBParziale(db);
+                await popolaDBCompleto(db);
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -81,7 +82,7 @@ const useDatabase = () => {
 };
 
 
-export const popolaDB = async (db) => {
+export const popolaDBCompleto = async (db) => {
     const insertCommands = [
         // Inserimento dati nella tabella 'icona'
         `INSERT INTO icona (path) VALUES 
@@ -108,7 +109,7 @@ export const popolaDB = async (db) => {
         ('/assets/img/icone_minions/Minions-Vacay.png'),
         ('/assets/img/icone_minions/Minions-Toy.png'),
         ('/assets/img/icone_minions/Minions-Woman.png'),
-        ('/assets/img/icone_minions/Minions-Transport-Golf.png'),
+        ('/assets/img/icone_minions/Minions-Transport.png'),
         ('/assets/img/icone_minions/Minions-Technology.png'),
         ('/assets/img/icone_minions/Minions-NewYork.png'),
         ('/assets/img/icone_minions/Minions-Jewels.png'),
@@ -129,29 +130,6 @@ export const popolaDB = async (db) => {
                 ('Salute', '/assets/img/icone_minions/Minion-Bananas.png'),
                 ('Casa', '/assets/img/icone_minions/Minion-Shy.png');`,
 
-        // Inserimento dati nella tabella 'valuta'
-        `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
-        ('EUR', 'Euro', '€'),
-        ('USD', 'Dollar', '$'),
-        ('JPY', 'Yen', '¥'),
-        ('GBP', 'Sterlina', '£'),
-        ('AUD', 'Dollaro australiano', '$'),
-        ('CAD', 'Dollaro canadese', '$'),
-        ('CHF', 'Franco svizzero', 'CHF'),
-        ('CNY', 'Yuan cinese', '¥'),
-        ('SEK', 'Corona svedese', 'kr'),
-        ('NZD', 'Dollaro neozelandese', '$'),
-        ('INR', 'Rupia indiana', '₹'),
-        ('RUB', 'Rublo russo', '₽'),
-        ('KRW', 'Won sudcoreano', '₩'),
-        ('MXN', 'Peso messicano', '$'),
-        ('BRL', 'Real brasiliano', 'R$'),
-        ('ZAR', 'Rand sudafricano', 'R'),
-        ('THB', 'Baht thailandese', '฿'),
-        ('SAR', 'Riyal saudita', '﷼'),
-        ('TRY', 'Lira turca', '₺'),
-        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
-
         // Inserimento dati nella tabella 'tag'
         `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
@@ -159,12 +137,6 @@ export const popolaDB = async (db) => {
                 ('Regalo fidanzato/a'),
                 ('Spesa settimanale'),
                 ('Croccantini Fido');`,
-
-        // Inserimento dati nella tabella 'utente'
-        `INSERT INTO utente (username, mail, pwd) VALUES 
-                ('john_doe', 'john@example.com', 'password123'),
-                ('jane_doe', 'jane@example.com', 'password456');`,
-
 
         // Inserimento dati nella tabella 'conto'
         `INSERT INTO conto (nome_conto, sigla,username) VALUES 
@@ -325,6 +297,48 @@ export const popolaDB = async (db) => {
         `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
         (1, 'Croccantini Fido'),
         (2, 'Urgente');`
+    ];
+    console.log("Caricamento completo effettuato");
+    for (const command of insertCommands) {
+        await db.execAsync(command);
+    }
+};
+
+export const popolaDBParziale = async (db) => {
+    const insertCommands = [
+        // Inserimento dati nella tabella 'valuta'
+        `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
+        ('EUR', 'Euro', '€'),
+        ('USD', 'Dollar', '$'),
+        ('JPY', 'Yen', '¥'),
+        ('GBP', 'Sterlina', '£'),
+        ('AUD', 'Dollaro australiano', '$'),
+        ('CAD', 'Dollaro canadese', '$'),
+        ('CHF', 'Franco svizzero', 'CHF'),
+        ('CNY', 'Yuan cinese', '¥'),
+        ('SEK', 'Corona svedese', 'kr'),
+        ('NZD', 'Dollaro neozelandese', '$'),
+        ('INR', 'Rupia indiana', '₹'),
+        ('RUB', 'Rublo russo', '₽'),
+        ('KRW', 'Won sudcoreano', '₩'),
+        ('MXN', 'Peso messicano', '$'),
+        ('BRL', 'Real brasiliano', 'R$'),
+        ('ZAR', 'Rand sudafricano', 'R'),
+        ('THB', 'Baht thailandese', '฿'),
+        ('SAR', 'Riyal saudita', '﷼'),
+        ('TRY', 'Lira turca', '₺'),
+        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
+
+        // Inserimento dati nella tabella 'utente'
+        `INSERT INTO utente (username, mail, pwd) VALUES 
+                ('john_doe', 'john@example.com', 'password123'),
+                ('jane_doe', 'jane@example.com', 'password456');`,
+
+
+        // Inserimento dati nella tabella 'conto'
+        `INSERT INTO conto (nome_conto, sigla,username) VALUES 
+                ('Conto Corrente', 'EUR', 'jane_doe'),
+                ('Conto Risparmio', 'USD', 'john_doe');`,
     ];
     console.log("Caricamento effettuato");
     for (const command of insertCommands) {

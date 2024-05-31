@@ -42,7 +42,7 @@ const Media = ({ database }) => {
                 <Picker.Item label="Mese" value="Mese" />
                 <Picker.Item label="Anno" value="Anno" />
             </Picker>
-            <Text style={styles.risultatoSpesaMedia}>{media} {valuta}</Text>
+            <Text style={styles.risultatoSpesaMedia}>{media}{valuta}</Text>
             <Image
                 style={styles.miniPazzoImage}
                 source={require('../../assets/Image/MiniPazzo.png')}
@@ -80,20 +80,18 @@ const styles = StyleSheet.create({
         paddingLeft: 10
     },
     picker: {
-        height: screenHeight * 0.1,
+        height: screenHeight * 0.05,
         width: screenWidth * 0.4,
         marginBottom: 20,
         color: '#0057B8',
     },
 
     pickerItem: {
-        fontSize: screenWidth,
         fontFamily: 'fredoka-one',
-
     },
 
     risultatoSpesaMedia: {
-        fontSize: screenHeight * 0.020,
+        fontSize: screenHeight * 0.024,
         marginTop: 4,
         color: '#0057B8',
         fontFamily: 'fredoka-one'
