@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert,ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -18,16 +18,16 @@ const Uscita = ({ database }) => {
     const [modalVisible, setModalVisible] = useState(false);
     //fine aggiunte
     //gestione picker categoria da db
+    const fetchCategories = async () => {
+        try {
+            const result = await database.getAllAsync(`SELECT nome FROM categoria`);
+            setCategories(result);
+        } catch (error) {
+            console.error("Errore nel recupero delle categorie:", error);
+        }
+    };
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const result = await database.getAllAsync(`SELECT nome FROM categoria`);
-                setCategories(result);
-            } catch (error) {
-                console.error("Errore nel recupero delle categorie:", error);
-            }
-        };
-        fetchCategories();
+       fetchCategories();
     }, [database]);
 
 
@@ -35,51 +35,53 @@ const Uscita = ({ database }) => {
         return date.toISOString().split('T')[0];
     };
     //gestione calcolo totale dinamico da db
-    useEffect(() => {
-        const calculateTotal = async () =>{
-            try{
-            if(category === 'Tutte'){
-            let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ?";
-            let params = [formatDate(endDate), formatDate(startDate)];
-            const result1 = await database.getAllAsync(query, params);
-            setTotal(result1[0].total|| 0);
-            }else{
-            let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
-            let params = [formatDate(endDate), formatDate(startDate),category];
-            const result2 = await database.getAllAsync(query, params);
-            setTotal(result2[0].total || 0);
-            }
-            
-        }catch(error){
-            console.error("Errore il calcolo delle uscite: ", error);
+    const calculateTotal = async () =>{
+        try{
+        if(category === 'Tutte'){
+        let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ?";
+        let params = [formatDate(endDate), formatDate(startDate)];
+        const result1 = await database.getAllAsync(query, params);
+        setTotal(result1[0].total|| 0);
+        }else{
+        let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
+        let params = [formatDate(endDate), formatDate(startDate),category];
+        const result2 = await database.getAllAsync(query, params);
+        setTotal(result2[0].total || 0);
         }
-        };
+        
+    }catch(error){
+        console.error("Errore il calcolo delle uscite: ", error);
+    }
+    };
+    calculateTotal();
+    useEffect(() => {
         calculateTotal();
     },[database,category, startDate, endDate]);
 
     //gestione lista spese dinamica da db
-    useEffect(() => {
-        const fetchSpese = async () => {
-            try {
-                let query;
-                let params;
-        
-                if (category === 'Tutte') {
-                    query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ?";
-                    params = [formatDate(endDate), formatDate(startDate)];
-                } else {
-                    query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
-                    params = [formatDate(endDate), formatDate(startDate), category];
-                }
-        
-                const result = await database.getAllAsync(query, params);
-                setSpese(result);
-              
-                
-            } catch (error) {
-                console.error("Errore nel recupero delle spese:", error);
+    const fetchSpese = async () => {
+        try {
+            let query;
+            let params;
+    
+            if (category === 'Tutte') {
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ?";
+                params = [formatDate(endDate), formatDate(startDate)];
+            } else {
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
+                params = [formatDate(endDate), formatDate(startDate), category];
             }
-        };
+    
+            const result = await database.getAllAsync(query, params);
+            setSpese(result);
+          
+            
+        } catch (error) {
+            console.error("Errore nel recupero delle spese:", error);
+        }
+    };
+    useEffect(() => {
+        
         fetchSpese();
     }, [database, category, startDate, endDate]);
 
@@ -87,12 +89,12 @@ const Uscita = ({ database }) => {
     /*useEffect(() => {
         console.log("Spese ordinate:", spese);
     }, [spese]);*/
-    useEffect(() => {
+    /*useEffect(() => {
         console.log("Spese ordinate:");
         spese.forEach(spesa => {
             console.log(`Categoria: ${spesa.categoria}, Data: ${new Date(spesa.data)}, Importo: ${spesa.importo}, Descrizione: ${spesa.descrizione}`);
         });
-    }, [spese]);
+    }, [spese]);*/
     
     
     const toggleStartDatePicker = () => {
@@ -130,25 +132,27 @@ const Uscita = ({ database }) => {
     
     const deleteSpesa = async (spesaToDelete) => {
         try {
-            console.log(spesaToDelete.id);
-            await database.execAsync(
-                "DELETE FROM spesa WHERE id = ?",
-                [spesaToDelete.id]
-            );
+            
+            
+            const deleteQuery = `DELETE FROM spesa WHERE id = ${spesaToDelete.id}`;
+            await database.execAsync(deleteQuery);
             console.log('Eliminazione effettuata');
+            //setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
+            fetchSpese();
             const result = await database.getAllAsync(
-                "Select * from spesa where categoria= ? order by id asc", [spesaToDelete.categoria]
+                "Select id from spesa where categoria= ? order by id asc", [spesaToDelete.categoria]
             );
             console.log(result);
+            console.log(result.length);
+            if(result.length===0){
+                console.log(spesaToDelete.categoria);
+                const deleteCategoryQuery = `DELETE FROM categoria WHERE nome = '${spesaToDelete.categoria}'`;
+                await database.execAsync(deleteCategoryQuery);
+                console.log(`Categoria eliminata`);
+                fetchCategories();
+            }
     
-            // Aggiorna lo stato delle spese, rimuovendo la spesa eliminata
-            /*setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
-    
-            // Ricalcola il totale delle spese dopo l'eliminazione
-            const result = await calculateTotal();
-            setTotal(result);*/
-            
-            // Chiudi il modal
+           
             toggleModal();
         } catch (error) {
             console.error("Errore durante l'eliminazione della spesa:", error);
@@ -199,6 +203,7 @@ const Uscita = ({ database }) => {
 
     //fine aggiunte
     return (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
             <Text style={styles.title}>Totale Uscite</Text>
 
@@ -290,10 +295,14 @@ const Uscita = ({ database }) => {
             />
             {renderModal()}
         </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flexGrow: 1,
+      },
     container: {
         flex: 1,
         alignItems: 'center',

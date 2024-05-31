@@ -48,7 +48,7 @@ const Intervallo = ({ database }) => {
     const [spesaMassima, setSpesaMassima] = useState(0);
     const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState('');
     const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState('');
-    const [pathMin, setPathMin] = useState('');
+    const [pathMin, setPathMin] = useState();
     const [pathMax, setPathMax] = useState('');
     const [valuta, setValuta] = useState('');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
@@ -100,6 +100,7 @@ const Intervallo = ({ database }) => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
+                <Text style={styles.textCaricamento}>Caricamento...</Text>
             </View>
         );
     }
@@ -121,7 +122,7 @@ const Intervallo = ({ database }) => {
                         <DateTimePicker
                             value={dataInizio}
                             mode="date"
-                            display="spinner"
+                            display="calendar"
                             onChange={(event, selectedDate) => onChangeData(true, selectedDate)}
                         />
                     )}
@@ -140,7 +141,7 @@ const Intervallo = ({ database }) => {
                         <DateTimePicker
                             value={dataFine}
                             mode="date"
-                            display="spinner"
+                            display="calendar"
                             onChange={(event, selectedDate) => onChangeData(false, selectedDate)}
                         />
                     )}
@@ -151,21 +152,21 @@ const Intervallo = ({ database }) => {
                     <Text style={styles.textElementDate}>Categoria per spesa massima:</Text>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => toggleModal(true)}>
+                        onPress={() => categoriaSpesaMassima != 'N/A' ? toggleModal(true) : null}>
                         {imageToShowMax ? (
-                            <Image source={imageToShowMax} style={{ width: screenWidth * 0.17, height: screenHeight * 0.07, resizeMode: 'contain' }} />
+                            <Image source={imageToShowMax} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
                             <Text style={{ color: '#FF0000', }}>N/A</Text>
                         )}
                     </Pressable>
                 </View>
-                <View style={[styles.contanerInernoCategoriaMinMax, { marginVertical: screenHeight * 0.018, }]}>
+                <View style={[styles.contanerInernoCategoriaMinMax, { marginTop: screenHeight * 0.005 }]}>
                     <Text style={styles.textElementDate}>Categoria per spesa minima:</Text>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => toggleModal(false)}>
+                        onPress={() => categoriaSpesaMinima != 'N/A' ? toggleModal(false) : null}>
                         {imageToShowMin ? (
-                            <Image source={imageToShowMin} style={{ width: screenWidth * 0.17, height: screenHeight * 0.07, resizeMode: 'contain' }} />
+                            <Image source={imageToShowMin} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
                             <Text style={{ color: '#FF0000' }}>N/A</Text>
                         )}
@@ -201,6 +202,7 @@ const styles = StyleSheet.create({
         fontSize: screenWidth * 0.05,
         marginBottom: screenHeight * 0.01,
         color: '#0057B8',
+        fontWeight: 'bold'
     },
     areaCalendario: {
         flexDirection: 'row',
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
         paddingVertical: screenHeight * 0.01,
         paddingHorizontal: screenWidth * 0.03,
         width: screenWidth * 0.39,
-        borderRadius: 5,
+        borderRadius: 10,
     },
     testoAreaCalendario: {
         textAlign: 'center',
@@ -225,12 +227,19 @@ const styles = StyleSheet.create({
     risultatoSpesaMedia: {
         fontSize: screenWidth * 0.04,
         marginTop: 4,
+        fontWeight: 'bold',
         color: '#0057B8',
     },
     containerCategoriaMinMax: {
-        marginTop: screenHeight * 0.02
+        marginVertical: screenHeight * 0.01,
+        backgroundColor: '#FFFF',
+        padding: screenHeight * 0.01,
+        borderRadius: 10,
+        height: screenHeight * 0.17,
+        alignItems: 'center',
     },
     contanerInernoCategoriaMinMax: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center'
     },
@@ -261,7 +270,9 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     buttonOpen: {
-        backgroundColor: 'white',
+        backgroundColor: '#FFFF',
+        borderColor: '#0057B8',
+        borderWidth: 1,
     },
     buttonClose: {
         backgroundColor: '#0057B8',
@@ -276,7 +287,12 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
         fontSize: screenWidth * 0.06
-    }
+    },
+    textCaricamento: {
+        fontSize: 18, fontWeight: 'bold',
+        marginTop: 20,
+        color: '#4682B4',
+    },
 });
 
 export default Intervallo;

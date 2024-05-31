@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 //import * as SQLite from 'expo-sqlite';
 
 
@@ -42,14 +43,11 @@ const truncateText = (text: string, length: number = 30) => {
   return text;
 };
 
-const aggiungiSpesa = () => {
-  console.log();
-};
 
 const HomePage = () => {
   const [selectedValue, setSelectedValue] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState(600);
-  const [valuta, setValuta] = React.useState("$");
+  const [valuta, setValuta] = React.useState("€");
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
@@ -65,8 +63,20 @@ const HomePage = () => {
     { id: '9', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' }
   ]);
   const today = new Date();
+
   const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
   const [viewDataPicker, setViewDataPicker] = React.useState(false);
+  const [causale, setCausale] = React.useState('');
+  const [categoria, setCategoria] = React.useState('');
+  const [importo, setImporto] = React.useState('');
+
+
+  const aggiungiSpesa = () => {
+    console.log("Causale:", causale);
+    console.log("Categoria:", categoria);
+    console.log("Importo:", importo);
+    console.log("Data:", data.toLocaleDateString());
+  };
 
   const openNuovaSpesa = () => {
     setSpesaModalVisible(true);
@@ -80,6 +90,14 @@ const HomePage = () => {
   };
   const closeModal = () => {
     setModalVisible(false);
+  };
+
+  const textInputRef = React.useRef(null);
+
+  const handleViewPress = () => {
+    if (textInputRef.current) {
+      textInputRef.current.focus();
+    }
   };
 
   const renderSpese = ({ item }: { item: Spesa }) => {
@@ -109,8 +127,12 @@ const HomePage = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.containerSaldoConto}>
         <View style={styles.cerchioEsterno}>
-          <View style={styles.cerchioInterno}>
-            <Text style={styles.testo}>Saldo Conto {saldoConto + valuta}</Text>
+          <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
+          <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Saldo disponibile al {today.toLocaleDateString()}</Text>
+          <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
+            <TouchableOpacity>
+              <Text> Aggiungi Fondi <Ionicons name="caret-forward-outline" /></Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -142,58 +164,65 @@ const HomePage = () => {
         onBackdropPress={closeSpesaModal}
         style={styles.modalNuovaSpesaContainer} // Aggiungi questo stile
       >
-        <View style={styles.modalViewNuovaSpesa}>
+        <ScrollView contentContainerStyle={styles.modalViewNuovaSpesa}>
           <View style={styles.modalNuovaSpesaHeader}>
             <Text style={styles.titleNuovaSpesaHeader}>Inserisci Nuova Spesa</Text>
             <View style={styles.modalViewSpaceSeparator}></View>
             <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeSpesaModal}></Ionicons>
           </View>
-          <View style={styles.nuovaSpesaCausale}>
-            <TextInput>Causale</TextInput>
-          </View>
+          <Text style={styles.labelNuovaSpesa}>Inserire la causale :</Text>
+          <TouchableOpacity style={styles.nuovaSpesaCausale} onPress={handleViewPress}>
+            <TextInput
+              ref={textInputRef}
+              multiline={true}
+              style={[{ paddingTop: 5 }]}
+              onChangeText={(text) => setCausale(text)}
+            />
+          </TouchableOpacity>
           <View style={styles.nuovaSpesaCategoriaData}>
-            <View>
-              <Text style={styles.labelNuovaSpesa}>Categoria</Text>
-              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            <View style={styles.viewInputNuovaSpesa}>
+              <Text style={styles.labelNuovaSpesa}>Categoria :</Text>
+              <TextInput style={styles.inputNuovaSpesa} onChangeText={(text) => setCategoria(text)}></TextInput>
             </View>
             <View style={styles.modalViewSpaceSeparator} />
-            <View>
-              <Text style={styles.labelNuovaSpesa}>Data</Text>
+            <View style={styles.viewInputNuovaSpesa}>
+              <Text style={styles.labelNuovaSpesa}>Data :</Text>
               <TouchableOpacity onPress={() => { setViewDataPicker(true) }}>
-                <View style={[{flexDirection: 'row', borderWidth:2, borderColor:'black'}]}>
-                  <Ionicons name='calendar-outline' color={'#0057BB'} size={25}/>
-                  <TextInput editable={false} style={[styles.inputNuovaSpesa, {width: 115, borderWidth:0, paddingLeft:5}]}>{data.getDate()+"/"+data.getMonth()+"/"+data.getFullYear()}</TextInput>
+                <View style={[{ flexDirection: 'row' }]}>
+                  <Ionicons name='calendar-outline' color={'#0057BB'} size={25} />
+                  <TextInput editable={false} style={[styles.inputNuovaSpesa, { width: 115, color: 'black' }]}>{data.toLocaleDateString()}</TextInput>
                 </View>
               </TouchableOpacity>
-              {viewDataPicker && 
-                <DateTimePicker 
-                  mode='date' 
-                  display='calendar' 
-                  value={data} 
-                  onChange={(event, date) => { 
+              {viewDataPicker &&
+                <DateTimePicker
+                  mode='date'
+                  display='calendar'
+                  value={data}
+                  onChange={(event, date) => {
                     setData(
-                      new Date(date.getFullYear(), 
-                      date.getMonth(), date.getDate())
-                    ); 
-                    setViewDataPicker(false) }}>
+                      new Date(date.getFullYear(),
+                        date.getMonth(), date.getDate())
+                    );
+                    setViewDataPicker(false)
+                  }}>
                 </DateTimePicker>}
             </View>
           </View>
           <View style={styles.nuovaSpesaImportoValuta}>
-            <View>
-              <Text style={styles.labelNuovaSpesa}>Importo</Text>
-              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            <View style={styles.viewInputNuovaSpesa}>
+              <Text style={styles.labelNuovaSpesa}>Importo :</Text>
+              <TextInput keyboardType="numeric" style={styles.inputNuovaSpesa} onChangeText={(text) => setImporto(text)}></TextInput>
             </View>
             <View style={styles.modalViewSpaceSeparator} />
-            <View>
-              <Text style={styles.labelNuovaSpesa}>Valuta</Text>
-              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+            <View style={styles.viewInputNuovaSpesa}>
+              <Text style={styles.labelNuovaSpesa}>Valuta :</Text>
+              <TextInput editable={false} style={[styles.inputNuovaSpesa, { color: 'black', fontWeight: 'bold', fontSize: 25 }]}>€</TextInput>
             </View>
           </View>
           <TouchableOpacity style={styles.btnNuovaSpesa} onPress={() => aggiungiSpesa()}>
             <Text style={styles.testoBtnNuovaSpesa}>Conferma</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </Modal>
       <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
       <Modal
@@ -259,20 +288,27 @@ const styles = StyleSheet.create({
   },
   containerSaldoConto: {
     alignItems: 'center',
-    marginTop: 45,
-    marginBottom: 45
+    paddingTop: 35,
+    paddingBottom: 45,
+    //backgroundColor: 'yellow'
   },
   cerchioEsterno: {
-    width: 200, // larghezza del cerchio
+    width: 250, // larghezza del cerchio
     height: 120, // altezza del cerchio
-    borderRadius: 75, // metà della larghezza e altezza per ottenere un cerchio
-    backgroundColor: '#4CAF50', // colore di sfondo del cerchio
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'black'
+    borderRadius: 25, // metà della larghezza e altezza per ottenere un cerchio
+    backgroundColor: '#fde23e', // colore di sfondo del cerchio
+    alignItems: 'flex-start',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.55,
+    shadowRadius: 3.84,
+    elevation: 10,
   },
-  cerchioInterno: {
+  /*cerchioInterno: {
     width: 140, // larghezza del cerchio
     height: 100, // altezza del cerchio
     borderRadius: 50, // metà della larghezza e altezza per ottenere un cerchio
@@ -281,12 +317,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 3,
     borderColor: 'black'
-  },
+  },*/
   testo: {
     color: 'black', // colore del testo
     fontSize: 18, // dimensione del testo
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'left'
   },
   containerVisualizzaElementi: {
     padding: 15,
@@ -304,21 +340,30 @@ const styles = StyleSheet.create({
   },
   viewPicker: {
     height: 50,
-    borderWidth: 3,
-    borderColor: 'black'
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
   },
   picker: {
     height: 50,
     width: 100
   },
   nuovaSpesaBtn: {
-    backgroundColor: 'blue',
+    backgroundColor: '#fde23e',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   nuovaSpesaBtnText: {
-    color: 'white',
+    color: 'black',
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   flatList: {
@@ -361,7 +406,9 @@ const styles = StyleSheet.create({
   // Modal nuova Spesa
   modalNuovaSpesaContainer: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    flex: 1,
+    margin: 0
   },
   modalViewNuovaSpesa: {
     flexGrow: 1,
@@ -383,10 +430,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   nuovaSpesaCausale: {
-    padding: 15,
+    paddingLeft: 15,
     borderWidth: 2,
     borderColor: 'black',
-    height: height / 4
+    height: height / 4,
   },
   nuovaSpesaCategoriaData: {
     flexDirection: 'row'
@@ -395,26 +442,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   btnNuovaSpesa: {
-    backgroundColor: 'blue',
+    backgroundColor: '#fde23e',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
-    marginTop: 25,
+    marginTop: 55,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    margin: 'auto',
+    width: width*0.7
   },
   testoBtnNuovaSpesa: {
     fontSize: 18,
-    color: 'white',
+    color: 'black',
     textAlign: 'center'
   },
   labelNuovaSpesa: {
     fontSize: 15,
     fontWeight: 'bold',
     marginTop: 10,
+    marginBottom: 10,
+  },
+  viewInputNuovaSpesa: {
+    borderBottomWidth: 2,
+    borderBottomColor: 'black',
+    marginTop: 25
   },
   inputNuovaSpesa: {
-    borderWidth: 2,
-    borderColor: 'black',
-    width: 150
+    width: 150,
+    textAlign: 'center',
+    fontSize: 17,
+    paddingBottom: 5
   },
 
 
