@@ -115,7 +115,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="HomePage"
-          component={HomePage}
+          component={()=><HomePage navigation={navigation} database={database} />}
           options={({ navigation }) => ({
             title: "DashBoard",
             headerLeft: () => (
