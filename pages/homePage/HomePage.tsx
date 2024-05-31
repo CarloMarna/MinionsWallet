@@ -44,7 +44,7 @@ const truncateText = (text: string, length: number = 30) => {
 };
 
 
-const HomePage = () => {
+const HomePage = ({ navigation }: { navigation: any }) => {
   const [selectedValue, setSelectedValue] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState(600);
   const [valuta, setValuta] = React.useState("€");
@@ -129,10 +129,10 @@ const HomePage = () => {
         <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')}/>
         <View style={styles.cerchioEsterno}>
           <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
-          <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Saldo disponibile al {today.toLocaleDateString()}</Text>
+          <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
           <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
-            <TouchableOpacity>
-              <Text> Aggiungi Fondi <Ionicons name="caret-forward-outline" /></Text>
+            <TouchableOpacity onPress={()=>navigation.navigate("Uscita")}>
+              <Text> Visualizza Uscite <Ionicons name="caret-forward-outline" /></Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: 'black'
+    borderColor: '#0057BB'
   },*/
   testo: {
     color: 'black', // colore del testo
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 2,
     borderBottomWidth: 2,
-    borderColor: 'black'
+    borderColor: '#0057BB'
   },
   visualizzaElementi: {
     flexDirection: 'row',
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   viewPicker: {
     height: 50,
     borderBottomWidth: 1,
-    borderBottomColor: 'black',
+    borderBottomColor: '#0057BB',
   },
   picker: {
     height: 50,
@@ -378,7 +378,7 @@ const styles = StyleSheet.create({
   rigaSpesa: {
     marginBottom: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'black',
+    borderBottomColor: '#0057BB',
     flexDirection: 'row', // Per allineare gli elementi in orizzontale
     justifyContent: 'space-between', // Per distribuire gli elementi lungo l'asse principale (orizzontale) con spazio tra di essi
     alignItems: 'center', // Per allineare verticalmente gli elementi al centro
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
   nuovaSpesaCausale: {
     paddingLeft: 15,
     borderWidth: 2,
-    borderColor: 'black',
+    borderColor: '#0057BB',
     height: height / 4,
   },
   nuovaSpesaCategoriaData: {
@@ -464,7 +464,8 @@ const styles = StyleSheet.create({
   testoBtnNuovaSpesa: {
     fontSize: 18,
     color: 'black',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: 'bold'
   },
   labelNuovaSpesa: {
     fontSize: 15,
@@ -474,7 +475,7 @@ const styles = StyleSheet.create({
   },
   viewInputNuovaSpesa: {
     borderBottomWidth: 2,
-    borderBottomColor: 'black',
+    borderBottomColor: '#0057BB',
     marginTop: 25
   },
   inputNuovaSpesa: {
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     borderWidth: 3,
-    borderColor: 'black'
+    borderColor: '#0057BB'
   },
   modalReviewSpesaHeader: {
     flexDirection: 'row',
@@ -538,7 +539,7 @@ const styles = StyleSheet.create({
   },
   modalAreaDescrizione: {
     /*borderWidth: 2,
-    borderColor: 'black',*/
+    borderColor: '#0057BB',*/
     paddingLeft: 15,
     paddingRight: 15,
     paddingTop: 10,
