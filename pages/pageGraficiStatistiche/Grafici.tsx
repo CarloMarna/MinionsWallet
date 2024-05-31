@@ -37,9 +37,9 @@ const Grafici = ({ database }) => {
     }, [database]);
 
     const chartConfigAndamento = {
-        backgroundGradientFrom: "#FFFF00", // Giallo
-        backgroundGradientTo: "#0055FF", // Blu
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Testo bianco
+        backgroundGradientFrom: "#05AF00",
+        backgroundGradientTo: "#0055FF",
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         strokeWidth: 3,
     };
 
