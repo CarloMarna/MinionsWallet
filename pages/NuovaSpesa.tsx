@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { Item } from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
@@ -191,7 +192,7 @@ const Categorie=({database}: {database:any})=>{
     
     return( //categorie mi restituisce la flatlist
         <SafeAreaView>
-            <Text style={styles.scritte}>Scegli la categoria o creane una nuova</Text>
+            <Text style={styles.scritte}>Scegli la categoria</Text>
             <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View style={[{width: 300}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
@@ -257,7 +258,7 @@ const Tag=({database}:{database:any})=>{
      return(
         <View style={[{flex: 1}]}>
             <Text style={styles.scritte}>Seleziona i tag o aggiungine altri</Text> 
-            <FlatList data={lista_tag} renderItem={renderItemTag} ListHeaderComponentStyle={[{alignSelf:'center'}]} ListHeaderComponent={<View style={[{backgroundColor: 'white',  borderRadius: 30}]}><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-circle-outline' size={50} color='#0057BB'></Ionicons></Pressable></View>} horizontal scrollEnabled/>
+            <FlatList style={[{marginVertical:5}]} data={lista_tag} renderItem={renderItemTag} ListHeaderComponentStyle={[{alignSelf:'center'}]} ListHeaderComponent={<View style={[{backgroundColor: 'white',  borderRadius: 30}]}><Pressable onPress={()=>{setTagModalVisible(!tagModalVisible)}}><Ionicons name='add-circle-outline' size={50} color='#0057BB'></Ionicons></Pressable></View>} horizontal scrollEnabled/>
             <View style={styles.vista_modal}>
             <Modal style={styles.modal} visible={tagModalVisible}  transparent={true}>
                 <View style={styles.elementi_tag_modal}>
@@ -270,6 +271,49 @@ const Tag=({database}:{database:any})=>{
         </View>
      )
 };
+
+const Descrizione=({database}: {database: any})=>{
+    const [text, setText]=useState('');
+    return(
+        <View style={[{flex:1}]}>
+            <Text style={[styles.scritte, {marginBottom:10}]}>Inserisci la descrizione</Text>
+            <TextInput onChangeText={(inputText)=>{setText(inputText)}} multiline placeholder='Scrivi qui la descrizione...' style={styles.inputDescrizione}></TextInput>
+        </View>
+    )
+}
+
+const Data=({database}:{database:any})=>{
+    const today = new Date();
+    const [data, setData]=useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+    const [viewDataPicker, setViewDataPicker] = useState(false);
+    return(
+        <View>
+            <Text style={[styles.scritte, {marginBottom:5, marginTop:7}]}>Inserisci la data</Text>
+            <View style={[{margin: 10, flex:1, flexDirection: 'row'}]}>
+                <Pressable onPress={()=>{setViewDataPicker(true)}}>
+                    <View style={[{backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor:'#0057BB', borderWidth:1}]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{alignSelf: 'center'}]}/></View>
+                </Pressable>
+                {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false)}}></DateTimePicker>}
+                <Text style={styles.scrittaData}>Hai effettuato la spesa il {data.getDate()}/{data.getMonth()}/{data.getFullYear()}</Text>
+            </View>
+        </View>
+        
+        
+    )
+}
+
+const BottoneAggiuntaSpesa=({database}:{database:any})=>{
+    return(
+        <View>
+            <Pressable>
+                <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
+                    <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
+                    <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
+                </View>
+            </Pressable>
+        </View>
+    )
+}
 
 const NuovaSpesa=({ database }: { database: any })=>{
 
@@ -292,7 +336,10 @@ const[fontLoaded, setFontLoaded] = useState(false);
             <ScrollView nestedScrollEnabled>
                 <Importo database={database}/>
                 <Categorie database={database}/>
+                <Descrizione database={database}/>
+                <Data database={database}/>
                 <Tag database={database}/>
+                <BottoneAggiuntaSpesa database={database}/>
             </ScrollView>
         </SafeAreaView>
     )
@@ -304,37 +351,33 @@ const styles=StyleSheet.create({
         flex: 1
     },
     spesa_valuta: {
-        marginVertical: 30,
+        flex:1,
+        marginVertical: 10,
         flexDirection: 'row',
         width: 304,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        borderColor:'#0057BB',
+        borderWidth:2,
+        borderRadius:4
     },
     testo_spesa: {
         fontFamily: 'minions-font',
         fontSize: 16,
         color: '#0057BB',
         borderColor:'#0057BB',
-        width: 80,
+        width: 150,
         height: 60,
         textAlign:'center',
-        borderBottomWidth:2,
-        borderTopWidth:2,
-        borderLeftWidth:2,
-        borderRadius:6,
+        borderRightWidth:2,
         backgroundColor: 'white'
     },
     spesa:{
         flex:1, 
-        alignItems: 'flex-end'
+        alignItems: 'center'
     },
     valuta:{
         flex:1,
-        alignItems: 'flex-start',
-        borderColor: '#0057BB',
-        borderBottomWidth:2,
-        borderTopWidth:2,
-        borderRightWidth:2,
-        borderRadius:6,
+        alignItems: 'center',
         width: 200, 
         height:60,
     },
@@ -426,6 +469,17 @@ const styles=StyleSheet.create({
         color: '#0057BB',
         textAlign: 'left'
     },
+    scrittaData: {
+        fontFamily: 'minions-font',
+        textAlign: 'left',
+        textAlignVertical:'center', 
+        marginHorizontal:10, 
+        color:'#0057BB', 
+        textShadowColor: 'white',
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 1,
+        fontSize:16
+    },
     icone: {
         width:50, 
         height: 50
@@ -438,6 +492,17 @@ const styles=StyleSheet.create({
         textAlignVertical: 'center',
         width: 100,
         height:40,
+    },
+    inputDescrizione: {
+        flexDirection:'row', 
+        backgroundColor:'white', 
+        borderColor: '#0057BB',
+        borderWidth: 2,
+        borderRadius: 6,
+        margin:7,
+        height: 100,
+        textAlignVertical:'top',
+        padding: 10
     }
 });
 

@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        height: screenHeight * 0.32
     },
     containerDate: {
         marginTop: screenHeight * 0.02,
