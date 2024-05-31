@@ -14,6 +14,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
+import DateTimePicker from '@react-native-community/datetimepicker';
 //import * as SQLite from 'expo-sqlite';
 
 
@@ -63,6 +64,9 @@ const HomePage = () => {
     { id: '8', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
     { id: '9', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' }
   ]);
+  const today = new Date();
+  const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+  const [viewDataPicker, setViewDataPicker] = React.useState(false);
 
   const openNuovaSpesa = () => {
     setSpesaModalVisible(true);
@@ -155,7 +159,24 @@ const HomePage = () => {
             <View style={styles.modalViewSpaceSeparator} />
             <View>
               <Text style={styles.labelNuovaSpesa}>Data</Text>
-              <TextInput style={styles.inputNuovaSpesa}></TextInput>
+              <TouchableOpacity onPress={() => { setViewDataPicker(true) }}>
+                <View style={[{flexDirection: 'row', borderWidth:2, borderColor:'black'}]}>
+                  <Ionicons name='calendar-outline' color={'#0057BB'} size={25}/>
+                  <TextInput editable={false} style={[styles.inputNuovaSpesa, {width: 115, borderWidth:0, paddingLeft:5}]}>{data.getDate()+"/"+data.getMonth()+"/"+data.getFullYear()}</TextInput>
+                </View>
+              </TouchableOpacity>
+              {viewDataPicker && 
+                <DateTimePicker 
+                  mode='date' 
+                  display='calendar' 
+                  value={data} 
+                  onChange={(event, date) => { 
+                    setData(
+                      new Date(date.getFullYear(), 
+                      date.getMonth(), date.getDate())
+                    ); 
+                    setViewDataPicker(false) }}>
+                </DateTimePicker>}
             </View>
           </View>
           <View style={styles.nuovaSpesaImportoValuta}>
@@ -395,7 +416,6 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     width: 150
   },
-
 
 
 
