@@ -41,7 +41,7 @@ export const caricaSpesePerCategoria = async (database) => {
             FROM spesa 
             WHERE id_conto = 1 
             GROUP BY categoria
-            ORDER BY totale_spesa DESC;
+            ORDER BY categoria, totale_spesa DESC;
         `);
 
         return result.map(item => ({
@@ -61,7 +61,7 @@ export const caricaSpesePerCategoriaMedia = async (database) => {
             FROM spesa 
             WHERE id_conto = 1 
             GROUP BY categoria
-            ORDER BY totale_spesa DESC;
+            ORDER BY categoria, totale_spesa DESC;
         `);
 
         return result.map(item => ({

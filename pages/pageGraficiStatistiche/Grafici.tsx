@@ -64,7 +64,7 @@ const Grafici = ({ database }) => {
     const legenda = dataGraficoMedia.map((data, index) => (
         <View key={index} style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: data.color }]} />
-            <Text style={styles.legendText}>{data.seriesName}</Text>
+            <Text style={styles.legendText}>{data.seriesName} in {valutaConto}</Text>
         </View>
     ));
 
@@ -189,6 +189,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 16,
+        flex: 1
     },
     legendColor: {
         width: 12,
