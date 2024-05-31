@@ -127,11 +127,12 @@ const Uscita = ({ database }) => {
         }
     };
     //aggiunte
-   /* const deleteSpesa = async (spesaToDelete) => {
+    
+    /*const deleteSpesa = async (spesaToDelete) => {
         try {
             await database.execAsync(
                 "DELETE FROM spesa WHERE id = ?",
-                [spesaToDelete.id] // Supponendo che ci sia un campo "id" univoco per ogni spesa nel database
+                [spesaToDelete.id] 
             );
     
             // Aggiorna lo stato delle spese, rimuovendo la spesa eliminata
@@ -147,6 +148,7 @@ const Uscita = ({ database }) => {
             console.error("Errore durante l'eliminazione della spesa:", error);
         }
     };*/
+
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
@@ -177,7 +179,7 @@ const Uscita = ({ database }) => {
                             'Sei sicuro di voler eliminare questa spesa?',
                             [
                                 { text: 'Annulla', style: 'cancel' },
-                               // { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
+                                //{ text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
                             ],
                             { cancelable: false }
                         );

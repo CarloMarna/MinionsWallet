@@ -80,30 +80,37 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
         const formattedDataFine = formatDate(dataFine);
 
         const resultMin = await database.getFirstAsync(`
-                SELECT importo, categoria
-                FROM spesa
-                WHERE data BETWEEN ? AND ? AND id_conto = 1
-                ORDER BY importo ASC
-                LIMIT 1
+                SELECT s.importo as importo, s.categoria, c.path_icona
+                FROM spesa s join categoria c  on s.categoria = c.nome
+                WHERE data BETWEEN ? AND ? AND s.id_conto = 1
+                ORDER by importo 
+                LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
 
         const resultMax = await database.getFirstAsync(`
-                SELECT importo, categoria
-                FROM spesa
-                WHERE data BETWEEN ? AND ? AND id_conto = 1
-                ORDER BY importo DESC
-                LIMIT 1
+                SELECT s.importo as importo, s.categoria, c.path_icona
+                FROM spesa s join categoria c  on s.categoria = c.nome
+                WHERE s.data BETWEEN ? AND ? AND s.id_conto = 1
+                ORDER BY importo  DESC
+                LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
+
+
+
+        console.log(resultMax);
+        console.log(resultMin);
 
         return {
             min: resultMin ? resultMin.importo : 0,
             max: resultMax ? resultMax.importo : 0,
             categoriaMin: resultMin ? resultMin.categoria : 'N/A',
             categoriaMax: resultMax ? resultMax.categoria : 'N/A',
+            pathMin: resultMin ? resultMin.path_icona : '',
+            pathMax: resultMax ? resultMax.path_icona : '',
         };
     } catch (error) {
         console.error("Errore durante il calcolo delle spese minime e massime:", error);
-        return { min: 0, max: 0, categoriaMin: 'N/A', categoriaMax: 'N/A' };
+        return { min: 0, max: 0, categoriaMin: 'N/A', categoriaMax: 'N/A', pathMin: '', pathMax: '' };
     }
 };
 
@@ -142,7 +149,7 @@ export const caricaSpesePerCategoriaSezione = async (database) => {
             FROM spesa 
             WHERE id_conto = 1 
             GROUP BY categoria
-            ORDER BY totale_spesa Desc
+            ORDER BY totale_spesa Desc;
         `);
 
         let totaleSpesa = 0;
@@ -158,6 +165,7 @@ export const caricaSpesePerCategoriaSezione = async (database) => {
         return [];
     }
 };
+
 
 
 

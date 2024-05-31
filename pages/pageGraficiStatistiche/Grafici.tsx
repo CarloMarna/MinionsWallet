@@ -81,7 +81,7 @@ const Grafici = ({ database }: { database: any }) => {
                 <ScrollView horizontal>
                     <ChartComponent
                         data={data}
-                        width={screenWidth * 2}
+                        width={screenWidth + screenWidth * 0.7 * dataGraficoABarre.datasets.length}
                         height={screenHeight * 0.362}
                         chartConfig={chartConfig}
                         bezier
