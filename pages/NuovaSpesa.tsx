@@ -377,7 +377,7 @@ const Data=({database}:{database:any})=>{
 const BottoneAggiuntaSpesa=({navigation, database}:{navigation:any, database:any})=>{
     return(
         <View>
-            <TouchableOpacity onPress={()=>{console.log(inserimento); navigation.navigate('NuovaSpesa')}}>
+            <TouchableOpacity onPress={()=>{console.log(inserimento); navigation.navigate('HomePage')}}>
                 <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
@@ -398,9 +398,9 @@ let inserimento: ins={
     tag:[]
 };
 
-const NuovaSpesa=({ database, navigation }: { database: any, navigation: any })=>{
+const NuovaSpesa=({navigation, database }: { navigation: any; database:any })=>{
 
-const[fontLoaded, setFontLoaded] = useState(false);
+    const[fontLoaded, setFontLoaded] = useState(false);
 
     useEffect(() => {
         async function loadApp() {
