@@ -1,107 +1,78 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, Dimensions, ScrollView, Alert, ActivityIndicator } from 'react-native';
-import { BarChart, LineChart } from 'react-native-chart-kit';
+import { Text, View, StyleSheet, Dimensions, ScrollView, Alert, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { LineChart } from 'react-native-chart-kit';
 import { useState, useEffect } from 'react';
-import { caricaSpesePerAnno, caricaSpesePerCategoria, ottieniValuta } from '../../script/scriptStatisticheGrafici';
+import PureChart from 'react-native-pure-chart';
+import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-const Grafici = ({ database }: { database: any }) => {
+
+const Grafici = ({ database }) => {
     const [spesePerAnno, setSpesePerAnno] = useState([]);
     const [spesePerCategoria, setSpesePerCategoria] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [spesePerCategoriaMedia, setSpesePerCategoriaMedia] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [valutaConto, setValuta] = useState('');
-
+    const { width: windowWidth } = useWindowDimensions();
     useEffect(() => {
         const caricaDati = async () => {
             try {
                 const speseAnno = await caricaSpesePerAnno(database);
-                setSpesePerAnno(speseAnno);
                 const speseCategoria = await caricaSpesePerCategoria(database);
-                setSpesePerCategoria(speseCategoria);
+                const speseCategoriaMedia = await caricaSpesePerCategoriaMedia(database);
                 const valuta = await ottieniValuta(database);
+                setSpesePerAnno(speseAnno);
+                setSpesePerCategoria(speseCategoria);
+                setSpesePerCategoriaMedia(speseCategoriaMedia);
                 setValuta(valuta);
-                setIsLoading(true);
             } catch (error) {
                 Alert.alert("Errore", "Si è verificato un errore durante il caricamento dei dati.");
+            } finally {
+                setIsLoading(false);
             }
         };
 
         caricaDati();
     }, [database]);
 
+    const chartConfigAndamento = {
+        backgroundGradientFrom: "#FFFF00", // Giallo
+        backgroundGradientTo: "#0055FF", // Blu
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Testo bianco
+        strokeWidth: 3,
+    };
+
+    const dataGraficoMedia = [
+        {
+            seriesName: 'Spese Categoria',
+            data: spesePerCategoria.map(item => ({ x: item.categoria, y: item.speseCategoria })),
+            color: '#297AB1'
+        },
+        {
+            seriesName: 'Spese Categoria Media',
+            data: spesePerCategoriaMedia.map(item => ({ x: item.categoria, y: item.speseCategoria })),
+            color: 'yellow'
+        }
+    ];
+
     const dataGraficoAndamento = {
         labels: spesePerAnno.map(item => item.mese),
-        datasets: [
-            {
-                data: spesePerAnno.map(item => item.totale)
-            }
-        ]
+        datasets: [{ data: spesePerAnno.map(item => item.totale) }]
     };
 
-    const dataGraficoABarre = {
-        labels: spesePerCategoria.map(item => item.categoria),
-        datasets: [
-            {
-                data: spesePerCategoria.map(item => parseFloat(item.speseCategoria))
-            }
-        ]
-    };
+    const legenda = dataGraficoMedia.map((data, index) => (
+        <View key={index} style={styles.legendItem}>
+            <View style={[styles.legendColor, { backgroundColor: data.color }]} />
+            <Text style={styles.legendText}>{data.seriesName}</Text>
+        </View>
+    ));
 
-    const chartConfigBarre = {
-        backgroundGradientFrom: "#FDE74C",
-        backgroundGradientFromOpacity: 1,
-        backgroundGradientTo: "#5CA4A9",
-        backgroundGradientToOpacity: 1,
-        color: (opacity = 1) => `rgba(23, 78, 139, ${opacity})`,
-        strokeWidth: 2,
-        barPercentage: 0.6,
-        useShadowColorFromDataset: false,
-    };
-
-    const chartConfigAndamento = {
-        backgroundGradientFrom: "#FFF3B0",
-        backgroundGradientFromOpacity: 1,
-        backgroundGradientTo: "#4CAF50",
-        backgroundGradientToOpacity: 1,
-        color: (opacity = 1) => `rgba(23, 78, 139, ${opacity})`,
-        strokeWidth: 3,
-        useShadowColorFromDataset: false,
-    };
-
-    const renderChartOMessaggio = (data, message, ChartComponent, chartConfig) => {
-        if (data.labels.length === 0) {
-            return (
-                <View style={styles.contanierNoSpese}>
-                    <Text style={styles.contanierNoSpeseText}>{message}</Text>
-                </View>
-            );
-        } else {
-            return (
-                <ScrollView horizontal>
-                    <ChartComponent
-                        data={data}
-                        width={screenWidth + screenWidth * 0.7 * dataGraficoABarre.datasets.length}
-                        height={screenHeight * 0.362}
-                        chartConfig={chartConfig}
-                        bezier
-                        verticalLabelRotation={60}
-                        showValuesOnTopOfBars
-                        yAxisSuffix={valutaConto}
-                        style={{
-                            marginVertical: 4,
-                        }}
-                    />
-                </ScrollView>
-            );
-        }
-    };
-
-    if (!isLoading) {
+    if (isLoading) {
         return (
             <View style={styles.containerCaricamento}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text style={styles.textContainerCaricamento}>Caricamento...</Text>
+                <Text style={styles.textCaricamento}>Caricamento...</Text>
             </View>
         );
     }
@@ -110,12 +81,38 @@ const Grafici = ({ database }: { database: any }) => {
         <View style={styles.mainContainer}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.containerGrafici}>
-                    <Text style={[styles.textStyle, { color: '#0057B8' }]}>Andamento spese in un anno:</Text>
-                    {renderChartOMessaggio(dataGraficoAndamento, "Nessun dato disponibile per l'andamento delle spese.", LineChart, chartConfigAndamento)}
+                    <Text style={styles.textTitle}>Andamento Spese Annuo:</Text>
+                    {dataGraficoAndamento.labels.length === 0 ? (
+                        <View style={styles.containerNoSpese}>
+                            <Text style={styles.textNoSpese}>Nessun dato disponibile per l'andamento delle spese.</Text>
+                        </View>
+                    ) : (
+                        <ScrollView horizontal>
+                            <LineChart
+                                data={dataGraficoAndamento}
+                                width={windowWidth}
+                                height={screenHeight * 0.362}
+                                chartConfig={chartConfigAndamento}
+                                bezier
+                                verticalLabelRotation={60}
+                                yAxisSuffix={valutaConto}
+                                style={styles.chart}
+                            />
+                        </ScrollView>
+                    )}
                 </View>
                 <View style={styles.containerGrafici}>
-                    <Text style={[styles.textStyle, { color: '#0057B8' }]}>Spese su categorie:</Text>
-                    {renderChartOMessaggio(dataGraficoABarre, "Nessun dato disponibile per le spese per categoria.", BarChart, chartConfigBarre)}
+                    <Text style={styles.textTitle}>Confronto Spese Categoria e Media:</Text>
+                    {spesePerCategoria.length === 0 ? (
+                        <View style={styles.containerNoSpese}>
+                            <Text style={styles.textNoSpese}>Nessun dato disponibile per le spese per categoria.</Text>
+                        </View>
+                    ) : (
+                        <>
+                            <PureChart data={dataGraficoMedia} type='bar' height={screenHeight * 0.25} />
+                            <View style={styles.legend}>{legenda}</View>
+                        </>
+                    )}
                 </View>
             </ScrollView>
         </View>
@@ -125,47 +122,86 @@ const Grafici = ({ database }: { database: any }) => {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: '#FDE74C',
+        backgroundColor: '#FEEC47',
     },
     scrollContainer: {
         flexGrow: 1,
     },
     containerGrafici: {
         flex: 1,
-        paddingHorizontal: screenWidth * 0.05,
-        paddingVertical: screenHeight * 0.01,
-        backgroundColor: '#FDE74C',
+        padding: 16,
+        backgroundColor: '#FFF5EE',
+        borderRadius: 10,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
     },
-    textStyle: {
-        color: '#0057B8',
+    textTitle: {
+        color: '#2F4F4F',
         fontWeight: 'bold',
         textAlign: 'center',
-        fontFamily: 'fredoka-one',
-        fontSize: 20,
+        fontSize: 22,
+        marginBottom: 15,
     },
     containerCaricamento: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5E642',
+        backgroundColor: '#FAEBD7',
     },
-    textContainerCaricamento: {
-        fontSize: 20,
-        fontWeight: 'bold',
+    textCaricamento: {
+        fontSize: 18, fontWeight: 'bold',
         marginTop: 20,
-        color: '#3B3B3B',
+        color: '#4682B4',
     },
-    contanierNoSpese: {
+    containerNoSpese: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    contanierNoSpeseText: {
+    textNoSpese: {
         fontSize: 18,
-        color: '#FF0000',
+        color: '#B22222',
         textAlign: 'center',
         marginVertical: 20,
+    },
+
+    chart: {
+        marginVertical: 8,
+    },
+    label: {
+        fontSize: 12,
+        textAlign: 'center',
+        marginTop: 8,
+        marginBottom: 4,
+    },
+    legend: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    legendColor: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        marginRight: 4,
+    },
+    legendText: {
+        fontSize: 14,
+        fontWeight: 'bold',
     },
 });
 
 export default Grafici;
+
+
