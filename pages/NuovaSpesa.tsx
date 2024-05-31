@@ -42,7 +42,7 @@ const Importo=({database, isLoadingPage, setIsLoadingPage})=>{
         };
 
         set_valute();
-        setLoadingImporto(true);    
+        setLoadingImporto(true);
         isLoadingPage.push(loadingImporto);
         setIsLoadingPage(isLoadingPage);
     }, [database]);
@@ -377,6 +377,7 @@ const BottoneAggiuntaSpesa=({database}:{database:any})=>{
 const NuovaSpesa=({ database }: { database: any })=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
+const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
     useEffect(() => {
         async function loadApp() {
           await loadFonts();
@@ -389,7 +390,6 @@ const[fontLoaded, setFontLoaded] = useState(false);
         return null;
     }
     
-    const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
