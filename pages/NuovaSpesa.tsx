@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {ActivityIndicator, ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button} from 'react-native';
+import {ActivityIndicator, ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button, TouchableOpacity} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
@@ -236,6 +236,7 @@ const Categorie=({database})=>{
 
 const Tag=({database})=>{
     const[tag, setTag]=useState<string[]>([]);
+    const [selectedTag, setSelectedTag] = useState<string[]>([]);
     const [isLoadingTag, setIsLoadingTag] = useState(false);
     useEffect(()=>{
         const readTag=async()=>{
@@ -260,7 +261,7 @@ const Tag=({database})=>{
         setIsLoadingTag(true);
     }, [database]);
 
-    const renderItemTag=({item}: {item: string})=>{
+    /*const renderItemTag=({item}: {item: string})=>{
         const color=selectedTag.includes(item)?'white':'#0057BB';
         const backgroundcolor=selectedTag.includes(item)?'#0057BB': 'white';
         const bordercolor=selectedTag.includes(item)?'white':'#0057BB';
@@ -268,34 +269,52 @@ const Tag=({database})=>{
             <View>
             <Pressable onPress={()=>{
                 if(selectedTag.includes(item)){
-                    setSelectedTag(selectedTag.replaceAll(item, ''));
-                    console.log(selectedTag);
+                    setSelectedTag(selectedTag.filter(x=>x!==item));
                     inserimento.tag=selectedTag;
-                    console.log(inserimento.tag);
                 }
                     
                 else{
                     setSelectedTag(selectedTag.concat(item));
-                    console.log(selectedTag);
                     inserimento.tag=selectedTag;
-                    console.log(inserimento.tag);
                 }
             }}>
-                <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
+            <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
+                
+            </Pressable>
+            </View>
+        )
+        
+    };*/
+    const renderItemTag=({item}: {item: string})=>{
+        const color=selectedTag.includes(item)?'white':'#0057BB';
+        const backgroundcolor=selectedTag.includes(item)?'#0057BB': 'white';
+        const bordercolor=selectedTag.includes(item)?'white':'#0057BB';
+        return(
+            <View>
+            <Pressable onPress={()=>{
+                setSelectedTag(prevTags => {    //uso la callback perchè in questo modo ho sempre il vlore più recente di selected tag
+                    if(prevTags.includes(item)){
+                        inserimento.tag=prevTags.filter(x=>x!==item);
+                        return inserimento.tag;
+                    } else {
+                        inserimento.tag=prevTags.concat(item);
+                        return inserimento.tag;
+                    }
+                });
+            }}>
+            <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
                 
             </Pressable>
             </View>
         )
         
     };
-
     /*const separator=()=>{
         return(
             <View style={styles.separator} />
         )
     }*/
 
-    const [selectedTag, setSelectedTag] = useState('');
     const [tagModalVisible, setTagModalVisible] = useState(false);
     const [tagText, setTagText] = useState('');
 
@@ -355,15 +374,15 @@ const Data=({database}:{database:any})=>{
     )
 }
 
-const BottoneAggiuntaSpesa=({database}:{database:any})=>{
+const BottoneAggiuntaSpesa=({navigation, database}:{navigation:any, database:any})=>{
     return(
         <View>
-            <Pressable onPress={()=>{console.log(inserimento)}}>
+            <TouchableOpacity onPress={()=>{console.log(inserimento); navigation.navigate('NuovaSpesa')}}>
                 <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
                 </View>
-            </Pressable>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -376,10 +395,10 @@ let inserimento: ins={
     nome_cat:'',
     descrizione: '',
     data:'',
-    tag:''
+    tag:[]
 };
 
-const NuovaSpesa=({ database }: { database: any })=>{
+const NuovaSpesa=({ database, navigation }: { database: any, navigation: any })=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
 
@@ -404,7 +423,7 @@ const[fontLoaded, setFontLoaded] = useState(false);
                 <Descrizione database={database}/>
                 <Data database={database}/>
                 <Tag database={database}/>
-                <BottoneAggiuntaSpesa database={database}/>
+                <BottoneAggiuntaSpesa navigation={navigation} database={database}/>
             </ScrollView>
         </SafeAreaView>
     )

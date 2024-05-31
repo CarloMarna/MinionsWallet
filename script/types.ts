@@ -6,5 +6,5 @@ export type ins = {
     nome_cat: string;
     descrizione: string;
     data: string;
-    tag: string;
+    tag: string[];
   };
