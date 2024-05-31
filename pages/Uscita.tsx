@@ -239,6 +239,7 @@ const Uscita = ({ database }) => {
                             display='spinner'
                             value={startDate}
                             onChange={onStartChange}
+                            maximumDate={endDate}
                         />
                     )}
                     {!showStartPicker && (
@@ -257,6 +258,7 @@ const Uscita = ({ database }) => {
                             display='spinner'
                             value={endDate}
                             onChange={onEndChange}
+                            minimumDate={startDate}
                         />
                     )}
                     {!showEndPicker && (
