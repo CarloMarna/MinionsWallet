@@ -39,13 +39,7 @@ const Importo=({database})=>{
         };
 
         set_valute();
-<<<<<<< HEAD
         setLoadingImporto(true);    
-=======
-        setLoadingImporto(true);
-        isLoadingPage.push(loadingImporto);
-        setIsLoadingPage(isLoadingPage);
->>>>>>> afc760a3102d8793a3ffa3871c74ef3a35ea8729
     }, [database]);
 
     
@@ -388,10 +382,6 @@ const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
     if (!fontLoaded) {
         return null;
     }
-<<<<<<< HEAD
-=======
-    
->>>>>>> afc760a3102d8793a3ffa3871c74ef3a35ea8729
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
