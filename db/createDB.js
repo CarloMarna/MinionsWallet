@@ -9,7 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
-               await deleteTable(db);
+                await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
@@ -147,10 +147,6 @@ export const popolaDBCompleto = async (db) => {
         `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
         (50.75, 'Spesa settimanale', 'Alimentazione', 1),
         (20.00, 'Biglietto del treno', 'Trasporti', 1);`,
-
-        `INSERT INTO spesa (importo, descrizione, categoria, id_conto) VALUES 
-        (50.75, 'Spesa settimanale', 'Alimentazione', 1),
-        (20.00, 'Biglietto del treno', 'Droga', 1);`,
 
         `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
             -- Categorie 'Cibo'

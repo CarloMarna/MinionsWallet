@@ -24,6 +24,8 @@ import MinionsChef from '../assets/img/icone_minions/Minions-Chef.png';
 import MinionsChitarra from '../assets/img/icone_minions/Minions-Chitarra.png';
 import MinionsChristmas from '../assets/img/icone_minions/Minions-Christmas.png';
 import MinionsFesta from '../assets/img/icone_minions/Minions-Festa.png';
+import MinionShy from '../assets/img/icone_minions/Minion-Shy.png';
+import MinionsJewels from '../assets/img/icone_minions/Minions-Jewels.png';
 
 const getImageFromPath = (path) => {
     const fileName = path.split('/').pop().split('.')[0].replaceAll('-', '');
@@ -80,6 +82,10 @@ const getImageFromPath = (path) => {
             return MinionsChristmas;
         case 'MinionsFesta':
             return MinionsFesta;
+        case 'MinionShy':
+            return MinionShy;
+        case 'MinionsJewels':
+            return MinionsJewels;
         default:
             return '';
     }
@@ -111,6 +117,8 @@ export {
     MinionsChitarra,
     MinionsChristmas,
     MinionsFesta,
+    MinionsJewels,
+    MinionShy,
     getImageFromPath
 };
 
