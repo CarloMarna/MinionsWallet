@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert,ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -203,6 +203,7 @@ const Uscita = ({ database }) => {
 
     //fine aggiunte
     return (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
             <Text style={styles.title}>Totale Uscite</Text>
 
@@ -294,10 +295,14 @@ const Uscita = ({ database }) => {
             />
             {renderModal()}
         </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flexGrow: 1,
+      },
     container: {
         flex: 1,
         alignItems: 'center',

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity,ScrollView} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -181,6 +181,7 @@ if (checkExistingUsername.length>0) {
     return null;
   }
   return (
+<ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.title}>Benvenuto in MINIONs</Text>
       <Text style={styles.label}>Username:</Text>
@@ -223,11 +224,15 @@ if (checkExistingUsername.length>0) {
         <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 }
 export default Registration;
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
