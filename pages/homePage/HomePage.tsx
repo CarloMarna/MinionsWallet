@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getImageFromPath } from '../../script/minionImage';
 
 //import * as SQLite from 'expo-sqlite';
 
@@ -29,6 +30,7 @@ interface Spesa {
   data: string;
   importo: string;
   categoria: string;
+  path_categoria: string;
 }
 
 interface Categoria {
@@ -44,14 +46,14 @@ const truncateText = (text: string, length: number = 30) => {
 };
 
 
-const HomePage = ({ navigation }: { navigation: any }) => {
+const HomePage = ({ navigation, database }: { navigation: any; database: any }) => {
   const [selectedValue, setSelectedValue] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState(600);
   const [valuta, setValuta] = React.useState("€");
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
-  const [spese, setSpese] = React.useState([
+  /*const [spese, setSpese] = React.useState([
     { id: '1', descrizione: 'Pagamento Bonifico Istantaneo', data: '27/05/2023', importo: '-300€' },
     { id: '2', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
     { id: '3', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' },
@@ -61,7 +63,32 @@ const HomePage = ({ navigation }: { navigation: any }) => {
     { id: '7', descrizione: 'Pagamento Bonifico Istantaneodsb fmns fmnds nfbdsmnfb sdnmbf dsb fndsbf bdskfb hds', data: '27/05/2023', importo: '-300€' },
     { id: '8', descrizione: 'Acquisto Negozio', data: '28/05/2023', importo: '-50€' },
     { id: '9', descrizione: 'Pagamento Affitto', data: '29/05/2023', importo: '-500€' }
-  ]);
+  ]);*/
+  const [spese, setSpese] = React.useState([]);
+
+  React.useEffect(()=>{
+    const load_spese=async()=>{
+        const query=await database.getAllAsync('SELECT spesa.*,categoria.path_icona AS path FROM spesa JOIN categoria ON spesa.categoria=categoria.nome;');
+        
+        console.log(query);
+
+        const elencoSpese:Spesa[]=[];
+        for(const row of query){
+          elencoSpese.push(row);
+        }
+        return{elencoSpese};
+    };
+
+    const set_spese=async()=>{
+        const result=await load_spese();
+        setSpese(result.elencoSpese);
+    };
+
+    set_spese();
+
+}, [database]);
+
+
   const today = new Date();
 
   const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
@@ -101,11 +128,12 @@ const HomePage = ({ navigation }: { navigation: any }) => {
   };
 
   const renderSpese = ({ item }: { item: Spesa }) => {
+    const path = getImageFromPath(item.path)
     return (
       <TouchableOpacity onPress={() => openRiepilogoSpesa(item)}>
         <View style={styles.rigaSpesa}>
           <View style={styles.categoriaSpesa}>
-            <Ionicons name='add-circle-outline' size={35} color='#0057BB'></Ionicons>
+            <Image style={[{width:50, height:50}]} source={path}/>
           </View>
           <View style={styles.descrizioneSpesa}>
             <View style={styles.testoDescrizioneSpesa}>
@@ -125,154 +153,156 @@ const HomePage = ({ navigation }: { navigation: any }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.containerSaldoConto}>
-        <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')}/>
-        <View style={styles.cerchioEsterno}>
-          <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
-          <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
-          <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
-            <TouchableOpacity onPress={()=>navigation.navigate("Uscita")}>
-              <Text> Visualizza Uscite <Ionicons name="caret-forward-outline" /></Text>
+      {/*<ScrollView>*/}
+        <View style={styles.containerSaldoConto}>
+          <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')} />
+          <View style={styles.cerchioEsterno}>
+            <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
+            <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
+            <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Uscita")}>
+                <Text> Visualizza Uscite <Ionicons name="caret-forward-outline" /></Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        <View style={styles.containerVisualizzaElementi}>
+          <View style={styles.visualizzaElementi}>
+            <View style={styles.viewPicker}>
+              <Picker
+                selectedValue={selectedValue}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
+              >
+                <Picker.Item label="10" value="10" />
+                <Picker.Item label="25" value="25" />
+                <Picker.Item label="50" value="50" />
+                <Picker.Item label="100" value="100" />
+              </Picker>
+            </View>
+            <View style={styles.spaceBtnChsEl} />
+            <TouchableOpacity style={styles.nuovaSpesaBtn} onPress={() => openNuovaSpesa()}>
+              <Text style={styles.nuovaSpesaBtnText}>Nuova Spesa</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-      <View style={styles.containerVisualizzaElementi}>
-        <View style={styles.visualizzaElementi}>
-          <View style={styles.viewPicker}>
-            <Picker
-              selectedValue={selectedValue}
-              style={styles.picker}
-              onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-            >
-              <Picker.Item label="10" value="10" />
-              <Picker.Item label="25" value="25" />
-              <Picker.Item label="50" value="50" />
-              <Picker.Item label="100" value="100" />
-            </Picker>
-          </View>
-          <View style={styles.spaceBtnChsEl} />
-          <TouchableOpacity style={styles.nuovaSpesaBtn} onPress={() => openNuovaSpesa()}>
-            <Text style={styles.nuovaSpesaBtnText}>Nuova Spesa</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Modal
-        isVisible={spesaModalVisible}
-        animationIn="slideInLeft"
-        animationOut="slideOutLeft"
-        backdropOpacity={0.5}
-        onBackdropPress={closeSpesaModal}
-        style={styles.modalNuovaSpesaContainer} // Aggiungi questo stile
-      >
-        <ScrollView contentContainerStyle={styles.modalViewNuovaSpesa}>
-          <View style={styles.modalNuovaSpesaHeader}>
-            <Text style={styles.titleNuovaSpesaHeader}>Inserisci Nuova Spesa</Text>
-            <View style={styles.modalViewSpaceSeparator}></View>
-            <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeSpesaModal}></Ionicons>
-          </View>
-          <Text style={styles.labelNuovaSpesa}>Inserire la causale :</Text>
-          <TouchableOpacity style={styles.nuovaSpesaCausale} onPress={handleViewPress}>
-            <TextInput
-              ref={textInputRef}
-              multiline={true}
-              style={[{ paddingTop: 5 }]}
-              onChangeText={(text) => setCausale(text)}
-            />
-          </TouchableOpacity>
-          <View style={styles.nuovaSpesaCategoriaData}>
-            <View style={styles.viewInputNuovaSpesa}>
-              <Text style={styles.labelNuovaSpesa}>Categoria :</Text>
-              <TextInput style={styles.inputNuovaSpesa} onChangeText={(text) => setCategoria(text)}></TextInput>
+        <Modal
+          isVisible={spesaModalVisible}
+          animationIn="slideInLeft"
+          animationOut="slideOutLeft"
+          backdropOpacity={0.5}
+          onBackdropPress={closeSpesaModal}
+          style={styles.modalNuovaSpesaContainer} // Aggiungi questo stile
+        >
+          <ScrollView contentContainerStyle={styles.modalViewNuovaSpesa}>
+            <View style={styles.modalNuovaSpesaHeader}>
+              <Text style={styles.titleNuovaSpesaHeader}>Inserisci Nuova Spesa</Text>
+              <View style={styles.modalViewSpaceSeparator}></View>
+              <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeSpesaModal}></Ionicons>
             </View>
-            <View style={styles.modalViewSpaceSeparator} />
-            <View style={styles.viewInputNuovaSpesa}>
-              <Text style={styles.labelNuovaSpesa}>Data :</Text>
-              <TouchableOpacity onPress={() => { setViewDataPicker(true) }}>
-                <View style={[{ flexDirection: 'row' }]}>
-                  <Ionicons name='calendar-outline' color={'#0057BB'} size={25} />
-                  <TextInput editable={false} style={[styles.inputNuovaSpesa, { width: 115, color: 'black' }]}>{data.toLocaleDateString()}</TextInput>
-                </View>
-              </TouchableOpacity>
-              {viewDataPicker &&
-                <DateTimePicker
-                  mode='date'
-                  display='calendar'
-                  value={data}
-                  onChange={(event, date) => {
-                    setData(
-                      new Date(date.getFullYear(),
-                        date.getMonth(), date.getDate())
-                    );
-                    setViewDataPicker(false)
-                  }}>
-                </DateTimePicker>}
-            </View>
-          </View>
-          <View style={styles.nuovaSpesaImportoValuta}>
-            <View style={styles.viewInputNuovaSpesa}>
-              <Text style={styles.labelNuovaSpesa}>Importo :</Text>
-              <TextInput keyboardType="numeric" style={styles.inputNuovaSpesa} onChangeText={(text) => setImporto(text)}></TextInput>
-            </View>
-            <View style={styles.modalViewSpaceSeparator} />
-            <View style={styles.viewInputNuovaSpesa}>
-              <Text style={styles.labelNuovaSpesa}>Valuta :</Text>
-              <TextInput editable={false} style={[styles.inputNuovaSpesa, { color: 'black', fontWeight: 'bold', fontSize: 25 }]}>€</TextInput>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.btnNuovaSpesa} onPress={() => aggiungiSpesa()}>
-            <Text style={styles.testoBtnNuovaSpesa}>Conferma</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </Modal>
-      <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
-      <Modal
-        isVisible={modalVisible}
-        animationIn="slideInLeft"
-        animationOut="slideOutLeft"
-        backdropOpacity={0.5}
-        onBackdropPress={closeModal}
-        style={styles.modalSpesaContainer} // Aggiungi questo stile
-      >
-        <ScrollView contentContainerStyle={styles.scrollViewSpesaContent}>
-          <View style={styles.modalReviewSpesaContainer}>
-            <View style={styles.modalReviewSpesaContent}>
-              <View style={styles.modalReviewSpesaHeader}>
-                <Text style={styles.modalReviewSpesaTitle}>Dettagli Spesa</Text>
-                <View style={styles.modalReviewSpesaSpace}></View>
-                <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeModal}></Ionicons>
+            <Text style={styles.labelNuovaSpesa}>Inserire la causale :</Text>
+            <TouchableOpacity style={styles.nuovaSpesaCausale} onPress={handleViewPress}>
+              <TextInput
+                ref={textInputRef}
+                multiline={true}
+                style={[{ paddingTop: 5 }]}
+                onChangeText={(text) => setCausale(text)}
+              />
+            </TouchableOpacity>
+            <View style={styles.nuovaSpesaCategoriaData}>
+              <View style={styles.viewInputNuovaSpesa}>
+                <Text style={styles.labelNuovaSpesa}>Categoria :</Text>
+                <TextInput style={styles.inputNuovaSpesa} onChangeText={(text) => setCategoria(text)}></TextInput>
               </View>
-              {selectedSpesa && (
-                <>
-                  <View style={styles.categoriaRow}>
-                    <Image
-                      source={require('../../assets/user/user-image.png')} // Imposta il percorso dell'immagine utente
-                      style={styles.categoriaImage}
-                    />
-                    <Text style={styles.denominazioneCategoria}>Denominazione Categoria</Text>
+              <View style={styles.modalViewSpaceSeparator} />
+              <View style={styles.viewInputNuovaSpesa}>
+                <Text style={styles.labelNuovaSpesa}>Data :</Text>
+                <TouchableOpacity onPress={() => { setViewDataPicker(true) }}>
+                  <View style={[{ flexDirection: 'row' }]}>
+                    <Ionicons name='calendar-outline' color={'#0057BB'} size={25} />
+                    <TextInput editable={false} style={[styles.inputNuovaSpesa, { width: 115, color: 'black' }]}>{data.toLocaleDateString()}</TextInput>
                   </View>
-                  <View style={styles.modalAreaDescrizione}>
-                    <Text>{selectedSpesa.descrizione}</Text>
-                  </View>
-                  <View style={styles.modalAreaDataImporto}>
-                    <View>
-                      <Text style={styles.modalTestoImporto}>Data</Text>
-                      <Text style={styles.modalTestoImporto}>{selectedSpesa.data}</Text>
-                    </View>
-
-                    <View style={styles.modalAreaSpace} />
-
-                    <View>
-                      <Text style={styles.modalTestoImporto}>Importo</Text>
-                      <Text style={styles.modalTestoImporto}>{selectedSpesa.importo}</Text>
-                    </View>
-                  </View>
-                </>
-              )}
+                </TouchableOpacity>
+                {viewDataPicker &&
+                  <DateTimePicker
+                    mode='date'
+                    display='calendar'
+                    value={data}
+                    onChange={(event, date) => {
+                      setData(
+                        new Date(date.getFullYear(),
+                          date.getMonth(), date.getDate())
+                      );
+                      setViewDataPicker(false)
+                    }}>
+                  </DateTimePicker>}
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </Modal>
+            <View style={styles.nuovaSpesaImportoValuta}>
+              <View style={styles.viewInputNuovaSpesa}>
+                <Text style={styles.labelNuovaSpesa}>Importo :</Text>
+                <TextInput keyboardType="numeric" style={styles.inputNuovaSpesa} onChangeText={(text) => setImporto(text)}></TextInput>
+              </View>
+              <View style={styles.modalViewSpaceSeparator} />
+              <View style={styles.viewInputNuovaSpesa}>
+                <Text style={styles.labelNuovaSpesa}>Valuta :</Text>
+                <TextInput editable={false} style={[styles.inputNuovaSpesa, { color: 'black', fontWeight: 'bold', fontSize: 25 }]}>€</TextInput>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.btnNuovaSpesa} onPress={() => aggiungiSpesa()}>
+              <Text style={styles.testoBtnNuovaSpesa}>Conferma</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </Modal>
+        <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
+        <Modal
+          isVisible={modalVisible}
+          animationIn="slideInLeft"
+          animationOut="slideOutLeft"
+          backdropOpacity={0.5}
+          onBackdropPress={closeModal}
+          style={styles.modalSpesaContainer} // Aggiungi questo stile
+        >
+          <ScrollView contentContainerStyle={styles.scrollViewSpesaContent}>
+            <View style={styles.modalReviewSpesaContainer}>
+              <View style={styles.modalReviewSpesaContent}>
+                <View style={styles.modalReviewSpesaHeader}>
+                  <Text style={styles.modalReviewSpesaTitle}>Dettagli Spesa</Text>
+                  <View style={styles.modalReviewSpesaSpace}></View>
+                  <Ionicons name="close-circle-outline" size={30} color={'#cc0000'} onPress={closeModal}></Ionicons>
+                </View>
+                {selectedSpesa && (
+                  <>
+                    <View style={styles.categoriaRow}>
+                      <Image
+                        source={require('../../assets/user/user-image.png')} // Imposta il percorso dell'immagine utente
+                        style={styles.categoriaImage}
+                      />
+                      <Text style={styles.denominazioneCategoria}>Denominazione Categoria</Text>
+                    </View>
+                    <View style={styles.modalAreaDescrizione}>
+                      <Text>{selectedSpesa.descrizione}</Text>
+                    </View>
+                    <View style={styles.modalAreaDataImporto}>
+                      <View>
+                        <Text style={styles.modalTestoImporto}>Data</Text>
+                        <Text style={styles.modalTestoImporto}>{selectedSpesa.data}</Text>
+                      </View>
+
+                      <View style={styles.modalAreaSpace} />
+
+                      <View>
+                        <Text style={styles.modalTestoImporto}>Importo</Text>
+                        <Text style={styles.modalTestoImporto}>{selectedSpesa.importo}</Text>
+                      </View>
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          </ScrollView>
+        </Modal>
+      {/*</ScrollView>*/}
     </SafeAreaView>
   );
 
@@ -288,7 +318,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   containerSaldoConto: {
-    flexDirection:'row',
+    flexDirection: 'row',
     alignItems: 'flex-end',
     paddingTop: 35,
     paddingBottom: 45,
@@ -459,7 +489,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     margin: 'auto',
-    width: width*0.7
+    width: width * 0.7
   },
   testoBtnNuovaSpesa: {
     fontSize: 18,
