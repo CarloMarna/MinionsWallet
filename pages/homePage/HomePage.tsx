@@ -69,8 +69,6 @@ const HomePage = ({ navigation, database }: { navigation: any; database: any }) 
   React.useEffect(()=>{
     const load_spese=async()=>{
         const query=await database.getAllAsync('SELECT spesa.*,categoria.path_icona AS path FROM spesa JOIN categoria ON spesa.categoria=categoria.nome;');
-        
-        console.log(query);
 
         const elencoSpese:Spesa[]=[];
         for(const row of query){
