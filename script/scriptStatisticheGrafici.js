@@ -54,6 +54,26 @@ export const caricaSpesePerCategoria = async (database) => {
     }
 };
 
+export const caricaSpesePerCategoriaMedia = async (database) => {
+    try {
+        const result = await database.getAllAsync(`
+            SELECT categoria, ROUND(AVG(importo),2) AS totale_spesa 
+            FROM spesa 
+            WHERE id_conto = 1 
+            GROUP BY categoria
+            ORDER BY totale_spesa DESC;
+        `);
+
+        return result.map(item => ({
+            categoria: item.categoria,
+            speseCategoria: parseFloat(item.totale_spesa)
+        }));
+    } catch (error) {
+        console.error("Errore durante il recupero delle spese per categoria:", error);
+        throw error;
+    }
+};
+
 export const ottieniValuta = async (database) => {
     try {
         const result = await database.getFirstAsync(`
@@ -140,7 +160,6 @@ export const calcolaMedia = async (database, opzione) => {
 
 
 //Script Spese Per Categoria
-// databaseSpesePerCategoria.js
 
 export const caricaSpesePerCategoriaSezione = async (database) => {
     try {
