@@ -9,7 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
-                await deleteTable(db);
+               await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
