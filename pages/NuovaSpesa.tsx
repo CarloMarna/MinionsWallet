@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { getImageFromPath } from '../script/minionImage';
-
+import {ins} from '../script/types';
 
 async function loadFonts() {
     await Font.loadAsync({
@@ -60,10 +60,10 @@ const Importo=({database})=>{
         <Text style={styles.scritte}>Inserisci l'importo e scegli la valuta</Text>
         <View style={styles.spesa_valuta}>
             <View style={styles.spesa}>
-                <TextInput placeholder='0' style={styles.testo_spesa} keyboardType='numeric' inputMode='numeric'></TextInput>
+                <TextInput placeholder='0' style={styles.testo_spesa} keyboardType='numeric' inputMode='numeric' onChangeText={(text)=>inserimento.importo=text}></TextInput>
             </View>
             <View style={styles.valuta}>
-                <Picker style={styles.picker} selectedValue={selectedValuePicker} onValueChange={(itemValue) => setSelectedValuePicker(itemValue)}> 
+                <Picker style={styles.picker} selectedValue={selectedValuePicker} onValueChange={(itemValue) => {setSelectedValuePicker(itemValue); inserimento.v_nome=itemValue.nome; inserimento.v_sigla=itemValue.sigla; inserimento.v_simbolo=itemValue.simbolo;}}> 
                     {listaValute.map((item, index) => (
                         <Picker.Item key={index} label={item.simbolo+'-'+item.nome+'('+item.sigla+')'} value={item} />
                     ))}
@@ -110,8 +110,6 @@ const Categorie=({database})=>{
 
         fetchIcone();
         setIsLoadingCategorie(true);
-        /*isLoadingPage.push(isLoadingCategorie);
-        setIsLoadingPage(isLoadingPage);*/
     }, [database]);
 
 
@@ -169,7 +167,7 @@ const Categorie=({database})=>{
         return (    //restituisco l'item con le proprietà settate
             <Item
               item={item}
-              onPress={() => setSelectedCategory(item.nomeCategoria)}
+              onPress={() => {setSelectedCategory(item.nomeCategoria); inserimento.img_cat=item.img; inserimento.nome_cat=item.nomeCategoria;}}
               backgroundColor={backgroundColor}
               color={color}
             />
@@ -191,7 +189,7 @@ const Categorie=({database})=>{
             return(
                 <ItemPopUp
                 item={path}
-                onPress={()=>(setSelectedIcon(item))}
+                onPress={()=>{setSelectedIcon(item);}}
                 borderColor={borderColor}
                 />
             ) 
@@ -225,15 +223,19 @@ const Categorie=({database})=>{
     return( 
         <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria</Text>
-            <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={<View style={[{width: 300}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={styles.scritte_popup}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
+            <View style={[{height:350}]}>
+                <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} 
+                ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={
+                <View style={[{width: 300, flex:1, flexDirection:'row'}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={[styles.scritte_popup, {textAlignVertical:'center'}]}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
+            </View>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
                         <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
-                        <FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/>
-                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> (setModalVisible(!modalVisible))}/></View>
+                        <View style={[{height:200, margin:10}]}><FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/></View>
+                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible);}}/></View>
                     </View>
                 </Modal>
             </View>
@@ -252,7 +254,6 @@ const Tag=({database})=>{
                 for(const row of lista_tag){
                     lista.push(row.nome);
                 }
-                setIsLoadingTag(true);
                 return{lista};
             }
             catch(error){
@@ -265,6 +266,7 @@ const Tag=({database})=>{
             setTag(result.lista);
         }
         setListaTag();
+        setIsLoadingTag(true);
     }, [database]);
 
     const renderItemTag=({item}: {item: string})=>{
@@ -315,7 +317,7 @@ const Tag=({database})=>{
                 <View style={styles.elementi_tag_modal}>
                     <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                     <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
-                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText));}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                 </View>
             </Modal>
             </View>
@@ -328,7 +330,7 @@ const Descrizione=({database}: {database: any})=>{
     return(
         <View style={[{flex:1}]}>
             <Text style={[styles.scritte, {marginBottom:10}]}>Inserisci la descrizione</Text>
-            <TextInput onChangeText={(inputText)=>{setText(inputText)}} multiline placeholder='Scrivi qui la descrizione...' style={styles.inputDescrizione}></TextInput>
+            <TextInput onChangeText={(inputText)=>{setText(inputText); inserimento.descrizione=inputText;}} multiline placeholder='Scrivi qui la descrizione...' style={styles.inputDescrizione}></TextInput>
         </View>
     )
 }
@@ -344,7 +346,7 @@ const Data=({database}:{database:any})=>{
                 <Pressable onPress={()=>{setViewDataPicker(true)}}>
                     <View style={[{backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor:'#0057BB', borderWidth:1}]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{alignSelf: 'center'}]}/></View>
                 </Pressable>
-                {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false)}}></DateTimePicker>}
+                {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false); inserimento.data=date.toLocaleDateString();}}></DateTimePicker>}
                 <Text style={styles.scrittaData}>Hai effettuato la spesa il {data.toLocaleDateString()}</Text>
             </View>
         </View>
@@ -356,7 +358,7 @@ const Data=({database}:{database:any})=>{
 const BottoneAggiuntaSpesa=({database}:{database:any})=>{
     return(
         <View>
-            <Pressable>
+            <Pressable onPress={()=>{console.log(inserimento)}}>
                 <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
@@ -366,10 +368,22 @@ const BottoneAggiuntaSpesa=({database}:{database:any})=>{
     )
 }
 
+let inserimento: ins={
+    importo:'',
+    v_simbolo: '',
+    v_nome:'',
+    v_sigla:'',
+    img_cat:'',
+    nome_cat:'',
+    descrizione: '',
+    data:'',
+    tag:''
+};
+
 const NuovaSpesa=({ database }: { database: any })=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
-const [isLoadingPage, setIsLoadingPage] = useState<boolean[]>([]);
+
     useEffect(() => {
         async function loadApp() {
           await loadFonts();

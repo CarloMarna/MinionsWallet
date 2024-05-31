@@ -100,18 +100,8 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
 
         <Stack.Screen
           name="Login"
-          component={()=><Login database={database}/>}
-          options={({ navigation }) => ({
-            title: "Login",
-            headerLeft: () => (
-              <View>
-                <TouchableOpacity onPress={() => handleMenuClick()}>
-                  <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
-                </TouchableOpacity>
-                <Menu navigation={navigation} />
-              </View>
-            ),
-          })}
+          options={{ headerShown: false }}
+          component={(props) => <Login {...props} database={database} />}
         />
         <Stack.Screen
           name="HomePage"
