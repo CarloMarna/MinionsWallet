@@ -126,6 +126,7 @@ const HomePage = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerSaldoConto}>
+        <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')}/>
         <View style={styles.cerchioEsterno}>
           <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
           <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Saldo disponibile al {today.toLocaleDateString()}</Text>
@@ -287,9 +288,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   containerSaldoConto: {
-    alignItems: 'center',
+    flexDirection:'row',
+    alignItems: 'flex-end',
     paddingTop: 35,
     paddingBottom: 45,
+    right: 0
     //backgroundColor: 'yellow'
   },
   cerchioEsterno: {
