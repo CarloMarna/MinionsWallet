@@ -63,6 +63,7 @@ const useDatabase = () => {
                     await db.execAsync(command);
                 }
                 await popolaDBParziale(db);
+                await popolaDBCompleto(db);
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -129,29 +130,6 @@ export const popolaDBCompleto = async (db) => {
                 ('Salute', '/assets/img/icone_minions/Minion-Bananas.png'),
                 ('Casa', '/assets/img/icone_minions/Minion-Shy.png');`,
 
-        // Inserimento dati nella tabella 'valuta'
-        `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
-        ('EUR', 'Euro', '€'),
-        ('USD', 'Dollar', '$'),
-        ('JPY', 'Yen', '¥'),
-        ('GBP', 'Sterlina', '£'),
-        ('AUD', 'Dollaro australiano', '$'),
-        ('CAD', 'Dollaro canadese', '$'),
-        ('CHF', 'Franco svizzero', 'CHF'),
-        ('CNY', 'Yuan cinese', '¥'),
-        ('SEK', 'Corona svedese', 'kr'),
-        ('NZD', 'Dollaro neozelandese', '$'),
-        ('INR', 'Rupia indiana', '₹'),
-        ('RUB', 'Rublo russo', '₽'),
-        ('KRW', 'Won sudcoreano', '₩'),
-        ('MXN', 'Peso messicano', '$'),
-        ('BRL', 'Real brasiliano', 'R$'),
-        ('ZAR', 'Rand sudafricano', 'R'),
-        ('THB', 'Baht thailandese', '฿'),
-        ('SAR', 'Riyal saudita', '﷼'),
-        ('TRY', 'Lira turca', '₺'),
-        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
-
         // Inserimento dati nella tabella 'tag'
         `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
@@ -159,12 +137,6 @@ export const popolaDBCompleto = async (db) => {
                 ('Regalo fidanzato/a'),
                 ('Spesa settimanale'),
                 ('Croccantini Fido');`,
-
-        // Inserimento dati nella tabella 'utente'
-        `INSERT INTO utente (username, mail, pwd) VALUES 
-                ('john_doe', 'john@example.com', 'password123'),
-                ('jane_doe', 'jane@example.com', 'password456');`,
-
 
         // Inserimento dati nella tabella 'conto'
         `INSERT INTO conto (nome_conto, sigla,username) VALUES 
