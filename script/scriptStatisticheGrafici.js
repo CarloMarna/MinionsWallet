@@ -141,11 +141,11 @@ export const calcolaMedia = async (database, opzione) => {
     try {
         let query = '';
         if (opzione === 'Giorno') {
-            query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE date(data) = date("now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE date(data) = date("now")';
         } else if (opzione === 'Mese') {
-            query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now")';
         } else if (opzione === 'Anno') {
-            query = 'SELECT ROUND(AVG(importo), 3) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now")';
         }
 
         const result = await database.getFirstAsync(query);
