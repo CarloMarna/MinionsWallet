@@ -17,11 +17,11 @@ const useDatabase = () => {
                         simbolo VARCHAR(5) NOT NULL
                     );`,
                     `CREATE TABLE IF NOT EXISTS icona (
-                        path VARCHAR(100) PRIMARY KEY NOT NULL
+                        path TEXT PRIMARY KEY NOT NULL
                     );`,
                     `CREATE TABLE IF NOT EXISTS categoria (
                         nome VARCHAR(50) PRIMARY KEY NOT NULL,
-                        path_icona VARCHAR(100) NOT NULL,
+                        path_icona TEXT NOT NULL,
                         FOREIGN KEY (path_icona) REFERENCES icona (path)
                     );`,
                     `CREATE TABLE IF NOT EXISTS utente (
