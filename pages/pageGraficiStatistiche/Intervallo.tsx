@@ -156,7 +156,7 @@ const Intervallo = ({ database }) => {
                         {imageToShowMax ? (
                             <Image source={imageToShowMax} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
-                            <Text style={{ color: '#FF0000', }}>N/A</Text>
+                            <Text style={styles.textNA}>N/A</Text>
                         )}
                     </Pressable>
                 </View>
@@ -168,7 +168,7 @@ const Intervallo = ({ database }) => {
                         {imageToShowMin ? (
                             <Image source={imageToShowMin} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
-                            <Text style={{ color: '#FF0000' }}>N/A</Text>
+                            <Text style={styles.textNA}>N/A</Text>
                         )}
                     </Pressable>
                 </View>
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 20,
         padding: screenWidth * 0.01,
-        elevation: 2,
+        elevation: 1.6,
     },
     buttonOpen: {
         backgroundColor: '#FFFF',
@@ -282,6 +282,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         fontSize: screenWidth * 0.05
+    },
+
+    textNA: {
+        textAlignVertical: 'center',
+        textAlign: 'center',
+        width: screenWidth * 0.17,
+        height: screenHeight * 0.06,
+        color: '#FF0000',
+        fontWeight: 'bold'
     },
     modalText: {
         marginBottom: 15,
