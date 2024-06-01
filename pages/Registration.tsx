@@ -12,7 +12,7 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Registration = ({ navigation, database }) => {
+const Registration = ({ navigation, database,onLogin }) => {
 
 
   const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
@@ -173,6 +173,7 @@ if (checkExistingUsername.length>0) {
         {
           text: 'OK',
           onPress: () => {
+            onLogin(username);
             navigation.navigate("HomePage")
           },
           style: 'default',

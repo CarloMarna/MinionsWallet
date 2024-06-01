@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert,ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useRoute } from '@react-navigation/native';
 
-const Uscita = ({ database }) => {
+const Uscita = ({ database,username }) => {
+    
+  
     const [total, setTotal] = useState(100);
     const [category, setCategory] = useState('Tutte');
     const [startDate, setStartDate] = useState(new Date());
@@ -205,7 +208,7 @@ const Uscita = ({ database }) => {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-            <Text style={styles.title}>Totale Uscite</Text>
+            <Text style={styles.title}>Totale Uscite di {username}</Text>
 
             <View style={styles.totalContainer}>
                 <Text style={styles.totalLabel}>Totale:</Text>
@@ -292,6 +295,7 @@ const Uscita = ({ database }) => {
                     
                 )}
                 keyExtractor={(item, index) => index.toString()}
+                scrollEnabled={false}
 
                 
             />
