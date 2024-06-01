@@ -49,6 +49,14 @@ const HomePageComponent = ({ database }: { database: any }) => {
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
   const [spese, setSpese] = React.useState([]);
 
+  const today = new Date();
+  const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+  const [viewDataPicker, setViewDataPicker] = React.useState(false);
+  const [causale, setCausale] = React.useState([]);
+  const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('');
+  const [categoria, setCategoria] = React.useState('');
+  const [importo, setImporto] = React.useState('');
+
   React.useEffect(() => {
     const load_spese = async () => {
       const query = await database.getAllAsync(
@@ -76,19 +84,30 @@ const HomePageComponent = ({ database }: { database: any }) => {
 
   }, [database, limitElementiFlatList]);
 
+  React.useEffect(() => {
+    const fetchCategorie = async () => {
+      try {
+        // Esegui la query per recuperare le categorie dal tuo database
+        const queryResult = await database.getAllAsync('SELECT DISTINCT nome FROM categoria;');
+        // Estrai le categorie dalla queryResult
+        const categorieFromDatabase = queryResult.map((row) => row.nome);
+        // Aggiorna lo stato delle categorie
+        setCategoria(categorieFromDatabase);
+        // Seleziona la prima categoria come valore predefinito
+        if (categorieFromDatabase.length > 0) {
+          setCategoriaSelezionata(categorieFromDatabase[0]);
+        }
+      } catch (error) {
+        console.error('Errore nel recupero delle categorie dal database:', error);
+      }
+    };
 
-  const today = new Date();
-
-  const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
-  const [viewDataPicker, setViewDataPicker] = React.useState(false);
-  const [causale, setCausale] = React.useState('');
-  const [categoria, setCategoria] = React.useState('');
-  const [importo, setImporto] = React.useState('');
-
+    fetchCategorie();
+  }, [database]);
 
   const aggiungiSpesa = () => {
     console.log("Causale:", causale);
-    console.log("Categoria:", categoria);
+    console.log("Categoria:", categoriaSelezionata);
     console.log("Importo:", importo);
     console.log("Data:", data.toLocaleDateString());
   };
@@ -141,16 +160,12 @@ const HomePageComponent = ({ database }: { database: any }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/*<ScrollView>*/}
       <View style={styles.containerSaldoConto}>
         <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')} />
         <View style={styles.cerchioEsterno}>
           <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
           <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
           <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
-            {/*<TouchableOpacity onPress={() => navigation.navigate("Uscita")}>
-                <Text> Visualizza Uscite <Ionicons name="caret-forward-outline" /></Text>
-              </TouchableOpacity>*/}
           </View>
         </View>
       </View>
@@ -205,15 +220,13 @@ const HomePageComponent = ({ database }: { database: any }) => {
               <Text style={styles.labelNuovaSpesa}>Categoria :</Text>
               {/*<TextInput style={styles.inputNuovaSpesa} onChangeText={(text) => setCategoria(text)}></TextInput>*/}
               <Picker
-                categoria={categoria}
-                selectedValue={categoria}
                 style={styles.pickerCategoria}
-                onValueChange={(itemValue) => setCategoria(itemValue)}
+                selectedValue={categoriaSelezionata}
+                onValueChange={(itemValue) => setCategoriaSelezionata(itemValue)}
               >
-                <Picker.Item label="10" value="10" />
-                <Picker.Item label="25" value="25" />
-                <Picker.Item label="50" value="50" />
-                <Picker.Item label="100" value="100" />
+                {categoria.map((categoria, index) => (
+                  <Picker.Item key={index} label={categoria} value={categoria} />
+                ))}
               </Picker>
             </View>
             <View style={styles.modalViewSpaceSeparator} />
@@ -307,7 +320,6 @@ const HomePageComponent = ({ database }: { database: any }) => {
           </View>
         </ScrollView>
       </Modal>
-      {/*</ScrollView>*/}
     </SafeAreaView>
   );
 
@@ -390,6 +402,10 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: 100
+  },
+  pickerCategoria: {
+    height: 40,
+    width: 150
   },
   nuovaSpesaBtn: {
     backgroundColor: '#fde23e',
