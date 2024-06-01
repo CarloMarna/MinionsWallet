@@ -164,24 +164,7 @@ const Categorie=({database})=>{
         item: string;    //item di tipo ItemPopUp
         onPress: ()=>void;  //funzione di tipo void
         borderColor: string;
-        //borderWidth: number;
     };
-
-    /*const lista_categorie: ItemCategoria[]=[    //lista categorie di tipo ItemCategoria
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png'),
-        nomeCategoria: 'cibo'},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png'),
-        nomeCategoria: 'feste'},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png'),
-        nomeCategoria: 'amici'},
-        {img: require('../assets/img/icone_minions/Minion-Bananas.png'),
-        nomeCategoria: 'fidanzata'},
-        {img: require('../assets/img/icone_minions/Minion-Cake.png'),
-        nomeCategoria: 'regali'},
-        {img: require('../assets/img/icone_minions/Minion-Crazy.png'),
-        nomeCategoria: 'bollette'},
-    ];*/
-
     
     const Item=({item, onPress, backgroundColor, color}:ItemProps)=>( //definisco la costante item a cui passo le proprietà
         <View>
@@ -215,7 +198,8 @@ const Categorie=({database})=>{
     );
     
     const [selectedIcon, setSelectedIcon] = useState("");
-    var aggiuntaCategoria:String[]=[];
+    const [imgAggiuntaCategoria, setImgAggiuntaCategoria] = useState('');
+    const [textAggiuntaCategoria, setTextAggiuntaCategoria] = useState('');
 
     const renderItemPopUp=({item}:{item: string})=>{
         const borderColor=item===selectedIcon?'#0057BB': '';
@@ -223,7 +207,7 @@ const Categorie=({database})=>{
             return(
                 <ItemPopUp
                 item={path}
-                onPress={()=>{setSelectedIcon(item); aggiuntaCategoria.concat(path);}}
+                onPress={()=>{setSelectedIcon(item); setImgAggiuntaCategoria(getImagePathFromId(path));}}
                 borderColor={borderColor}
                 />
             ) 
@@ -247,8 +231,8 @@ const Categorie=({database})=>{
     return( 
         <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria</Text>
-            <View style={[{height:350}]}>
-                <FlatList scrollEnabled data={listaCategorie} renderItem={renderItem} style={styles.categorie} numColumns={4} ItemSeparatorComponent={separator} 
+            <View style={[{height:'auto'}]}>
+                <FlatList scrollEnabled data={listaCategorie} renderItem={renderItem} style={styles.categorie} ItemSeparatorComponent={separator} 
                 ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={
                 <View style={[{width: 300, flex:1, flexDirection:'row'}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={[styles.scritte_popup, {textAlignVertical:'center'}]}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             </View>
@@ -256,10 +240,10 @@ const Categorie=({database})=>{
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
-                        <TextInput placeholder='Inserisci nome categoria...' onChangeText={(text)=>aggiuntaCategoria.concat(text)} ></TextInput>
+                        <TextInput placeholder='Inserisci nome categoria...' onChangeText={(text)=>setTextAggiuntaCategoria(text)} ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
                         <View style={[{height:200, margin:10}]}><FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/></View>
-                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible); database.execAsync('INSERT INTO categoria VALUES('+aggiuntaCategoria.at(0)+','+aggiuntaCategoria.at(1)+');'); aggiuntaCategoria.splice(0,aggiuntaCategoria.length);}}/></View>
+                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible);database.execAsync('INSERT INTO categoria VALUES('+textAggiuntaCategoria+','+imgAggiuntaCategoria+');');}}/></View>
                     </View>
                 </Modal>
             </View>
@@ -407,7 +391,7 @@ let inserimento: ins={
     tag:[]
 };
 
-const NuovaSpesa=({database}: { database: any})=>{
+const NuovaSpesaComponent=({database}: { database: any})=>{
 
     const[fontLoaded, setFontLoaded] = useState(false);
 
@@ -426,18 +410,33 @@ const NuovaSpesa=({database}: { database: any})=>{
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
-            <ScrollView nestedScrollEnabled>
                 <Importo database={database}/>
                 <Categorie database={database}/>
                 <Descrizione database={database}/>
                 <Data database={database}/>
                 <Tag database={database}/>
                 <BottoneAggiuntaSpesa database={database}/>
-            </ScrollView>
         </SafeAreaView>
     )
 
 };
+
+const NuovaSpesa = ({ database }: { database: any }) => {
+    const data = [{ key: '1', component: <NuovaSpesaComponent database={database} /> }];
+  
+    const renderItem = ({ item }) => item.component;
+  
+    return (
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+        scrollEnabled
+        nestedScrollEnabled
+      />
+    );
+  }
+  
 
 const styles=StyleSheet.create({
     box: {
@@ -494,13 +493,14 @@ const styles=StyleSheet.create({
         borderColor: '#0057BB',
         borderWidth: 2,
         borderRadius: 20,
-        flex: 1,
         width: 370,
         paddingHorizontal:7,
         marginVertical: 20,
         flexDirection: 'row',
+        flexWrap:'wrap',
         paddingVertical: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        flex:1
     },
     separator: {
         height: 20
