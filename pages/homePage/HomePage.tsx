@@ -54,7 +54,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
   const [viewDataPicker, setViewDataPicker] = React.useState(false);
   const [causale, setCausale] = React.useState([]);
   const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('');
-  const [categoria, setCategoria] = React.useState('');
+  const [categoria, setCategoria] = React.useState([]);
   const [importo, setImporto] = React.useState('');
 
   React.useEffect(() => {
@@ -218,7 +218,6 @@ const HomePageComponent = ({ database }: { database: any }) => {
           <View style={styles.nuovaSpesaCategoriaData}>
             <View style={styles.viewInputNuovaSpesa}>
               <Text style={styles.labelNuovaSpesa}>Categoria :</Text>
-              {/*<TextInput style={styles.inputNuovaSpesa} onChangeText={(text) => setCategoria(text)}></TextInput>*/}
               <Picker
                 style={styles.pickerCategoria}
                 selectedValue={categoriaSelezionata}
