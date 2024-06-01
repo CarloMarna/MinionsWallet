@@ -130,7 +130,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
 };
 
 //Script per MEDIA
-// databaseMedia.js
+
 
 export const calcolaMedia = async (database, opzione) => {
     try {
