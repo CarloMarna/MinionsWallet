@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View, Image, Dimensions, StyleSheet, ActivityIndicator } from 'react-native';
 import { caricaSpesePerCategoriaSezione } from '../../script/scriptStatisticheGrafici';
+import { getImageFromPath } from '../../script/minionImage';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 type SpesaCategoriaType = {
     categoria: string,
-    percentuale: number
+    percentuale: number,
+    path: string
 };
 
-const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => (
-    <View style={styles.spesaCategoriaContainer}>
-        <Text style={styles.spesaCategoriaText}>{item.categoria}</Text>
-        <Text style={[styles.spesaCategoriaText, styles.spesaCategoriaTextPercentuale]}>{item.percentuale}%</Text>
-    </View>
-);
+const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => {
+    const path = getImageFromPath(item.path);
+    return (
+        <>
+            <View style={styles.rigaSpesa}>
+                <View style={styles.categoriaSpesa}>
+                    <Image style={[{ width: 50, height: 50 }]} source={path} />
+                </View>
+                <View style={styles.percentualeCategorie}>
+                    <Text style={styles.spesaCategoriaText}>{item.categoria}</Text>
+                    <Text style={[styles.spesaCategoriaText, styles.spesaCategoriaTextPercentuale]}>{item.percentuale}%</Text>
+                </View>
+            </View>
+        </>
+    );
+};
 
 const MinionComponent = () => (
     <View style={styles.minionsContainer}>
@@ -73,7 +85,7 @@ const SpesePerCategoria = ({ database }: { database: any }) => {
                         ListHeaderComponent={<Text style={styles.headerText}>Divisione Spese Per Categoria:</Text>}
                         data={spesaCat}
                         renderItem={renderSpeseCategoria}
-                        ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
+                        style={styles.flatList}
                         ListFooterComponent={orientation !== 'portrait' ? <MinionComponent /> : null}
                     />
                     {orientation === 'portrait' && <MinionComponent />}
@@ -96,21 +108,10 @@ const styles = StyleSheet.create({
         color: '#0057B8',
         fontFamily: 'fredoka-one',
     },
-    spesaCategoriaContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingVertical: screenHeight * 0.013,
-        borderBottomWidth: 1,
-        borderBottomColor: '#0057B8',
-    },
     spesaCategoriaText: {
         fontSize: 16,
         color: '#0057B8',
         fontFamily: 'fredoka-one',
-        textShadowColor: '#FFF',
-        textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 1,
     },
     spesaCategoriaTextPercentuale: {
         fontWeight: 'bold',
@@ -159,6 +160,38 @@ const styles = StyleSheet.create({
         height: screenHeight * 0.25,
         resizeMode: 'contain',
     },
+
+    rigaSpesa: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 5,
+        marginHorizontal: 3,
+        elevation: 6,
+        shadowColor: '#0057BB',
+        shadowOpacity: 0.5
+    },
+
+    categoriaSpesa: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+
+    flatList: {
+        paddingTop: 10,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 20
+    },
+
+    percentualeCategorie: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    }
 });
 
 export default SpesePerCategoria;
