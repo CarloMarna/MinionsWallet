@@ -105,7 +105,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="HomePage"
-          component={()=><HomePage navigation={navigation} database={database} />}
+          component={()=><HomePage database={database} />}
           options={({ navigation }) => ({
             title: "DashBoard",
             headerLeft: () => (
@@ -120,8 +120,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="NuovaSpesa"
-          //component={() => <NuovaSpesa navigation={navigation} database={database}/>}
-          component={(props) => <NuovaSpesa navigation={props.navigation} database={props.database} />}
+          component={() => <NuovaSpesa database={database}/>}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (
