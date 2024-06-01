@@ -1,28 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
-const Login = ({ navigation,database,onLogin }) => {
+const Login = ({ navigation, database, onLogin }) => {
 
-  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async() => {
-      if (!username || !password) {
-        Alert.alert('Errore', 'Si prega di compilare tutti i campi');
-        return;
-      }
-      const lowercaseUsername = username.toLowerCase();
-      const checkCredenziali = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${lowercaseUsername}' 
+  const handleLogin = async () => {
+    if (!username || !password) {
+      Alert.alert('Errore', 'Si prega di compilare tutti i campi');
+      return;
+    }
+    const lowercaseUsername = username.toLowerCase();
+    const checkCredenziali = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${lowercaseUsername}' 
       and pwd = '${password}';`);
-      console.log(checkCredenziali);
-          if(checkCredenziali.length>0){
-            onLogin(username);
-            navigation.navigate('HomePage');
-          }else {
-            Alert.alert('Errore', 'Username o password non validi');}
-    
-    };
+    console.log(checkCredenziali);
+    if (checkCredenziali.length > 0) {
+      const id_conto = await database.getAllAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
+      onLogin(id_conto);
+      navigation.navigate('HomePage');
+    } else {
+      Alert.alert('Errore', 'Username o password non validi');
+    }
+
+  };
 
   return (
     <View style={styles.container}>

@@ -7,7 +7,7 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const Media = ({ database }) => {
     const [opzione, setOpzione] = useState('Giorno');
-    const [media, setMedia] = useState('0.000');
+    const [media, setMedia] = useState('');
     const [valuta, setValuta] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 

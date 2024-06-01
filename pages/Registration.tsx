@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity,ScrollView} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +12,7 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Registration = ({ navigation, database,onLogin }) => {
+const Registration = ({ navigation, database }) => {
 
 
   const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
@@ -81,40 +81,42 @@ const Registration = ({ navigation, database,onLogin }) => {
     let messaggio1 = '';
     let messaggio2 = '';
     try {
-    const lowercaseUsername = username.toLowerCase();
-    const lowercaseEmail = email.toLowerCase();
-    const checkExistingUsername = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${lowercaseUsername}';`);
-    
-    
-if (checkExistingUsername.length>0) {
-    
-    return { messaggio: 'usernameDuplicato' };}
-    else{
-      
-      
-    const checkExistingEmail = await database.getAllAsync(`SELECT * FROM utente WHERE mail = '${lowercaseEmail}';`);
-    
-   
-    if(checkExistingEmail.length>0){
-      
-      return{messaggio: 'emailDuplicato'};}
-    else{
-    
-      const command1 = `INSERT INTO utente (username,mail,pwd) VALUES ('${lowercaseUsername}', '${lowercaseEmail}','${password}');`;
-      const command2 = `INSERT INTO conto (nome_conto, sigla,username) VALUES ('${accountName}', '${selectedCurrency}','${lowercaseUsername}');`;
-      
-      await database.execAsync(command1);
-      await database.execAsync(command2);
-      messaggio1= await database.getAllAsync('Select * from utente');
-      messaggio2=await database.getAllAsync('Select * from conto');
-      
-      const mergedMessages = [...messaggio1, ...messaggio2];
-      
-      return {mergedMessages};
-    }
-  
-  }
- } catch (error) {
+      const lowercaseUsername = username.toLowerCase();
+      const lowercaseEmail = email.toLowerCase();
+      const checkExistingUsername = await database.getAllAsync(`SELECT * FROM utente WHERE username = '${lowercaseUsername}';`);
+
+
+      if (checkExistingUsername.length > 0) {
+
+        return { messaggio: 'usernameDuplicato' };
+      }
+      else {
+
+
+        const checkExistingEmail = await database.getAllAsync(`SELECT * FROM utente WHERE mail = '${lowercaseEmail}';`);
+
+
+        if (checkExistingEmail.length > 0) {
+
+          return { messaggio: 'emailDuplicato' };
+        }
+        else {
+
+          const command1 = `INSERT INTO utente (username,mail,pwd) VALUES ('${lowercaseUsername}', '${lowercaseEmail}','${password}');`;
+          const command2 = `INSERT INTO conto (nome_conto, sigla,username) VALUES ('${accountName}', '${selectedCurrency}','${lowercaseUsername}');`;
+
+          await database.execAsync(command1);
+          await database.execAsync(command2);
+          messaggio1 = await database.getAllAsync('Select * from utente');
+          messaggio2 = await database.getAllAsync('Select * from conto');
+
+          const mergedMessages = [...messaggio1, ...messaggio2];
+
+          return { mergedMessages };
+        }
+
+      }
+    } catch (error) {
       console.error("Errore durante la registrazione: ", error);
 
       return { messaggio: 'errore' };
@@ -128,7 +130,7 @@ if (checkExistingUsername.length>0) {
     if (!username || !email || !password || !accountName) {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
-      
+
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
@@ -139,49 +141,49 @@ if (checkExistingUsername.length>0) {
 
     console.log(registrationResult);
 
-    if(registrationResult.messaggio === 'usernameDuplicato'){
-    Alert.alert(
-          'Registrazione non eseguita',
-          'Username già esistente',
-          [
-            {
-              text: 'OK',
-              style: 'default',
-            },
-          ],
-          { cancelable: false }
-        );
-      }else if(registrationResult.messaggio === 'emailDuplicato'){
-        
-        Alert.alert(
-          'Registrazione non eseguita',
-          'Email già esistente',
-          [
-            {
-              text: 'OK',
-              style: 'default',
-            },
-          ],
-          { cancelable: false }
-        );
-      }else{
-    
-    Alert.alert(
-      'Registrazione eseguita',
-      'La registrazione è stata completata con successo!',
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            onLogin(username);
-            navigation.navigate("HomePage")
+    if (registrationResult.messaggio === 'usernameDuplicato') {
+      Alert.alert(
+        'Registrazione non eseguita',
+        'Username già esistente',
+        [
+          {
+            text: 'OK',
+            style: 'default',
           },
-          style: 'default',
-        },
-      ],
-      { cancelable: false }
-    );
-  }};
+        ],
+        { cancelable: false }
+      );
+    } else if (registrationResult.messaggio === 'emailDuplicato') {
+
+      Alert.alert(
+        'Registrazione non eseguita',
+        'Email già esistente',
+        [
+          {
+            text: 'OK',
+            style: 'default',
+          },
+        ],
+        { cancelable: false }
+      );
+    } else {
+
+      Alert.alert(
+        'Registrazione eseguita',
+        'La registrazione è stata completata con successo!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate("HomePage")
+            },
+            style: 'default',
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  };
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -196,53 +198,53 @@ if (checkExistingUsername.length>0) {
     return null;
   }
   return (
-<ScrollView contentContainerStyle={styles.scrollContainer}>
-    <View style={styles.container}>
-      <Text style={styles.title}>Benvenuto in MINIONs</Text>
-      <Text style={styles.label}>Username:</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setUsername}
-        value={username}
-      />
-      <Text style={styles.label}>Mail:</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-      />
-      <Text style={styles.label}>Password:</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        secureTextEntry={true}
-      />
-      <Text style={styles.label}>NomeConto:</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={setAccountName}
-        value={accountName}
-      />
-      <Text style={styles.label}>Valuta:</Text>
-      <Picker
-        selectedValue={selectedCurrency}
-        onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}
-        style={styles.picker}
-      >
-        {currencies.map(currency => (
-          <Picker.Item key={currency} label={`${currency} ${currencySymbols(currency)}`} value={currency} />
-        ))}
-      </Picker>
-      <Button title="Registrati" onPress={() => handleRegistration()} />
-      <TouchableOpacity onPress={handleGoToLogin}>
-        <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
-      </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Benvenuto in MINIONs</Text>
+        <Text style={styles.label}>Username:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setUsername}
+          value={username}
+        />
+        <Text style={styles.label}>Mail:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+        />
+        <Text style={styles.label}>Password:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          secureTextEntry={true}
+        />
+        <Text style={styles.label}>NomeConto:</Text>
+        <TextInput
+          style={styles.input}
+          onChangeText={setAccountName}
+          value={accountName}
+        />
+        <Text style={styles.label}>Valuta:</Text>
+        <Picker
+          selectedValue={selectedCurrency}
+          onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}
+          style={styles.picker}
+        >
+          {currencies.map(currency => (
+            <Picker.Item key={currency} label={`${currency} ${currencySymbols(currency)}`} value={currency} />
+          ))}
+        </Picker>
+        <Button title="Registrati" onPress={() => handleRegistration()} />
+        <TouchableOpacity onPress={handleGoToLogin}>
+          <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
-        <Text style={styles.label}>Ti scocci di fare il login?Cliccami</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
+          <Text style={styles.label}>Ti scocci di fare il login?Cliccami</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }

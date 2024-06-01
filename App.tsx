@@ -24,15 +24,17 @@ const { width, height } = Dimensions.get('window');
 
 const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da navigator, passo navigation come parametro
   const database = useDatabase();
-  const [username, setUsername] = useState('');
+  const [idConto, setIdConto] = useState('');
   const [isMenuVisible, setMenuVisible] = useState(false);
-  const takeUsername = (username) =>{
-    setUsername(username);
-    console.log('sono in app'+username);
+
+  const takeIdConto = (idConto) => {
+    setIdConto(idConto);
   }
+
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
+
   const Menu = ({ navigation }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
@@ -99,17 +101,16 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         <Stack.Screen
           name="Registration"
           options={{ headerShown: false }}
-          component={(props) => <Registration {...props} database={database} onLogin={takeUsername}/>}
+          component={(props) => <Registration {...props} database={database} />}
         />
-
         <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
-          component={(props) => <Login {...props} database={database} onLogin={takeUsername}/>}
+          component={(props) => <Login {...props} database={database} onLogin={takeIdConto} />}
         />
         <Stack.Screen
           name="HomePage"
-          component={()=><HomePage database={database} />}
+          component={() => <HomePage database={database} />}
           options={({ navigation }) => ({
             title: "DashBoard",
             headerLeft: () => (
@@ -124,7 +125,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="NuovaSpesa"
-          component={() => <NuovaSpesa database={database}/>}
+          component={() => <NuovaSpesa database={database} />}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (
@@ -154,7 +155,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="Uscita"
-          component={()=><Uscita database={database} username={username}/>}
+          component={() => <Uscita database={database} idConto={idConto} />}
           options={({ navigation }) => ({
             headerLeft: () => (
               <View>
