@@ -27,6 +27,130 @@ import MinionsFesta from '../assets/img/icone_minions/Minions-Festa.png';
 import MinionShy from '../assets/img/icone_minions/Minion-Shy.png';
 import MinionsJewels from '../assets/img/icone_minions/Minions-Jewels.png';
 
+const imageMapping = {
+    MinionShout: {
+      id: MinionShout,
+      path: '../assets/img/icone_minions/Minion-Shout.png',
+    },
+    MinionsNewYork: {
+      id: MinionsNewYork,
+      path: '../assets/img/icone_minions/Minions-NewYork.png',
+    },
+    MinionsPillola: {
+        id: MinionsPillola,
+        path: '../assets/img/icone_minions/Minions-Pillola.png',
+    },
+    MinionsSadChristmas: {
+        id: MinionsSadChristmas,
+        path: '../assets/img/icone_minions/Minions-Sad-Christmas.png',
+    },
+    MinionsSpa: {
+        id: MinionsSpa,
+        path: '../assets/img/icone_minions/Minions-Spa.png',
+    },
+    MinionsTechnology: {
+        id: MinionsTechnology,
+        path: '../assets/img/icone_minions/Minions-Technology.png',
+    },
+    MinionsToy: {
+        id: MinionsToy,
+        path: '../assets/img/icone_minions/Minions-Toy.png',
+    },
+    MinionsTransport: {
+        id: MinionsTransport,
+        path: '../assets/img/icone_minions/Minions-Transport.png',
+    },
+    MinionsVacay: {
+        id: MinionsVacay,
+        path: '../assets/img/icone_minions/Minions-Vacay.png',
+    },
+    MinionsWoman: {
+        id: MinionsWoman,
+        path: '../assets/img/icone_minions/Minions-Woman.png',
+    },
+    MinionBananas: {
+        id: MinionBananas,
+        path: '../assets/img/icone_minions/Minion-Bananas.png',
+    },
+    MinionCake: {
+        id: MinionCake,
+        path: '../assets/img/icone_minions/Minion-Cake.png',
+    },
+    MinionCrazy: {
+        id: MinionCrazy,
+        path: '../assets/img/icone_minions/Minion-Crazy.png',
+    },
+    MinionDancing: {
+        id: MinionDancing,
+        path: '../assets/img/icone_minions/Minion-Dancing.png',
+    },
+    MinionDuck: {
+        id: MinionDuck,
+        path: '../assets/img/icone_minions/Minion-Duck.png',
+    },
+    MinionEvil: {
+        id: MinionEvil,
+        path: '../assets/img/icone_minions/Minion-Evil.png',
+    },
+    MinionFruits: {
+        id: MinionFruits,
+        path: '../assets/img/icone_minions/Minion-Fruits.png',
+    },
+    MinionKungfu: {
+        id: MinionKungfu,
+        path: '../assets/img/icone_minions/Minion-Kungfu.png',
+    },
+    MinionMaid: {
+        id: MinionMaid,
+        path: '../assets/img/icone_minions/Minion-Maid.png',
+    },
+    MinionPlayingGolf: {
+        id: MinionPlayingGolf,
+        path: '../assets/img/icone_minions/Minion-Playing-Golf.png',
+    },
+    MinionReading: {
+        id: MinionReading,
+        path: '../assets/img/icone_minions/Minion-Reading.png',
+    },
+    MinionSad: {
+        id: MinionSad,
+        path: '../assets/img/icone_minions/Minion-Sad.png',
+    },
+    MinionsChef: {
+        id: MinionsChef,
+        path: '../assets/img/icone_minions/Minions-Chef.png',
+    },
+    MinionsChitarra: {
+        id: MinionsChitarra,
+        path: '../assets/img/icone_minions/Minions-Chitarra.png',
+    },
+    MinionsChristmas: {
+        id: MinionsChristmas,
+        path: '../assets/img/icone_minions/Minions-Christmas.png',
+    },
+    MinionsFesta: {
+        id: MinionsFesta,
+        path: '../assets/img/icone_minions/Minions-Festa.png',
+    },
+    MinionShy: {
+        id: MinionShy,
+        path: '../assets/img/icone_minions/Minion-Shy.png',
+    },
+    MinionsJewels: {
+        id: MinionsJewels,
+        path: '../assets/img/icone_minions/Minions-Jewels.png',
+    },
+};
+
+const getImagePathFromId = (id) => {
+    for (const key in imageMapping) {
+      if (imageMapping[key].id === id) {
+        return imageMapping[key].path;
+      }
+    }
+    return null;
+};
+
 const getImageFromPath = (path) => {
     const fileName = path.split('/').pop().split('.')[0].replaceAll('-', '');
     switch (fileName) {
@@ -119,7 +243,8 @@ export {
     MinionsFesta,
     MinionsJewels,
     MinionShy,
-    getImageFromPath
+    getImageFromPath,
+    getImagePathFromId
 };
 
 

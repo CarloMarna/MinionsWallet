@@ -120,8 +120,12 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="NuovaSpesa"
+<<<<<<< HEAD
+          component={() => <NuovaSpesa database={database}/>}
+=======
           //component={() => <NuovaSpesa navigation={navigation} database={database}/>}
           component={(props) => <NuovaSpesa navigation={props.navigation} database={props.database} />}
+>>>>>>> 0341a59427a899e072308fbb119b10e29e003e35
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (
