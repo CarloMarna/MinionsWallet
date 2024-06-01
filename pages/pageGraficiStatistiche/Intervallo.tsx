@@ -48,7 +48,7 @@ const Intervallo = ({ database }) => {
     const [spesaMassima, setSpesaMassima] = useState(0);
     const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState('');
     const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState('');
-    const [pathMin, setPathMin] = useState();
+    const [pathMin, setPathMin] = useState('');
     const [pathMax, setPathMax] = useState('');
     const [valuta, setValuta] = useState('');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
@@ -156,7 +156,7 @@ const Intervallo = ({ database }) => {
                         {imageToShowMax ? (
                             <Image source={imageToShowMax} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
-                            <Text style={{ color: '#FF0000', }}>N/A</Text>
+                            <Text style={styles.textNA}>N/A</Text>
                         )}
                     </Pressable>
                 </View>
@@ -168,7 +168,7 @@ const Intervallo = ({ database }) => {
                         {imageToShowMin ? (
                             <Image source={imageToShowMin} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
                         ) : (
-                            <Text style={{ color: '#FF0000' }}>N/A</Text>
+                            <Text style={styles.textNA}>N/A</Text>
                         )}
                     </Pressable>
                 </View>
@@ -197,12 +197,13 @@ const styles = StyleSheet.create({
     containerDate: {
         marginTop: screenHeight * 0.02,
         flexDirection: 'row',
+
     },
     textElementDate: {
         fontSize: screenWidth * 0.05,
         marginBottom: screenHeight * 0.01,
         color: '#0057B8',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     areaCalendario: {
         flexDirection: 'row',
@@ -212,6 +213,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: screenWidth * 0.03,
         width: screenWidth * 0.39,
         borderRadius: 10,
+        elevation: 1.3,
     },
     testoAreaCalendario: {
         textAlign: 'center',
@@ -237,6 +239,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: screenHeight * 0.17,
         alignItems: 'center',
+        elevation: 1.6,
     },
     contanerInernoCategoriaMinMax: {
         flex: 1,
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 20,
         padding: screenWidth * 0.01,
-        elevation: 2,
+        elevation: 1.5,
     },
     buttonOpen: {
         backgroundColor: '#FFFF',
@@ -282,6 +285,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         fontSize: screenWidth * 0.05
+    },
+
+    textNA: {
+        textAlignVertical: 'center',
+        textAlign: 'center',
+        width: screenWidth * 0.17,
+        height: screenHeight * 0.06,
+        color: '#FF0000',
+        fontWeight: 'bold'
     },
     modalText: {
         marginBottom: 15,
