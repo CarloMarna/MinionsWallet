@@ -409,7 +409,7 @@ let inserimento: ins={
 
 const NuovaSpesa=({database}: { database: any})=>{
 
-const[fontLoaded, setFontLoaded] = useState(false);
+    const[fontLoaded, setFontLoaded] = useState(false);
 
     useEffect(() => {
         async function loadApp() {

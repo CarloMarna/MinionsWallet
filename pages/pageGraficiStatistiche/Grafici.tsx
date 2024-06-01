@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import PureChart from 'react-native-pure-chart';
 import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
-const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
+const { height: screenHeight } = Dimensions.get('window');
 
 
 const Grafici = ({ database }) => {
@@ -181,15 +181,13 @@ const styles = StyleSheet.create({
     },
     legend: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
         marginTop: 8,
     },
     legendItem: {
         flexDirection: 'row',
         alignItems: 'center',
         marginRight: 16,
-        flex: 1
+        flex: 1,
     },
     legendColor: {
         width: 12,
