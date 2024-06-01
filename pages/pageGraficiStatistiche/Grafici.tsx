@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import PureChart from 'react-native-pure-chart';
 import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
-const { height: screenHeight } = Dimensions.get('window');
+const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 
 const Grafici = ({ database }) => {
@@ -41,6 +41,9 @@ const Grafici = ({ database }) => {
         backgroundGradientTo: "#0055FF",
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
         strokeWidth: 3,
+        propsForLabels: {
+            fontSize: screenWidth * 0.032,
+        },
     };
 
     const dataGraficoMedia = [
@@ -68,6 +71,13 @@ const Grafici = ({ database }) => {
         </View>
     ));
 
+    const handleDataPointClick = (data) => {
+        const dataIndex = data.index;
+        const mese = dataGraficoAndamento.labels[dataIndex];
+        const valore = data.value;
+        Alert.alert('Dettagli', `Mese: ${mese}\nImporto Totale: ${valore}${valutaConto}`, [{ text: 'OK' }]);
+    };
+
     if (isLoading) {
         return (
             <View style={styles.containerCaricamento}>
@@ -94,9 +104,9 @@ const Grafici = ({ database }) => {
                                 height={screenHeight * 0.362}
                                 chartConfig={chartConfigAndamento}
                                 bezier
-                                verticalLabelRotation={60}
                                 yAxisSuffix={valutaConto}
                                 style={styles.chart}
+                                onDataPointClick={handleDataPointClick}
                             />
                         </ScrollView>
                     )}
