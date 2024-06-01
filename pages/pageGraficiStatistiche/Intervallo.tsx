@@ -48,7 +48,7 @@ const Intervallo = ({ database }) => {
     const [spesaMassima, setSpesaMassima] = useState(0);
     const [categoriaSpesaMassima, setCategoriaSpesaMassima] = useState('');
     const [categoriaSpesaMinima, setCategoriaSpesaMinima] = useState('');
-    const [pathMin, setPathMin] = useState();
+    const [pathMin, setPathMin] = useState('');
     const [pathMax, setPathMax] = useState('');
     const [valuta, setValuta] = useState('');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
