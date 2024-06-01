@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         alignItems: 'center',
         padding: 10,
+        elevation: 1.3,
     },
     picker: {
         height: screenHeight * 0.05,

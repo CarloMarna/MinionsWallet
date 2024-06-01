@@ -197,12 +197,13 @@ const styles = StyleSheet.create({
     containerDate: {
         marginTop: screenHeight * 0.02,
         flexDirection: 'row',
+
     },
     textElementDate: {
         fontSize: screenWidth * 0.05,
         marginBottom: screenHeight * 0.01,
         color: '#0057B8',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     areaCalendario: {
         flexDirection: 'row',
@@ -212,6 +213,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: screenWidth * 0.03,
         width: screenWidth * 0.39,
         borderRadius: 10,
+        elevation: 1.3,
     },
     testoAreaCalendario: {
         textAlign: 'center',
@@ -237,6 +239,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: screenHeight * 0.17,
         alignItems: 'center',
+        elevation: 1.6,
     },
     contanerInernoCategoriaMinMax: {
         flex: 1,
@@ -267,7 +270,7 @@ const styles = StyleSheet.create({
     button: {
         borderRadius: 20,
         padding: screenWidth * 0.01,
-        elevation: 1.6,
+        elevation: 1.5,
     },
     buttonOpen: {
         backgroundColor: '#FFFF',
