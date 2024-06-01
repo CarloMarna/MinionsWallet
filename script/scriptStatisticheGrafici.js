@@ -130,7 +130,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
 };
 
 //Script per MEDIA
-// databaseMedia.js
+
 
 export const calcolaMedia = async (database, opzione) => {
     try {
@@ -159,10 +159,10 @@ export const calcolaMedia = async (database, opzione) => {
 export const caricaSpesePerCategoriaSezione = async (database) => {
     try {
         const result = await database.getAllAsync(`
-            SELECT categoria, SUM(importo) AS totale_spesa 
-            FROM spesa 
+            SELECT s.categoria, c.path_icona, SUM(s.importo) AS totale_spesa 
+            FROM spesa s join categoria c on s.categoria = c.nome
             WHERE id_conto = 1 
-            GROUP BY categoria
+            GROUP BY categoria, path_icona
             ORDER BY totale_spesa Desc;
         `);
 
@@ -171,7 +171,8 @@ export const caricaSpesePerCategoriaSezione = async (database) => {
 
         const spesePerCategoria = result.map(item => ({
             categoria: item.categoria,
-            percentuale: ((item.totale_spesa / totaleSpesa) * 100).toFixed(2)
+            percentuale: ((item.totale_spesa / totaleSpesa) * 100).toFixed(2),
+            path: item.path_icona
         }));
         return spesePerCategoria;
     } catch (error) {

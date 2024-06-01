@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
-const Login = ({ navigation,database }) => {
+const Login = ({ navigation,database,onLogin }) => {
 
-  console.log(database);
+  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -17,6 +17,7 @@ const Login = ({ navigation,database }) => {
       and pwd = '${password}';`);
       console.log(checkCredenziali);
           if(checkCredenziali.length>0){
+            onLogin(username);
             navigation.navigate('HomePage');
           }else {
             Alert.alert('Errore', 'Username o password non validi');}
