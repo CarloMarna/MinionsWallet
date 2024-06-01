@@ -19,7 +19,8 @@ const Media = ({ database, idConto }) => {
 
     useEffect(() => {
         const fetchInizialelMedia = async () => {
-            const [mediaIniziale, valuta] = await Promise.all([calcolaMedia(database, opzione, idConto), ottieniValuta(database, idConto)]);
+            const mediaIniziale = await calcolaMedia(database, opzione, idConto);
+            const valuta = await ottieniValuta(database, idConto);
             setMedia(mediaIniziale);
             setValuta(valuta);
             setIsLoading(true);

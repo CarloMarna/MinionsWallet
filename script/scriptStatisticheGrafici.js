@@ -98,7 +98,6 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto
     try {
         const formattedDataInizio = formatDate(dataInizio);
         const formattedDataFine = formatDate(dataFine);
-
         const resultMin = await database.getFirstAsync(`
                 SELECT s.importo as importo, s.categoria, c.path_icona
                 FROM spesa s join categoria c  on s.categoria = c.nome
@@ -136,11 +135,11 @@ export const calcolaMedia = async (database, opzione, idConto) => {
     try {
         let query = '';
         if (opzione === 'Giorno') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE date(data) = date("now") and id_conto =' + idConto;
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE date(data) = date("now") and id_conto = ' + idConto + ';';
         } else if (opzione === 'Mese') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now") and id_conto =' + idConto;
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now") and id_conto = ' + idConto + ';';
         } else if (opzione === 'Anno') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now") and id_conto =' + idConto;
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now") and id_conto = ' + idConto + ';';
         }
 
         const result = await database.getFirstAsync(query);
