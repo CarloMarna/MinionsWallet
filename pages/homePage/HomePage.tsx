@@ -10,7 +10,8 @@ import {
   FlatList,
   Image,
   Dimensions,
-  Pressable
+  Pressable,
+  Alert
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,12 +43,13 @@ const truncateText = (text: string, length: number = 30) => {
 
 const HomePageComponent = ({ database }: { database: any }) => {
   const [limitElementiFlatList, setLimitElementiFlatList] = React.useState("10");
-  const [saldoConto, setSaldoConto] = React.useState(600);
+  const [saldoConto, setSaldoConto] = React.useState('0');
   const [valuta, setValuta] = React.useState("€");
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
   const [spese, setSpese] = React.useState([]);
+  const [isInsertNewSpesa,setStatusInsertNewSpesa] = React.useState<boolean>(false);
 
   const today = new Date();
   const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
@@ -65,7 +67,8 @@ const HomePageComponent = ({ database }: { database: any }) => {
         'JOIN categoria AS cat ON s.categoria = cat.nome ' +
         'JOIN conto AS con ON s.id_conto = con.id ' +
         'JOIN valuta AS val ON con.sigla = val.sigla ' +
-        'ORDER BY s.data DESC ' +
+        'WHERE con.id=1 '+
+        'ORDER BY s.importo DESC ' +
         'LIMIT ' + limitElementiFlatList + ';'
       );
       const elencoSpese: Spesa[] = [];
@@ -82,18 +85,14 @@ const HomePageComponent = ({ database }: { database: any }) => {
 
     set_spese();
 
-  }, [database, limitElementiFlatList]);
+  }, [database, limitElementiFlatList, isInsertNewSpesa]);
 
   React.useEffect(() => {
     const fetchCategorie = async () => {
       try {
-        // Esegui la query per recuperare le categorie dal tuo database
         const queryResult = await database.getAllAsync('SELECT DISTINCT nome FROM categoria;');
-        // Estrai le categorie dalla queryResult
         const categorieFromDatabase = queryResult.map((row) => row.nome);
-        // Aggiorna lo stato delle categorie
         setCategoria(categorieFromDatabase);
-        // Seleziona la prima categoria come valore predefinito
         if (categorieFromDatabase.length > 0) {
           setCategoriaSelezionata(categorieFromDatabase[0]);
         }
@@ -105,12 +104,34 @@ const HomePageComponent = ({ database }: { database: any }) => {
     fetchCategorie();
   }, [database]);
 
-  const aggiungiSpesa = () => {
-    console.log("Causale:", causale);
-    console.log("Categoria:", categoriaSelezionata);
-    console.log("Importo:", importo);
-    console.log("Data:", data.toLocaleDateString());
-  };
+  React.useEffect(() => {
+    const fetchValuta = async () => {
+      try {
+        const queryResult = await database.getAllAsync('SELECT v.simbolo FROM valuta AS v JOIN conto AS c ON c.sigla=v.sigla WHERE c.id=1;');
+        const valutaUtilizzata = queryResult.map((row) => row.simbolo);
+        setValuta(valutaUtilizzata);
+      } catch (error) {
+        console.error('Errore nel recupero della valuta di default dal database:', error);
+      }
+    };
+
+    fetchValuta();
+  }, [database]);
+
+  React.useEffect(() => {
+    const fetchSaldoConto = async () => {
+      try {
+        const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto=1;');
+        const totaleSpesaConto = queryResult.map((row) => row.totSpesa);
+        setSaldoConto(totaleSpesaConto);
+      } catch (error) {
+        console.error('Errore nel recupero del totale spese dal database:', error);
+      }
+    };
+
+    fetchSaldoConto();
+  }, [database, isInsertNewSpesa]);
+
 
   const openNuovaSpesa = () => {
     setSpesaModalVisible(true);
@@ -124,6 +145,28 @@ const HomePageComponent = ({ database }: { database: any }) => {
   };
   const closeModal = () => {
     setModalVisible(false);
+  };
+
+  const aggiungiSpesa = async () => {
+    try {
+      if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
+        return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
+      }
+      const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('+parseFloat(importo)+', "'+data.toISOString().split('T')[0]+'", "'+causale+'", "'+categoriaSelezionata+'", 1);';
+      //console.log(query);
+      await database.execAsync(query);
+      //console.info('Inserimento riuscito!');
+      setCausale([]);
+      setCategoriaSelezionata('');
+      setImporto('');
+      setData(new Date());
+      closeSpesaModal();
+      Alert.alert('Nuova Spesa Aggiunta', 'Inserimento andato a buon fine.');
+    } catch (error) {
+      Alert.alert('Errore Inserimento Spesa', 'Ops... Qualcosa è andato storto.');
+      //console.error('Errore durante l\'inserimento nel database:', error);
+    }
+    setStatusInsertNewSpesa(!isInsertNewSpesa)
   };
 
   const textInputRef = React.useRef(null);
@@ -163,7 +206,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
       <View style={styles.containerSaldoConto}>
         <Image source={require('../../assets/img/icone_minions/Minion-Kungfu.png')} />
         <View style={styles.cerchioEsterno}>
-          <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + saldoConto + " " + valuta}</Text>
+          <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + parseFloat(saldoConto).toFixed(2) + " " + valuta}</Text>
           <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
           <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
           </View>
@@ -211,6 +254,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
             <TextInput
               ref={textInputRef}
               multiline={true}
+              value={causale}
               style={[{ paddingTop: 5 }]}
               onChangeText={(text) => setCausale(text)}
             />
@@ -234,7 +278,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
               <TouchableOpacity onPress={() => { setViewDataPicker(true) }}>
                 <View style={[{ flexDirection: 'row' }]}>
                   <Ionicons name='calendar-outline' color={'#0057BB'} size={25} />
-                  <TextInput editable={false} style={[styles.inputNuovaSpesa, { width: 115, color: 'black' }]}>{data.toLocaleDateString()}</TextInput>
+                  <TextInput value={data.toLocaleDateString()} editable={false} style={[styles.inputNuovaSpesa, { width: 115, color: 'black' }]}></TextInput>
                 </View>
               </TouchableOpacity>
               {viewDataPicker &&
@@ -255,7 +299,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
           <View style={styles.nuovaSpesaImportoValuta}>
             <View style={styles.viewInputNuovaSpesa}>
               <Text style={styles.labelNuovaSpesa}>Importo :</Text>
-              <TextInput keyboardType="numeric" style={styles.inputNuovaSpesa} onChangeText={(text) => setImporto(text)}></TextInput>
+              <TextInput value={importo} keyboardType="numeric" style={styles.inputNuovaSpesa} onChangeText={(text) => setImporto(text)}></TextInput>
             </View>
             <View style={styles.modalViewSpaceSeparator} />
             <View style={styles.viewInputNuovaSpesa}>
