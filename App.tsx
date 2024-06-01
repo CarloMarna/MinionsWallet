@@ -120,7 +120,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="NuovaSpesa"
-          component={() => <NuovaSpesa navigation={navigation} database={database}/>}
+          component={() => <NuovaSpesa database={database}/>}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (

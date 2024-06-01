@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { getImageFromPath } from '../script/minionImage';
+import { getImageFromPath, getImagePathFromId} from '../script/minionImage';
 import {ins} from '../script/types';
 
 async function loadFonts() {
@@ -77,7 +77,13 @@ const Importo=({database})=>{
 
 const Categorie=({database})=>{
     const [icone, setIcone] = useState<string[]>([]);
+    const [listaCategorie, setListaCategorie] = useState<string[]>([]);
     const [isLoadingCategorie, setIsLoadingCategorie] = useState(false);
+
+    type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
+        img: string;
+        nomeCategoria: string;
+    };
 
     useEffect(() => {
         const readIcone= async (database: any)=>{
@@ -87,9 +93,7 @@ const Categorie=({database})=>{
                 );
                 const lista_icone: string[]=[];
                 for (const row of icone) {
-                    let x:string='';
-                    x='..'+row.path;
-                    lista_icone.push(x);
+                    lista_icone.push(row.path);
                   }
                 return {lista_icone};
             }
@@ -108,17 +112,45 @@ const Categorie=({database})=>{
             }
         };
 
+        const readCategorie= async (database: any)=>{
+            try{
+                const categorie=await database.getAllAsync(
+                    'SELECT nome, path_icona FROM categoria;'
+                );
+                console.log(categorie);
+                const lista_categorie: ItemCategoria[]=[];
+                for (const row of categorie) {
+                    let x=getImageFromPath(row.path_icona)    //ottengo il numero
+                    let y:ItemCategoria={   //creo una variabile dove metto numero e nome
+                        img:x,
+                        nomeCategoria:row.nome
+                    };
+                    lista_categorie.push(y);
+                  }
+                return {lista_categorie};
+            }
+            catch(error){
+                console.error("Errore nel prelievo delle categorie", error);
+                return [];
+            }
+        }
+
+        const fetchCategorie = async () => {
+            try {
+                const result = await readCategorie(database);
+                setListaCategorie(result.lista_categorie);
+            } catch (error) {
+                console.error("Errore nel prelievo delle icone", error);
+            }
+        };
+
         fetchIcone();
+        fetchCategorie();
         setIsLoadingCategorie(true);
     }, [database]);
 
 
     const [selectedCategory, setSelectedCategory]=useState("");
-
-    type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
-        img: string;
-        nomeCategoria: string;
-      };
 
 
     type ItemProps={    //proprietà dell'item
@@ -135,7 +167,7 @@ const Categorie=({database})=>{
         //borderWidth: number;
     };
 
-    const lista_categorie: ItemCategoria[]=[    //lista categorie di tipo ItemCategoria
+    /*const lista_categorie: ItemCategoria[]=[    //lista categorie di tipo ItemCategoria
         {img: require('../assets/img/icone_minions/Minion-Bananas.png'),
         nomeCategoria: 'cibo'},
         {img: require('../assets/img/icone_minions/Minion-Cake.png'),
@@ -148,7 +180,7 @@ const Categorie=({database})=>{
         nomeCategoria: 'regali'},
         {img: require('../assets/img/icone_minions/Minion-Crazy.png'),
         nomeCategoria: 'bollette'},
-    ];
+    ];*/
 
     
     const Item=({item, onPress, backgroundColor, color}:ItemProps)=>( //definisco la costante item a cui passo le proprietà
@@ -183,13 +215,15 @@ const Categorie=({database})=>{
     );
     
     const [selectedIcon, setSelectedIcon] = useState("");
+    var aggiuntaCategoria:String[]=[];
+
     const renderItemPopUp=({item}:{item: string})=>{
         const borderColor=item===selectedIcon?'#0057BB': '';
         const path=getImageFromPath(item);
             return(
                 <ItemPopUp
                 item={path}
-                onPress={()=>{setSelectedIcon(item);}}
+                onPress={()=>{setSelectedIcon(item); aggiuntaCategoria.concat(path);}}
                 borderColor={borderColor}
                 />
             ) 
@@ -209,13 +243,12 @@ const Categorie=({database})=>{
             </View>
         );
     }
-    /**/
     
     return( 
         <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria</Text>
             <View style={[{height:350}]}>
-                <FlatList scrollEnabled data={lista_categorie} renderItem={renderItem} style={styles.categorie} numColumns={5} ItemSeparatorComponent={separator} 
+                <FlatList scrollEnabled data={listaCategorie} renderItem={renderItem} style={styles.categorie} numColumns={4} ItemSeparatorComponent={separator} 
                 ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={
                 <View style={[{width: 300, flex:1, flexDirection:'row'}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={[styles.scritte_popup, {textAlignVertical:'center'}]}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
             </View>
@@ -223,10 +256,10 @@ const Categorie=({database})=>{
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
                     <View style={styles.elementi_modal}>
                         <Text style={styles.scritte_popup}>Nome categoria</Text>
-                        <TextInput placeholder='Inserisci nome categoria...' ></TextInput>
+                        <TextInput placeholder='Inserisci nome categoria...' onChangeText={(text)=>aggiuntaCategoria.concat(text)} ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
                         <View style={[{height:200, margin:10}]}><FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/></View>
-                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible);}}/></View>
+                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible); database.execAsync('INSERT INTO categoria VALUES('+aggiuntaCategoria.at(0)+','+aggiuntaCategoria.at(1)+');'); aggiuntaCategoria.splice(0,aggiuntaCategoria.length);}}/></View>
                     </View>
                 </Modal>
             </View>
@@ -261,30 +294,6 @@ const Tag=({database})=>{
         setIsLoadingTag(true);
     }, [database]);
 
-    /*const renderItemTag=({item}: {item: string})=>{
-        const color=selectedTag.includes(item)?'white':'#0057BB';
-        const backgroundcolor=selectedTag.includes(item)?'#0057BB': 'white';
-        const bordercolor=selectedTag.includes(item)?'white':'#0057BB';
-        return(
-            <View>
-            <Pressable onPress={()=>{
-                if(selectedTag.includes(item)){
-                    setSelectedTag(selectedTag.filter(x=>x!==item));
-                    inserimento.tag=selectedTag;
-                }
-                    
-                else{
-                    setSelectedTag(selectedTag.concat(item));
-                    inserimento.tag=selectedTag;
-                }
-            }}>
-            <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
-                
-            </Pressable>
-            </View>
-        )
-        
-    };*/
     const renderItemTag=({item}: {item: string})=>{
         const color=selectedTag.includes(item)?'white':'#0057BB';
         const backgroundcolor=selectedTag.includes(item)?'#0057BB': 'white';
@@ -374,10 +383,10 @@ const Data=({database}:{database:any})=>{
     )
 }
 
-const BottoneAggiuntaSpesa=({navigation, database}:{navigation:any, database:any})=>{
+const BottoneAggiuntaSpesa=({database}:{database:any})=>{
     return(
         <View>
-            <TouchableOpacity onPress={()=>{console.log(inserimento); navigation.navigate('NuovaSpesa')}}>
+            <TouchableOpacity onPress={()=>{console.log(inserimento)}}>
                 <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
@@ -398,7 +407,7 @@ let inserimento: ins={
     tag:[]
 };
 
-const NuovaSpesa=({ database, navigation }: { database: any, navigation: any })=>{
+const NuovaSpesa=({database}: { database: any})=>{
 
 const[fontLoaded, setFontLoaded] = useState(false);
 
@@ -423,7 +432,7 @@ const[fontLoaded, setFontLoaded] = useState(false);
                 <Descrizione database={database}/>
                 <Data database={database}/>
                 <Tag database={database}/>
-                <BottoneAggiuntaSpesa navigation={navigation} database={database}/>
+                <BottoneAggiuntaSpesa database={database}/>
             </ScrollView>
         </SafeAreaView>
     )
