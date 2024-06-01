@@ -14,12 +14,13 @@ const monthNames = {
     "12": "Dicembre"
 };
 
-export const caricaSpesePerAnno = async (database) => {
+export const caricaSpesePerAnno = async (database, idConto) => {
     try {
         const result = await database.getAllAsync(`
             SELECT strftime('%m', data) as mese, SUM(importo) as totale_spese
             FROM spesa
             WHERE strftime('%Y-%m', data) BETWEEN strftime('%Y-%m', 'now', '-1 year') AND strftime('%Y-%m', 'now')
+            AND id_conto = ${idConto}
             GROUP BY mese
             ORDER BY mese;
         `);
@@ -34,12 +35,12 @@ export const caricaSpesePerAnno = async (database) => {
     }
 };
 
-export const caricaSpesePerCategoria = async (database) => {
+export const caricaSpesePerCategoria = async (database, idConto) => {
     try {
         const result = await database.getAllAsync(`
             SELECT categoria, SUM(importo) AS totale_spesa 
             FROM spesa 
-            WHERE id_conto = 1 
+            WHERE id_conto = ${idConto}
             GROUP BY categoria
             ORDER BY categoria, totale_spesa DESC;
         `);
@@ -54,12 +55,12 @@ export const caricaSpesePerCategoria = async (database) => {
     }
 };
 
-export const caricaSpesePerCategoriaMedia = async (database) => {
+export const caricaSpesePerCategoriaMedia = async (database, idConto) => {
     try {
         const result = await database.getAllAsync(`
             SELECT categoria, ROUND(AVG(importo),2) AS totale_spesa 
             FROM spesa 
-            WHERE id_conto = 1 
+            WHERE id_conto =${idConto} 
             GROUP BY categoria
             ORDER BY categoria, totale_spesa DESC;
         `);
@@ -74,13 +75,12 @@ export const caricaSpesePerCategoriaMedia = async (database) => {
     }
 };
 
-export const ottieniValuta = async (database) => {
+export const ottieniValuta = async (database, idConto) => {
     try {
         const result = await database.getFirstAsync(`
         SELECT v.simbolo AS valuta_conto
         FROM conto c JOIN valuta v ON c.sigla = v.sigla
-        WHERE c.id = 1
-    `);
+        WHERE c.id =  ${idConto}`);
         return result.valuta_conto.toString();
     } catch (error) {
         console.error("Errore durante il recupero della valuta:", error);
@@ -94,7 +94,7 @@ export const formatDate = (date) => {
     return date.toISOString().split('T')[0];
 };
 
-export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
+export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto) => {
     try {
         const formattedDataInizio = formatDate(dataInizio);
         const formattedDataFine = formatDate(dataFine);
@@ -102,7 +102,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
         const resultMin = await database.getFirstAsync(`
                 SELECT s.importo as importo, s.categoria, c.path_icona
                 FROM spesa s join categoria c  on s.categoria = c.nome
-                WHERE data BETWEEN ? AND ? AND s.id_conto = 1
+                WHERE data BETWEEN ? AND ? AND s.id_conto = ${idConto}
                 ORDER by importo 
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
@@ -110,7 +110,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
         const resultMax = await database.getFirstAsync(`
                 SELECT s.importo as importo, s.categoria, c.path_icona
                 FROM spesa s join categoria c  on s.categoria = c.nome
-                WHERE s.data BETWEEN ? AND ? AND s.id_conto = 1
+                WHERE s.data BETWEEN ? AND ? AND s.id_conto = ${idConto}
                 ORDER BY importo  DESC
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
@@ -132,15 +132,15 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine) => {
 //Script per MEDIA
 
 
-export const calcolaMedia = async (database, opzione) => {
+export const calcolaMedia = async (database, opzione, idConto) => {
     try {
         let query = '';
         if (opzione === 'Giorno') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE date(data) = date("now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE date(data) = date("now") and id_conto =' + idConto;
         } else if (opzione === 'Mese') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y-%m", data) = strftime("%Y-%m", "now") and id_conto =' + idConto;
         } else if (opzione === 'Anno') {
-            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now")';
+            query = 'SELECT ROUND(AVG(importo), 2) AS media FROM spesa WHERE strftime("%Y", data) = strftime("%Y", "now") and id_conto =' + idConto;
         }
 
         const result = await database.getFirstAsync(query);
@@ -156,12 +156,12 @@ export const calcolaMedia = async (database, opzione) => {
 
 //Script Spese Per Categoria
 
-export const caricaSpesePerCategoriaSezione = async (database) => {
+export const caricaSpesePerCategoriaSezione = async (database, idConto) => {
     try {
         const result = await database.getAllAsync(`
             SELECT s.categoria, c.path_icona, SUM(s.importo) AS totale_spesa 
             FROM spesa s join categoria c on s.categoria = c.nome
-            WHERE id_conto = 1 
+            WHERE id_conto = ${idConto}
             GROUP BY categoria, path_icona
             ORDER BY totale_spesa Desc;
         `);

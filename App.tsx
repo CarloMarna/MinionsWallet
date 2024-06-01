@@ -28,7 +28,8 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const takeIdConto = (idConto) => {
-    setIdConto(idConto);}
+    setIdConto(idConto);
+  }
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
@@ -139,7 +140,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="HomeGraficiStatistiche"
-          component={() => <HomeGraficiStatistiche database={database} />}
+          component={() => <HomeGraficiStatistiche database={database} idConto={idConto} />}
           options={({ navigation }) => ({
             title: "Statistiche",
             headerLeft: () => (

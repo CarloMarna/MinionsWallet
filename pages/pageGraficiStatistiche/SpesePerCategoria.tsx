@@ -34,14 +34,14 @@ const MinionComponent = () => (
     </View>
 );
 
-const SpesePerCategoria = ({ database }: { database: any }) => {
+const SpesePerCategoria = ({ database, idConto }) => {
     const [spesaCat, setSpesaCat] = useState<SpesaCategoriaType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [orientation, setOrientation] = useState('portrait');
 
     useEffect(() => {
         const caricaSpese = async () => {
-            const spesePerCategoria = await caricaSpesePerCategoriaSezione(database);
+            const spesePerCategoria = await caricaSpesePerCategoriaSezione(database, idConto);
             setSpesaCat(spesePerCategoria);
             setIsLoading(false);
         };

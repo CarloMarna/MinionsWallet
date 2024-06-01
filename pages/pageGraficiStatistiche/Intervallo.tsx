@@ -38,7 +38,7 @@ const ModalContent = ({ modalVisible, onClose, content }) => {
     );
 };
 
-const Intervallo = ({ database }) => {
+const Intervallo = ({ database, idConto }) => {
 
     const [dataInizio, setDataInizio] = useState(new Date());
     const [dataFine, setDataFine] = useState(new Date());
@@ -58,8 +58,8 @@ const Intervallo = ({ database }) => {
 
     useEffect(() => {
         const fetchSpese = async () => {
-            const { min, max, categoriaMin, categoriaMax, pathMin, pathMax } = await calcolaSpesaMinMax(database, dataInizio, dataFine);
-            setValuta(await ottieniValuta(database));
+            const { min, max, categoriaMin, categoriaMax, pathMin, pathMax } = await calcolaSpesaMinMax(database, dataInizio, dataFine, idConto);
+            setValuta(await ottieniValuta(database, idConto));
             setSpesaMinima(min);
             setSpesaMassima(max);
             setCategoriaSpesaMinima(categoriaMin);

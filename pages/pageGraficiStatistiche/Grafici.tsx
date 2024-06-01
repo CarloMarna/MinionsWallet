@@ -8,7 +8,7 @@ import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMed
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 
-const Grafici = ({ database }) => {
+const Grafici = ({ database, idConto }) => {
     const [spesePerAnno, setSpesePerAnno] = useState([]);
     const [spesePerCategoria, setSpesePerCategoria] = useState([]);
     const [spesePerCategoriaMedia, setSpesePerCategoriaMedia] = useState([]);
@@ -18,10 +18,10 @@ const Grafici = ({ database }) => {
     useEffect(() => {
         const caricaDati = async () => {
             try {
-                const speseAnno = await caricaSpesePerAnno(database);
-                const speseCategoria = await caricaSpesePerCategoria(database);
-                const speseCategoriaMedia = await caricaSpesePerCategoriaMedia(database);
-                const valuta = await ottieniValuta(database);
+                const speseAnno = await caricaSpesePerAnno(database, idConto);
+                const speseCategoria = await caricaSpesePerCategoria(database, idConto);
+                const speseCategoriaMedia = await caricaSpesePerCategoriaMedia(database, idConto);
+                const valuta = await ottieniValuta(database, idConto);
                 setSpesePerAnno(speseAnno);
                 setSpesePerCategoria(speseCategoria);
                 setSpesePerCategoriaMedia(speseCategoriaMedia);

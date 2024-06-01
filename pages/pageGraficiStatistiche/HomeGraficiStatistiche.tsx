@@ -18,35 +18,35 @@ async function loadFonts() {
   });
 }
 
-const HomeMediaMinMax = ({ database }) => {
+const HomeMediaMinMax = ({ database, idConto }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.mainContainer}>
         <View style={styles.metaContainer}>
-          <Intervallo database={database} />
+          <Intervallo database={database} idConto={idConto} />
         </View>
         <View style={styles.metaContainer}>
-          <Media database={database} />
+          <Media database={database} idConto={idConto} />
         </View>
       </View>
     </ScrollView>
   );
 };
 
-const Statistiche = ({ database }) => {
+const Statistiche = ({ database, idConto }) => {
   return (
     <TabTop.Navigator>
       <TabTop.Screen name="Intervallo di Spesa">
-        {() => <HomeMediaMinMax database={database} />}
+        {() => <HomeMediaMinMax database={database} idConto={idConto} />}
       </TabTop.Screen>
       <TabTop.Screen name="Spese per Categoria" >
-        {() => <SpesePerCategoria database={database} />}
+        {() => <SpesePerCategoria database={database} idConto={idConto} />}
       </TabTop.Screen>
     </TabTop.Navigator >
   )
 };
 
-const HomeGraficiStatistiche = ({ database }) => {
+const HomeGraficiStatistiche = ({ database, idConto }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -69,14 +69,14 @@ const HomeGraficiStatistiche = ({ database }) => {
             <AntDesign name="linechart" size={size} color={color} />
           ),
         }}>
-          {() => <Statistiche database={database} />}
+          {() => <Statistiche database={database} idConto={idConto} />}
         </TabBottom.Screen>
         <TabBottom.Screen name="Grafici" options={{
           headerShown: false, tabBarIcon: ({ color, size }) => (
             <AntDesign name="barchart" size={size} color={color} />
           ),
         }}>
-          {() => <Grafici database={database} />}
+          {() => <Grafici database={database} idConto={idConto} />}
         </TabBottom.Screen>
       </TabBottom.Navigator>
     </SafeAreaView>
