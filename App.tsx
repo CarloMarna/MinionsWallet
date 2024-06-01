@@ -28,8 +28,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
   const [isMenuVisible, setMenuVisible] = useState(false);
 
   const takeIdConto = (idConto) => {
-    setIdConto(idConto);
-  }
+    setIdConto(idConto);}
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
