@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {ActivityIndicator, ScrollView, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, Alert, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button, TouchableOpacity} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
@@ -77,12 +77,42 @@ const Importo=({database})=>{
 
 const Categorie=({database})=>{
     const [icone, setIcone] = useState<string[]>([]);
-    const [listaCategorie, setListaCategorie] = useState<string[]>([]);
+    const [listaCategorie, setListaCategorie] = useState<ItemCategoria[]>([]);
     const [isLoadingCategorie, setIsLoadingCategorie] = useState(false);
-
     type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
         img: string;
         nomeCategoria: string;
+    };
+
+    const readCategorie= async (database: any)=>{
+        try{
+            const categorie=await database.getAllAsync(
+                'SELECT nome, path_icona FROM categoria;'
+            );
+            const lista_categorie: ItemCategoria[]=[];
+            for (const row of categorie) {
+                let x=getImageFromPath(row.path_icona)    //ottengo il numero
+                let y:ItemCategoria={   //creo una variabile dove metto numero e nome
+                    img:x,
+                    nomeCategoria:row.nome
+                };
+                lista_categorie.push(y);
+              }
+            return {lista_categorie};
+        }
+        catch(error){
+            console.error("Errore nel prelievo delle categorie", error);
+            return [];
+        }
+    }
+
+    const fetchCategorie = async () => {
+        try {
+            const result = await readCategorie(database);
+            setListaCategorie(result.lista_categorie);
+        } catch (error) {
+            console.error("Errore nel prelievo delle icone", error);
+        }
     };
 
     useEffect(() => {
@@ -112,38 +142,6 @@ const Categorie=({database})=>{
             }
         };
 
-        const readCategorie= async (database: any)=>{
-            try{
-                const categorie=await database.getAllAsync(
-                    'SELECT nome, path_icona FROM categoria;'
-                );
-                console.log(categorie);
-                const lista_categorie: ItemCategoria[]=[];
-                for (const row of categorie) {
-                    let x=getImageFromPath(row.path_icona)    //ottengo il numero
-                    let y:ItemCategoria={   //creo una variabile dove metto numero e nome
-                        img:x,
-                        nomeCategoria:row.nome
-                    };
-                    lista_categorie.push(y);
-                  }
-                return {lista_categorie};
-            }
-            catch(error){
-                console.error("Errore nel prelievo delle categorie", error);
-                return [];
-            }
-        }
-
-        const fetchCategorie = async () => {
-            try {
-                const result = await readCategorie(database);
-                setListaCategorie(result.lista_categorie);
-            } catch (error) {
-                console.error("Errore nel prelievo delle icone", error);
-            }
-        };
-
         fetchIcone();
         fetchCategorie();
         setIsLoadingCategorie(true);
@@ -168,7 +166,7 @@ const Categorie=({database})=>{
     
     const Item=({item, onPress, backgroundColor, color}:ItemProps)=>( //definisco la costante item a cui passo le proprietà
         <View>
-            <Pressable onPress={onPress}>
+            <Pressable onPress={onPress} style={[{marginHorizontal:2}]}>
                 <Image source={item.img} style={styles.immagine_categoria}/>
                 <Text style={[{backgroundColor, color}, styles.testo_categoria]}>{item.nomeCategoria}</Text>
             </Pressable>
@@ -232,9 +230,16 @@ const Categorie=({database})=>{
         <SafeAreaView>
             <Text style={styles.scritte}>Scegli la categoria</Text>
             <View style={[{height:'auto'}]}>
-                <FlatList scrollEnabled data={listaCategorie} renderItem={renderItem} style={styles.categorie} ItemSeparatorComponent={separator} 
-                ListFooterComponentStyle={styles.immagine_aggiunta} ListFooterComponent={
-                <View style={[{width: 300, flex:1, flexDirection:'row'}]}><Pressable onPress={async () => {setModalVisible(!modalVisible)}}><Ionicons name='add-circle-outline' size={35} color='#0057BB'><Text style={[styles.scritte_popup, {textAlignVertical:'center'}]}>Inserisci un nuova categoria</Text></Ionicons></Pressable></View>}/>
+                <FlatList scrollEnabled data={listaCategorie} renderItem={renderItem} style={styles.categorie} ItemSeparatorComponent={separator} />
+                <View>
+                    <TouchableOpacity onPress={async () => {setModalVisible(!modalVisible)}}>
+                        <View style={[styles.botton, {alignSelf:'flex-start', backgroundColor:'white',borderColor:'#0057BB',borderWidth:1, width:'auto', paddingHorizontal:5, marginHorizontal:10}]}>
+                            <Ionicons name='add-circle-outline' size={35} color='#0057BB'>
+                                <Text style={[styles.scritte, {color:'#0057BB'}]}>Inserisci un nuova categoria</Text>
+                            </Ionicons>
+                        </View>
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={styles.vista_modal}>
                 <Modal visible={modalVisible} animationType="slide" transparent={true} style={styles.modal}>
@@ -243,7 +248,28 @@ const Categorie=({database})=>{
                         <TextInput placeholder='Inserisci nome categoria...' onChangeText={(text)=>setTextAggiuntaCategoria(text)} ></TextInput>
                         <Text style={styles.scritte_popup}>Scegli l'icona della categoria</Text>
                         <View style={[{height:200, margin:10}]}><FlatList scrollEnabled style={[{flexWrap: 'wrap', flexDirection: 'row'}]} numColumns={5} data={icone} renderItem={renderItemPopUp}/></View>
-                        <View style={[{marginVertical:30}]}><Button title='Aggiungi categoria' onPress={()=> {setModalVisible(!modalVisible);database.execAsync('INSERT INTO categoria VALUES('+textAggiuntaCategoria+','+imgAggiuntaCategoria+');');}}/></View>
+                        <View style={[{marginTop:30, marginBottom:15}]}><Button title='Aggiungi categoria' onPress={()=> {
+                            if(textAggiuntaCategoria!='' && imgAggiuntaCategoria!=''){
+                                setModalVisible(!modalVisible);
+                                database.execAsync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}','${imgAggiuntaCategoria}');`);
+                                const y:ItemCategoria={
+                                    img:imgAggiuntaCategoria,
+                                    nomeCategoria:textAggiuntaCategoria
+                                };
+                                fetchCategorie();
+                                setSelectedCategory(textAggiuntaCategoria);
+                                setImgAggiuntaCategoria('');
+                                setTextAggiuntaCategoria('');
+                            }
+                            else{
+                                Alert.alert("Attenzione!", "Inserire entrambi i campi");
+                            }
+                        }}/></View>
+                        <View><Button title='Annulla' onPress={()=> {
+                                setModalVisible(!modalVisible);
+                                setImgAggiuntaCategoria('');
+                                setTextAggiuntaCategoria('');
+                        }}/></View>
                     </View>
                 </Modal>
             </View>
@@ -295,18 +321,12 @@ const Tag=({database})=>{
                     }
                 });
             }}>
-            <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View>
-                
+            <View style={[{backgroundColor:backgroundcolor, marginRight: 10, marginLeft:5,marginVertical:10, borderColor: bordercolor, borderWidth: 1, borderRadius: 4, padding: 2}]}><Ionicons name='pricetags-outline' size={35} color={color}><Text style={[{fontFamily: 'minions-font', fontSize: 18, textAlignVertical: 'center'}]}>{item}</Text></Ionicons></View> 
             </Pressable>
             </View>
         )
         
     };
-    /*const separator=()=>{
-        return(
-            <View style={styles.separator} />
-        )
-    }*/
 
     const [tagModalVisible, setTagModalVisible] = useState(false);
     const [tagText, setTagText] = useState('');
@@ -371,7 +391,7 @@ const BottoneAggiuntaSpesa=({database}:{database:any})=>{
     return(
         <View>
             <TouchableOpacity onPress={()=>{console.log(inserimento)}}>
-                <View style={[{flex:1, flexDirection: 'row', backgroundColor:'#0057BB', borderRadius:6, height: 45, width:200, alignItems:'center', alignSelf:'center', justifyContent:'center', marginBottom:10}]}>
+                <View style={styles.botton}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
                 </View>
@@ -443,6 +463,18 @@ const styles=StyleSheet.create({
         marginTop:10,
         flex: 1
     },
+    botton:{
+        flex:1, 
+        flexDirection: 'row', 
+        backgroundColor:'#0057BB', 
+        borderRadius:6, 
+        height: 45, 
+        width:200, 
+        alignItems:'center', 
+        alignSelf:'center', 
+        justifyContent:'center', 
+        marginBottom:10
+    },
     spesa_valuta: {
         flex:1,
         marginVertical: 10,
@@ -500,6 +532,7 @@ const styles=StyleSheet.create({
         flexWrap:'wrap',
         paddingVertical: 10,
         alignSelf: 'center',
+        justifyContent:'center',
         flex:1
     },
     separator: {
@@ -517,12 +550,6 @@ const styles=StyleSheet.create({
         width:70,
         height:70
     },
-    immagine_aggiunta: {
-        width: 50,
-        height: 50,
-        marginTop: 20,
-        marginLeft: 20
-    },
     modal: {
         backgroundColor: 'white',
         color: '#0057BB',
@@ -539,7 +566,7 @@ const styles=StyleSheet.create({
         alignItems:'center',
         backgroundColor:'white',
         width: 300,
-        height:400,
+        height:450,
         alignSelf:'center',
         marginTop:20,
         borderColor:'#0057BB',
