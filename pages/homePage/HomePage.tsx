@@ -88,7 +88,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
   React.useEffect(() => {
     const fetchCategorie = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT nome FROM categoria;');
+        const queryResult = await database.getAllAsync('SELECT nome FROM categoria WHERE idConto='+idConto+';');
         const categorieFromDatabase = queryResult.map((row) => row.nome);
         setCategoria(categorieFromDatabase);
         if (categorieFromDatabase.length > 0) {
@@ -121,7 +121,10 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
       try {
         const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto='+idConto+';');
         const totaleSpesaConto = queryResult.map((row) => row.totSpesa);
-        setSaldoConto(totaleSpesaConto);
+        if(!totaleSpesaConto)
+          setSaldoConto(totaleSpesaConto);
+        else
+          setSaldoConto(0);
       } catch (error) {
         console.error('Errore nel recupero del totale spese dal database:', error);
       }
@@ -303,7 +306,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
             <View style={styles.modalViewSpaceSeparator} />
             <View style={styles.viewInputNuovaSpesa}>
               <Text style={styles.labelNuovaSpesa}>Valuta :</Text>
-              <TextInput editable={false} style={[styles.inputNuovaSpesa, { color: 'black', fontWeight: 'bold', fontSize: 25 }]}>€</TextInput>
+              <TextInput editable={false} style={[styles.inputNuovaSpesa, { color: 'black', fontWeight: 'bold', fontSize: 25 }]}>{valuta}</TextInput>
             </View>
           </View>
           <TouchableOpacity style={styles.btnNuovaSpesa} onPress={() => aggiungiSpesa()}>
