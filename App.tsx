@@ -101,7 +101,6 @@ const App = () => {
   }
 
 
-<<<<<<< HEAD
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
@@ -164,9 +163,6 @@ const App = () => {
   }
 
   const RegistrationScreen = (props) => <Registration {...props} database={database} onLogin={takeIdConto}/>;
-=======
-  const RegistrationScreen = (props) => <Registration {...props} database={database} />;
->>>>>>> 8611d563e012ed3bc8a6ce930d2fa5b90f0edfcf
   const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
   const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
   const NuovaSpesaScreen = (props) => <NuovaSpesa {...props}  database={database} idConto={idConto} />;
