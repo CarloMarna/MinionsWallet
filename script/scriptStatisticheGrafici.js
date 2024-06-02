@@ -100,7 +100,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto
         const formattedDataFine = formatDate(dataFine);
         const resultMin = await database.getFirstAsync(`
                 SELECT s.importo as importo, s.categoria, c.path_icona
-                FROM spesa s join categoria c  on s.categoria = c.nome
+                FROM spesa s join categoria c  on (s.categoria = c.nome and s.id_conto = c.idConto)
                 WHERE data BETWEEN ? AND ? AND s.id_conto = ${idConto}
                 ORDER by importo 
                 LIMIT 1;
@@ -108,7 +108,7 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto
 
         const resultMax = await database.getFirstAsync(`
                 SELECT s.importo as importo, s.categoria, c.path_icona
-                FROM spesa s join categoria c  on s.categoria = c.nome
+                FROM spesa s join categoria c  on (s.categoria = c.nome  and s.id_conto = c.idConto)
                 WHERE s.data BETWEEN ? AND ? AND s.id_conto = ${idConto}
                 ORDER BY importo  DESC
                 LIMIT 1;
@@ -160,7 +160,7 @@ export const caricaSpesePerCategoriaSezione = async (database, idConto) => {
     try {
         const result = await database.getAllAsync(`
             SELECT s.categoria, c.path_icona, SUM(s.importo) AS totale_spesa 
-            FROM spesa s join categoria c on s.categoria = c.nome
+            FROM spesa s join categoria c on s.categoria = c.nome and s.id_conto = c.idConto
             WHERE id_conto = ${idConto}
             GROUP BY categoria, path_icona
             ORDER BY totale_spesa Desc;

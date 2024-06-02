@@ -19,11 +19,6 @@ const useDatabase = () => {
                     `CREATE TABLE IF NOT EXISTS icona (
                         path TEXT PRIMARY KEY NOT NULL
                     );`,
-                    `CREATE TABLE IF NOT EXISTS categoria (
-                        nome VARCHAR(50) PRIMARY KEY NOT NULL,
-                        path_icona TEXT NOT NULL,
-                        FOREIGN KEY (path_icona) REFERENCES icona (path)
-                    );`,
                     `CREATE TABLE IF NOT EXISTS utente (
                         username VARCHAR(50) PRIMARY KEY NOT NULL,
                         mail VARCHAR(100) NOT NULL UNIQUE,
@@ -38,6 +33,14 @@ const useDatabase = () => {
                         FOREIGN KEY (username) REFERENCES utente (username) ON DELETE CASCADE ON UPDATE CASCADE
                         FOREIGN KEY (sigla) REFERENCES valuta (sigla)
                     );`,
+                    `CREATE TABLE IF NOT EXISTS categoria (
+                        nome VARCHAR(50) NOT NULL,
+                        idConto INTEGER NOT NULL,
+                        path_icona TEXT NOT NULL,
+                        PRIMARY KEY (nome, idConto),
+                        FOREIGN KEY (idConto) REFERENCES conto (id),
+                        FOREIGN KEY (path_icona) REFERENCES icona (path)
+                    );`,
                     `CREATE TABLE IF NOT EXISTS spesa (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         importo DECIMAL(10, 2) NOT NULL,
@@ -46,7 +49,7 @@ const useDatabase = () => {
                         categoria VARCHAR(50) NOT NULL,
                         id_conto INTEGER NOT NULL,
                         FOREIGN KEY (categoria) REFERENCES categoria (nome),
-                        FOREIGN KEY (id_conto) REFERENCES conto (id)
+                        FOREIGN KEY (id_conto) REFERENCES categoria (idConto)
                     );`,
                     `CREATE TABLE IF NOT EXISTS tag (
                         nome VARCHAR(30) PRIMARY KEY NOT NULL
@@ -83,9 +86,10 @@ const useDatabase = () => {
 
 
 export const popolaDBCompleto = async (db) => {
-    const insertCommands = [
-        // Inserimento dati nella tabella 'icona'
-        `INSERT INTO icona (path) VALUES 
+    try {
+        const insertCommands = [
+            // Inserimento dati nella tabella 'icona'
+            `INSERT INTO icona (path) VALUES 
         ('/assets/img/icone_minions/Minion-Bananas.png'),
         ('/assets/img/icone_minions/Minion-Cake.png'),
         ('/assets/img/icone_minions/Minion-Crazy.png'),
@@ -116,33 +120,33 @@ export const popolaDBCompleto = async (db) => {
         ('/assets/img/icone_minions/Minions-Sad-Christmas.png');
         `,
 
-        // Inserimento dati nella tabella 'categoria'
-        `INSERT INTO categoria (nome, path_icona) VALUES 
-                ('Alimentazione', '/assets/img/icone_minions/Minion-Fruits.png'),
-                ('Trasporti', '/assets/img/icone_minions/Minion-Playing-Golf.png'),
-                ('Regali', '/assets/img/icone_minions/Minion-Crazy.png'),
-                ('Viaggi', '/assets/img/icone_minions/Minion-Duck.png'),
-                ('Svago', '/assets/img/icone_minions/Minion-Dancing.png'),
-                ('Altro', '/assets/img/icone_minions/Minion-Evil.png'),
-                ('Cibo', '/assets/img/icone_minions/Minion-Cake.png'),
-                ('Abbigliamento', '/assets/img/icone_minions/Minion-Shout.png'),
-                ('Intrattenimento', '/assets/img/icone_minions/Minion-Reading.png'),
-                ('Salute', '/assets/img/icone_minions/Minion-Bananas.png'),
-                ('Casa', '/assets/img/icone_minions/Minion-Shy.png');`,
+            // Inserimento dati nella tabella 'categoria'
+            `INSERT INTO categoria (nome, path_icona,idConto) VALUES 
+                ('Alimentazione', '/assets/img/icone_minions/Minion-Fruits.png',1),
+                ('Trasporti', '/assets/img/icone_minions/Minion-Playing-Golf.png',1),
+                ('Regali', '/assets/img/icone_minions/Minion-Crazy.png',1),
+                ('Viaggi', '/assets/img/icone_minions/Minion-Duck.png',1),
+                ('Svago', '/assets/img/icone_minions/Minion-Dancing.png',1),
+                ('Altro', '/assets/img/icone_minions/Minion-Evil.png',1),
+                ('Cibo', '/assets/img/icone_minions/Minion-Cake.png',1),
+                ('Abbigliamento', '/assets/img/icone_minions/Minion-Shout.png',1),
+                ('Intrattenimento', '/assets/img/icone_minions/Minion-Reading.png',1),
+                ('Salute', '/assets/img/icone_minions/Minion-Bananas.png',1),
+                ('Casa', '/assets/img/icone_minions/Minion-Shy.png',1);`,
 
-        // Inserimento dati nella tabella 'tag'
-        `INSERT INTO tag (nome) VALUES 
+            // Inserimento dati nella tabella 'tag'
+            `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
                 ('Concerto'),
                 ('Regalo fidanzato/a'),
                 ('Spesa settimanale'),
                 ('Croccantini Fido');`,
 
-       
-       
 
-        // Inserimento dati nella tabella 'spesa'
-        `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
+
+
+            // Inserimento dati nella tabella 'spesa'
+            `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
         (50.75, '2024-01-20', 'Spesa settimanale', 'Alimentazione', 1),
         (20.00, '2024-01-20', 'Biglietto del treno', 'Trasporti', 1),
         -- Categorie 'Cibo'
@@ -236,21 +240,25 @@ export const popolaDBCompleto = async (db) => {
         (45.25, '2024-04-10', 'Commissioni bancarie', 'Altro', 1),
         (55.75, '2024-05-18', 'Tasse', 'Altro', 1);`,
 
-        // Inserimento dati nella tabella 'tag_spesa'
-        `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
+            // Inserimento dati nella tabella 'tag_spesa'
+            `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
         (1, 'Croccantini Fido'),
         (2, 'Urgente');`
-    ];
-    console.log("Caricamento completo effettuato");
-    for (const command of insertCommands) {
-        await db.execAsync(command);
+        ];
+        console.log("Caricamento completo effettuato");
+        for (const command of insertCommands) {
+            await db.execAsync(command);
+        }
+    } catch (error) {
+        console.error('Errore nel preparare il database Completo:', error);
     }
 };
 
 export const popolaDBParziale = async (db) => {
-    const insertCommands = [
-        // Inserimento dati nella tabella 'valuta'
-        `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
+    try {
+        const insertCommands = [
+            // Inserimento dati nella tabella 'valuta'
+            `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
         ('EUR', 'Euro', '€'),
         ('USD', 'Dollar', '$'),
         ('JPY', 'Yen', '¥'),
@@ -272,20 +280,23 @@ export const popolaDBParziale = async (db) => {
         ('TRY', 'Lira turca', '₺'),
         ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
 
-        // Inserimento dati nella tabella 'utente'
-        `INSERT INTO utente (username, mail, pwd) VALUES 
-                ('john_doe', 'john@example.com', 'password123'),
+            // Inserimento dati nella tabella 'utente'
+            `INSERT INTO utente (username, mail, pwd) VALUES 
+                ('carlo', 'john@example.com', '123'),
                 ('jane_doe', 'jane@example.com', 'password456');`,
 
 
-        // Inserimento dati nella tabella 'conto'
-        `INSERT INTO conto (nome_conto, sigla,username) VALUES 
-                ('Conto Corrente', 'EUR', 'jane_doe'),
+            // Inserimento dati nella tabella 'conto'
+            `INSERT INTO conto (nome_conto, sigla,username) VALUES 
+                ('Conto Corrente', 'EUR', 'carlo'),
                 ('Conto Risparmio', 'USD', 'john_doe');`,
-    ];
-    console.log("Caricamento effettuato");
-    for (const command of insertCommands) {
-        await db.execAsync(command);
+        ];
+        console.log("Caricamento effettuato");
+        for (const command of insertCommands) {
+            await db.execAsync(command);
+        }
+    } catch (error) {
+        console.error('Errore nel preparare il database Parziale:', error);
     }
 };
 
