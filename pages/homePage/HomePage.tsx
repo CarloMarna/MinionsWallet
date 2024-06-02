@@ -550,6 +550,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#0057BB',
     height: height / 4,
+    borderRadius: 18
   },
   nuovaSpesaCategoriaData: {
     flexDirection: 'row'
@@ -558,7 +559,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   btnNuovaSpesa: {
-    backgroundColor: '#fde23e',
+    backgroundColor: '#ffef99',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
