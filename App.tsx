@@ -16,7 +16,7 @@ import { getImageFromPath, getRandomImage } from './script/minionImage';
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
-
+/*
 const Menu = ({ navigation, username, isMenuVisible, setMenuVisible, imageUser }) => {
   const handleMenuClickInternal = () => {
     setMenuVisible(!isMenuVisible);
@@ -77,7 +77,7 @@ const Menu = ({ navigation, username, isMenuVisible, setMenuVisible, imageUser }
       </Modal>
     </View>
   );
-};
+};*/
 
 
 const App = () => {
