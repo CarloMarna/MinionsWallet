@@ -151,7 +151,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
   const aggiungiSpesa = async () => {
     try {
       console.log(importo, data, causale, categoriaSelezionata);
-      return;
+      //return;
       if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
         return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
       }

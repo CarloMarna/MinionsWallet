@@ -480,12 +480,15 @@ const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>
 
 };
 
-const NuovaSpesa = ({ database, idConto,route }: { database: any, idConto:any, route:any}) => {
+const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto:any, route:any}) => {
     const data = [{ key: '1', component: <NuovaSpesaComponent database={database} idConto={idConto}/> }];
     
     //modifiche Sergio
-    const { id: spesaId } = route.params;
-    console.log('Spesa id passato: '+spesaId);
+    console.log(route.params);
+    if(route.params!=undefined){
+        const { id: spesaId } = route.params;
+        console.log('Spesa id passato: '+spesaId);
+    }
     //modifiche Sergio
     const renderItem = ({ item }) => item.component;
   

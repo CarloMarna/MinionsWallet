@@ -99,7 +99,7 @@ const App = () => {
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
-  
+
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
@@ -218,6 +218,7 @@ const App = () => {
                   isMenuVisible={isMenuVisible}
                   setMenuVisible={setMenuVisible}
                   imageUser={imageUser}
+                  route
                 />
               </View>
             ),
@@ -336,7 +337,6 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 10
   },*/
-
   modal: {
     margin: 0,
     justifyContent: 'flex-start',
@@ -353,8 +353,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 8,
-    height: height,
-    width: width * 4 / 5,
+    height: '100%',
+    width: '80%', // Usato percentuali per migliorare la compatibilità con diversi schermi
   },
   userRow: {
     flexDirection: 'row',
@@ -402,16 +402,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   footer: {
-    marginTop: 40,
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    bottom: 20, // Distanza dal fondo
+    left: 20,  // Distanza dal lato sinistro
+    right: 20, // Distanza dal lato destro
   },
   footerText: {
-    fontSize: 13,
-    color: '#005eb8'
+    color: 'black',
+    fontSize: 10
   },
   versionText: {
-    fontSize: 13,
-    color: '#005eb8'
+    color: 'black',
+    fontSize: 10
   },
 });
 
