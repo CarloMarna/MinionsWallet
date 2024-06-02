@@ -3,8 +3,9 @@ import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-const Uscita = ({ database, idConto }) => {
+const Uscita = ({navigation, database, idConto }) => {
 
 
     const [total, setTotal] = useState(100);
@@ -15,6 +16,7 @@ const Uscita = ({ database, idConto }) => {
     const [showEndPicker, setShowEndPicker] = useState(false);
     const [categories, setCategories] = useState([]);
     const [spese, setSpese] = useState([]);
+    const [valuta,setValuta]= useState('EUR');
 
     //aggiunte
     const [selectedItem, setSelectedItem] = useState(null);
@@ -40,14 +42,21 @@ const Uscita = ({ database, idConto }) => {
     //gestione calcolo totale dinamico da db
     const calculateTotal = async () => {
         try {
+            let query2 = "SELECT sigla FROM conto where id=?";
+            let params2=[idConto];
+            const result3 = await database.getFirstAsync(query2, params2);
+            let query3 = "SELECT simbolo FROM valuta where sigla=?";
+            let params3=[result3.sigla];
+            const result4 = await database.getFirstAsync(query3, params3);
+            setValuta(result4.simbolo);
             if (category === 'Tutte') {
-                let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ?";
-                let params = [formatDate(endDate), formatDate(startDate)];
+                let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND id_conto=?";
+                let params = [formatDate(endDate), formatDate(startDate),idConto];
                 const result1 = await database.getAllAsync(query, params);
                 setTotal(result1[0].total || 0);
             } else {
-                let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
-                let params = [formatDate(endDate), formatDate(startDate), category];
+                let query = "SELECT SUM(importo) AS total FROM spesa WHERE data < ? AND data > ? AND categoria = ? AND id_conto=?";
+                let params = [formatDate(endDate), formatDate(startDate), category,idConto];
                 const result2 = await database.getAllAsync(query, params);
                 setTotal(result2[0].total || 0);
             }
@@ -68,11 +77,11 @@ const Uscita = ({ database, idConto }) => {
             let params;
 
             if (category === 'Tutte') {
-                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ?";
-                params = [formatDate(endDate), formatDate(startDate)];
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND id_conto=?";
+                params = [formatDate(endDate), formatDate(startDate),idConto];
             } else {
-                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ?";
-                params = [formatDate(endDate), formatDate(startDate), category];
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ? AND id_conto=?";
+                params = [formatDate(endDate), formatDate(startDate), category,idConto];
             }
 
             const result = await database.getAllAsync(query, params);
@@ -132,7 +141,10 @@ const Uscita = ({ database, idConto }) => {
         }
     };
     //aggiunte
-
+    const modificaSpesa= (spesaToModify) =>{
+        console.log(spesaToModify.id);
+        navigation.navigate('NuovaSpesa', { id: spesaToModify.id });
+    }
     const deleteSpesa = async (spesaToDelete) => {
         try {
 
@@ -192,11 +204,13 @@ const Uscita = ({ database, idConto }) => {
                                 'Sei sicuro di voler eliminare questa spesa?',
                                 [
                                     { text: 'Annulla', style: 'cancel' },
-                                    { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) }
+                                    { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) },
+                                    
                                 ],
                                 { cancelable: false }
                             );
                         }} />
+                        <Button title="Modifica" onPress={() => modificaSpesa(selectedItem)}/>
                         <Button title="Chiudi" onPress={toggleModal} />
                     </View>
                 </View>
@@ -212,7 +226,7 @@ const Uscita = ({ database, idConto }) => {
 
                 <View style={styles.totalContainer}>
                     <Text style={styles.totalLabel}>Totale:</Text>
-                    <Text style={styles.totalValue}>{total}</Text>
+                    <Text style={styles.totalValue}>{total}{valuta}</Text>
                 </View>
 
                 <Text style={styles.filter}>Filtra per:</Text>

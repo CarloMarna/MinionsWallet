@@ -100,12 +100,12 @@ const App = () => {
     );
   }
 
-  const RegistrationScreen = (props) => <Registration {...props} database={database} />;
+  const RegistrationScreen = (props) => <Registration {...props} database={database} onLogin={takeIdConto}/>;
   const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
   const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
-  const NuovaSpesaScreen = () => <NuovaSpesa database={database} idConto={idConto} />;
+  const NuovaSpesaScreen = (props) => <NuovaSpesa {...props}  database={database} idConto={idConto} />;
   const HomeGraficiStatisticheScreen = () => <HomeGraficiStatistiche database={database} idConto={idConto} />;
-  const UscitaScreen = () => <Uscita database={database} idConto={idConto} />;
+  const UscitaScreen = (props) => <Uscita {...props} database={database} idConto={idConto} />;
 
   return (
     <NavigationContainer>
