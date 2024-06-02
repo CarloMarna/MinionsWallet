@@ -396,6 +396,7 @@ const styles = StyleSheet.create({
   logoutItem: {
     marginTop: 25,
     backgroundColor: '#FFCDD2',
+    justifyContent: 'center'
   },
   logoutText: {
     color: '#D32F2F',
