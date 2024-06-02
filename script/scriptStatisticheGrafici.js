@@ -116,8 +116,6 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
 
-        console.log("Categoria minima: " + resultMin.toString());
-        console.log("Categoria massima: " + resultMax.toString());
         return {
             min: resultMin ? resultMin.importo : 0,
             max: resultMax ? resultMax.importo : 0,
