@@ -5,6 +5,7 @@ export const conversioneValuta = async (valutPartenza, valutaArrivo, cifra) => {
         const json = await risposta.json();
         if (json.result === 'success') {
             const p = parseFloat(json.conversion_result.toFixed(2));
+            console.log("Valore convertito: " + p);
             return (p);
         } else {
             alert('Error nella converisone della valuta');
