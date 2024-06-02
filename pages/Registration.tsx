@@ -12,70 +12,43 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Registration = ({ navigation, database }) => {
+const Registration = ({ navigation, database, onLogin }) => {
 
 
-  const currencies = ["EUR", "USD", "JPY", "GBP", "AUD", "CAD",
-    "CHF", "CNY", "SEK", "NZD", "INR", "RUB", "KRW", "MXN",
-    "BRL", "ZAR", "THB", "SAR", "TRY", "AED"];
-
-
-  function currencySymbols(currencyCode: string) {
-    switch (currencyCode) {
-      case 'USD':
-        return '$';
-      case 'EUR':
-        return '€';
-      case 'GBP':
-        return '£';
-      case 'JPY':
-        return '¥';
-      case 'CAD':
-        return '$';
-      case 'AUD':
-        return '$';
-      case 'CHF':
-        return 'CHF';
-      case 'CNY':
-        return '¥';
-      case 'SEK':
-        return 'kr';
-      case 'NZD':
-        return '$';
-      case 'INR':
-        return '₹';
-      case 'RUB':
-        return '₽';
-      case 'KRW':
-        return '₩';
-      case 'MXN':
-        return '$';
-      case 'BRL':
-        return 'R$';
-      case 'ZAR':
-        return 'R';
-      case 'THB':
-        return '฿';
-      case 'SAR':
-        return '﷼';
-      case 'TRY':
-        return '₺';
-      case 'AED':
-        return 'د.إ';
-      default:
-        return '';
-    }
-
-  }
+  
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [accountName, setAccountName] = useState<string>('');
+  const [currencies, setCurrencies] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState('EUR');
+  const [isDatabaseInitialized, setIsDatabaseInitialized] = useState(false);
   const handleGoToLogin = () => {  //reindirizzamento a login da modificare
     navigation.navigate("Login");
 
   }
+  useEffect(() => {
+    if (database) {
+      setIsDatabaseInitialized(true);
+    }
+  }, [database]);
+
+  const fetchCurrencies = async () => {
+    if(isDatabaseInitialized){
+    try {
+      const result = await database.getAllAsync(`SELECT sigla, simbolo FROM valuta`);
+      
+      setCurrencies(result);
+    } catch (error) {
+      console.error("Errore durante il caricamento delle valute: ", error);
+    }
+  }};
+  useEffect(() => {
+    if (isDatabaseInitialized) {
+      fetchCurrencies();
+    }
+  }, [isDatabaseInitialized]);
+
 
   const registrazioneUtente = async () => {
     let messaggio1 = '';
@@ -107,12 +80,11 @@ const Registration = ({ navigation, database }) => {
 
           await database.execAsync(command1);
           await database.execAsync(command2);
-          messaggio1 = await database.getAllAsync('Select * from utente');
-          messaggio2 = await database.getAllAsync('Select * from conto');
-
-          const mergedMessages = [...messaggio1, ...messaggio2];
-
-          return { mergedMessages };
+          
+          const id_conto = await database.getFirstAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
+      
+          onLogin(id_conto.id);
+          return {messaggio: ''};
         }
 
       }
@@ -122,9 +94,7 @@ const Registration = ({ navigation, database }) => {
       return { messaggio: 'errore' };
     }
   };
-  /*`INSERT INTO conto (nome_conto, sigla) VALUES 
-                ('Conto Corrente', 'EUR'),
-                ('Conto Risparmio', 'USD');` */
+  
   const handleRegistration = async () => {
     //logica registrazione
     if (!username || !email || !password || !accountName) {
@@ -188,6 +158,7 @@ const Registration = ({ navigation, database }) => {
 
   useEffect(() => {
     async function loadApp() {
+       
       await loadFonts();
       setFontLoaded(true);
     }
@@ -233,7 +204,7 @@ const Registration = ({ navigation, database }) => {
           style={styles.picker}
         >
           {currencies.map(currency => (
-            <Picker.Item key={currency} label={`${currency} ${currencySymbols(currency)}`} value={currency} />
+            <Picker.Item key={currency.sigla} label={`${currency.sigla} ${currency.simbolo}`} value={currency.sigla} />
           ))}
         </Picker>
         <Button title="Registrati" onPress={() => handleRegistration()} />

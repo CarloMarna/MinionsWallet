@@ -100,13 +100,73 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
+  const Menu = ({ navigation, username }) => {
+    const handleMenuClickInternal = () => {
+      setMenuVisible(!isMenuVisible);
+    }
+    return (
+      <View>
+        <Modal
+          isVisible={isMenuVisible}
+          animationIn="slideInLeft"
+          animationOut="slideOutLeft"
+          backdropOpacity={0.5}
+          style={styles.modal}
+          onBackdropPress={handleMenuClickInternal}>
+          <View style={styles.menuContent}>
+            <View style={styles.userRow}>
+              <Image
+                source={imageUser} // Imposta il percorso dell'immagine utente
+                style={styles.userImage}
+              />
+              <Text style={styles.username}>{username}</Text>
+            </View>
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              setMenuVisible(false);
+              navigation.navigate("HomePage")
+            }}>
+              <Text>DashBoard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              setMenuVisible(false);
+              navigation.navigate("NuovaSpesa")
+            }}>
+              <Text>Nuova Spesa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              setMenuVisible(false);
+              navigation.navigate("HomeGraficiStatistiche")
+            }}>
+              <Text>Grafici & Statistiche</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              setMenuVisible(false);
+              navigation.navigate("Uscita")
+            }}>
+              <Text>Uscita</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
+              setMenuVisible(false);
+              navigation.navigate("Registration")
+            }}>
+              <Text style={styles.logoutText}>Logout</Text>
+            </TouchableOpacity>
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>© {new Date().getFullYear()} Developed by MinionsGroup</Text>
+              <Text style={styles.versionText}>v. 1.0.0.0</Text>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
 
-  const RegistrationScreen = (props) => <Registration {...props} database={database} />;
+  const RegistrationScreen = (props) => <Registration {...props} database={database} onLogin={takeIdConto}/>;
   const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
   const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
-  const NuovaSpesaScreen = () => <NuovaSpesa database={database} idConto={idConto} />;
+  const NuovaSpesaScreen = (props) => <NuovaSpesa {...props}  database={database} idConto={idConto} />;
   const HomeGraficiStatisticheScreen = () => <HomeGraficiStatistiche database={database} idConto={idConto} />;
-  const UscitaScreen = () => <Uscita database={database} idConto={idConto} />;
+  const UscitaScreen = (props) => <Uscita {...props} database={database} idConto={idConto} />;
 
   return (
     <NavigationContainer>
@@ -158,6 +218,7 @@ const App = () => {
                   isMenuVisible={isMenuVisible}
                   setMenuVisible={setMenuVisible}
                   imageUser={imageUser}
+                  route
                 />
               </View>
             ),
@@ -217,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modal: {
+  /*modal: {
     margin: 0,
     justifyContent: 'flex-start',
   },
@@ -267,6 +328,87 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 20,
+  },
+  footerText: {
+    color: 'black',
+    fontSize: 10
+  },
+  versionText: {
+    color: 'black',
+    fontSize: 10
+  },*/
+  modal: {
+    margin: 0,
+    justifyContent: 'flex-start',
+  },
+  menuContent: {
+    backgroundColor: '#FFF9C4', // Colore giallo chiaro, giocoso
+    padding: 20,
+    paddingTop: 40,
+    flex: 1,
+    borderTopRightRadius: 30,
+    borderBottomRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 8,
+    height: '100%',
+    width: '80%', // Usato percentuali per migliorare la compatibilità con diversi schermi
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  userImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginRight: 15,
+    borderWidth: 2,
+    borderColor: '#005eb8',
+  },
+  username: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#005eb8'
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 15,
+    backgroundColor: '#FFFDE7', // Colore di sfondo più chiaro per l'elemento
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  menuItemText: {
+    fontSize: 18,
+    color: '#005eb8',
+    marginLeft: 15
+  },
+  logoutItem: {
+    marginTop: 25,
+    backgroundColor: '#FFCDD2',
+    justifyContent: 'center'
+  },
+  logoutText: {
+    color: '#D32F2F',
+    fontWeight: 'bold',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    bottom: 20, // Distanza dal fondo
+    left: 20,  // Distanza dal lato sinistro
+    right: 20, // Distanza dal lato destro
   },
   footerText: {
     color: 'black',

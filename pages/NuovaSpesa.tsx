@@ -9,6 +9,8 @@ import {ins} from '../script/types';
 import { conversioneValuta } from '../script/conversioneValuta';
 import {formatDate} from '../script/scriptStatisticheGrafici';
 
+
+
 async function loadFonts() {
     await Font.loadAsync({
       'minions-font': require('../assets/fonts/Fredoka-VariableFont_wdth,wght.ttf'),
@@ -483,11 +485,19 @@ const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>
 
 };
 
-const NuovaSpesa = ({ database, idConto }: { database: any, idConto:any }) => {
+const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto:any, route:any}) => {
     const data = [{ key: '1', component: <NuovaSpesaComponent database={database} idConto={idConto}/> }];
-  
+    
+    //modifiche Sergio
+    console.log(route.params);
+    if(route.params!=undefined){
+        const { id: spesaId } = route.params;
+        console.log('Spesa id passato: '+spesaId);
+    }
+    //modifiche Sergio
     const renderItem = ({ item }) => item.component;
   
+
     return (
       <FlatList
         data={data}
