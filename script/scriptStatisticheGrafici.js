@@ -149,6 +149,7 @@ export const calcolaMedia = async (database, opzione, idConto) => {
     } catch (error) {
         console.error("Errore durante il calcolo della media:", error);
     }
+    
     return '0.000';
 };
 

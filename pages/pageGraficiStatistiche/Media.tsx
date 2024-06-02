@@ -5,7 +5,7 @@ import { calcolaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafi
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-const Media = ({ database, idConto }) => {
+const Media = ({ database, idConto }:{database:any, idConto:number}) => {
     const [opzione, setOpzione] = useState('Giorno');
     const [media, setMedia] = useState('');
     const [valuta, setValuta] = useState('');
@@ -13,7 +13,7 @@ const Media = ({ database, idConto }) => {
 
     const onChange = async (opzione) => {
         setOpzione(opzione);
-        const mediaCalcolata = await calcolaMedia(database, opzione);
+        const mediaCalcolata = await calcolaMedia(database, opzione, idConto);
         setMedia(mediaCalcolata);
     };
 

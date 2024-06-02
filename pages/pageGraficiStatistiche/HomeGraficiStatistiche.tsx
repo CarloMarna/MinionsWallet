@@ -18,7 +18,7 @@ async function loadFonts() {
   });
 }
 
-const HomeMediaMinMax = ({ database, idConto }) => {
+const HomeMediaMinMax = ({ database, idConto }:{database:any, idConto:number}) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.mainContainer}>
@@ -33,7 +33,7 @@ const HomeMediaMinMax = ({ database, idConto }) => {
   );
 };
 
-const Statistiche = ({ database, idConto }) => {
+const Statistiche = ({ database, idConto }:{database:any, idConto:number}) => {
   return (
     <TabTop.Navigator>
       <TabTop.Screen name="Intervallo di Spesa">
@@ -46,7 +46,7 @@ const Statistiche = ({ database, idConto }) => {
   )
 };
 
-const HomeGraficiStatistiche = ({ database, idConto }) => {
+const HomeGraficiStatistiche = ({ database, idConto }:{database:any, idConto:number}) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
