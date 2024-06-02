@@ -132,7 +132,7 @@ const Grafici = ({ database, idConto }) => {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        backgroundColor: '#FEEC47',
+        backgroundColor: '#FFF9C4',
     },
     scrollContainer: {
         flexGrow: 1,

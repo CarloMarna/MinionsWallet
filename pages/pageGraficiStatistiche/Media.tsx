@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     containerMedia: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#FEEC47',
+        backgroundColor: '#FFF9C4',
         borderTopWidth: 1,
         borderColor: '#003366',
         width: screenWidth,
