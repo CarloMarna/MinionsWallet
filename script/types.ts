@@ -5,6 +5,6 @@ export type ins = {
     v_sigla: string;
     nome_cat: string;
     descrizione: string;
-    data: string;
+    data: Date;
     tag: string[];
   };
