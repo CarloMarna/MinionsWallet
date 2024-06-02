@@ -206,8 +206,9 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
         <View style={styles.cerchioEsterno}>
           <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + parseFloat(saldoConto).toFixed(2) + " " + valuta}</Text>
           <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
-          <View style={{ position: 'absolute', bottom: 10, right: 7 }}>
-          </View>
+          {/*<View style={{ position: 'absolute', bottom: 10, right: 7 }}>
+            <Text>Visualizza Spese</Text>
+          </View>*/}
         </View>
       </View>
       <View style={styles.containerVisualizzaElementi}>
