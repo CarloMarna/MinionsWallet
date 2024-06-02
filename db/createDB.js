@@ -283,7 +283,7 @@ export const popolaDBParziale = async (db) => {
             // Inserimento dati nella tabella 'utente'
             `INSERT INTO utente (username, mail, pwd) VALUES 
                 ('carlo', 'john@example.com', '123'),
-                ('jane_doe', 'jane@example.com', 'password456');`,
+                ('john_doe', 'jane@example.com', 'password456');`,
 
 
             // Inserimento dati nella tabella 'conto'
