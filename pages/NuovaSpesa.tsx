@@ -6,6 +6,8 @@ import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { getImageFromPath, getImagePathFromId} from '../script/minionImage';
 import {ins} from '../script/types';
+import { conversioneValuta } from '../script/conversioneValuta';
+import {formatDate} from '../script/scriptStatisticheGrafici';
 
 async function loadFonts() {
     await Font.loadAsync({
@@ -235,7 +237,7 @@ const Categorie=({database})=>{
                     <TouchableOpacity onPress={async () => {setModalVisible(!modalVisible)}}>
                         <View style={[styles.botton, {alignSelf:'flex-start', backgroundColor:'white',borderColor:'#0057BB',borderWidth:1, width:'auto', paddingHorizontal:5, marginHorizontal:10}]}>
                             <Ionicons name='add-circle-outline' size={35} color='#0057BB'>
-                                <Text style={[styles.scritte, {color:'#0057BB'}]}>Inserisci un nuova categoria</Text>
+                                <Text style={[styles.scritte, {color:'#0057BB', fontSize:15}]}>Inserisci un nuova categoria</Text>
                             </Ionicons>
                         </View>
                     </TouchableOpacity>
@@ -258,6 +260,7 @@ const Categorie=({database})=>{
                                 };
                                 fetchCategorie();
                                 setSelectedCategory(textAggiuntaCategoria);
+                                inserimento.nome_cat=textAggiuntaCategoria;
                                 setImgAggiuntaCategoria('');
                                 setTextAggiuntaCategoria('');
                             }
@@ -349,7 +352,7 @@ const Tag=({database})=>{
                 <View style={styles.elementi_tag_modal}>
                     <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                     <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
-                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execAsync(`INSERT INTO tag VALUES(${tag});`);inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                 </View>
             </Modal>
             </View>
@@ -387,10 +390,44 @@ const Data=({database}:{database:any})=>{
     )
 }
 
-const BottoneAggiuntaSpesa=({database}:{database:any})=>{
+const BottoneAggiuntaSpesa=({database, idConto}:{database:any, idConto:any})=>{
     return(
         <View>
-            <TouchableOpacity onPress={()=>{console.log(inserimento)}}>
+            <TouchableOpacity onPress={()=>{
+                if(inserimento.data!='' && inserimento.descrizione!='' && inserimento.importo!='' && inserimento.nome_cat!='' && inserimento.v_sigla!=''){
+                    let x=database.getAllSync(`SELECT sigla FROM conto WHERE id=${idConto};`);
+                    let importoConvertito:string='';
+                    /*if(x!=inserimento.v_sigla){
+                        importoConvertito=conversioneValuta(inserimento.v_sigla, x, inserimento.importo);
+                        database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES (${importoConvertito}, ${inserimento.data}, ${inserimento.descrizione}, ${inserimento.nome_cat}, ${idConto});`);
+                    }
+                    else{
+                        */try{
+                            database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('${inserimento.importo}', '${inserimento.data}', '${inserimento.descrizione}', '${inserimento.nome_cat}', '${idConto}');`);
+                        }
+                        catch(error){
+                            console.log("errore aggiunta query"+error);
+                        }
+                    //}
+                    let id_spesa=database.getAllSync(`SELECT MAX(id) FROM spesa;`);
+                    for(const x in inserimento.tag){
+                        if(x!=''){
+                            try{
+                                database.execSync(`INSERT INTO tag_spesa VALUES ('${id_spesa}', '${x}');`);
+                            }
+                            catch(error){
+                                console.log("errore aggiunta tag"+error);
+                            }
+                            
+                        }
+                    }
+                    Alert.alert("Operazione completata!", "Spesa aggiunta correttamente.");
+                }
+                else{
+                    Alert.alert("Attenzione!", "Spesa non aggiunta. Compilare tutti i campi obbligatori.");
+                }
+                
+            }}>
                 <View style={styles.botton}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
                     <Text style={[styles.scritte, {color:'white'}]}>Aggiungi spesa</Text>
@@ -411,7 +448,7 @@ let inserimento: ins={
     tag:[]
 };
 
-const NuovaSpesaComponent=({database}: { database: any})=>{
+const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>{
 
     const[fontLoaded, setFontLoaded] = useState(false);
 
@@ -434,15 +471,15 @@ const NuovaSpesaComponent=({database}: { database: any})=>{
                 <Categorie database={database}/>
                 <Descrizione database={database}/>
                 <Data database={database}/>
-                <Tag database={database}/>
-                <BottoneAggiuntaSpesa database={database}/>
+                <Tag database={database} />
+                <BottoneAggiuntaSpesa database={database} idConto={idConto}/>
         </SafeAreaView>
     )
 
 };
 
-const NuovaSpesa = ({ database }: { database: any }) => {
-    const data = [{ key: '1', component: <NuovaSpesaComponent database={database} /> }];
+const NuovaSpesa = ({ database, idConto }: { database: any, idConto:any }) => {
+    const data = [{ key: '1', component: <NuovaSpesaComponent database={database} idConto={idConto}/> }];
   
     const renderItem = ({ item }) => item.component;
   
