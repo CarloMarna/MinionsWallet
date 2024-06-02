@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NuovaSpesa from './pages/NuovaSpesa';  //importo pagina di aggiunta spesa
 import HomeGraficiStatistiche from './pages/pageGraficiStatistiche/HomeGraficiStatistiche';
 import Registration from './pages/Registration';
@@ -12,36 +12,32 @@ import Modal from 'react-native-modal';
 import useDatabase from './db/createDB';
 import Login from './pages/Login';
 import { getImageFromPath, getRandomImage } from './script/minionImage';
+
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
-/*
- <Stack.Screen name="NuovaSpesa" component={NuovaSpesa}/>
-<Stack.Screen name="GraficiStatistiche" component={HomeGrfaiciStatistiche}/>
 
-        */
 
-/*<Stack.Screen name='Registration' component={Registration} options={{ headerShown: false }}/>*/
-
-const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da navigator, passo navigation come parametro
+const App = () => {
   const database = useDatabase();
   const [idConto, setIdConto] = useState(0);
   const [username, setUsername] = useState('Non Sei Loggato');
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [imageUser, setImageUser] = useState(null);
 
-  const takeIdConto = (idConto,username) => {
+  const takeIdConto = (idConto, username) => {
     setIdConto(idConto);
     setUsername(username);
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     setImageUser(getRandomImage());
   }, []);
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
+
 
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
@@ -103,22 +99,30 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
       </View>
     );
   }
+
+  const RegistrationScreen = (props) => <Registration {...props} database={database} />;
+  const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
+  const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
+  const NuovaSpesaScreen = () => <NuovaSpesa database={database} idConto={idConto} />;
+  const HomeGraficiStatisticheScreen = () => <HomeGraficiStatistiche database={database} idConto={idConto} />;
+  const UscitaScreen = () => <Uscita database={database} idConto={idConto} />;
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Registration">
         <Stack.Screen
           name="Registration"
           options={{ headerShown: false }}
-          component={(props) => <Registration {...props} database={database} />}
+          component={RegistrationScreen}
         />
         <Stack.Screen
           name="Login"
           options={{ headerShown: false }}
-          component={(props) => <Login {...props} database={database} onLogin={takeIdConto} />}
+          component={LoginScreen}
         />
         <Stack.Screen
           name="HomePage"
-          component={() => <HomePage database={database} />}
+          component={HomePageScreen}
           options={({ navigation }) => ({
             title: "DashBoard",
             headerLeft: () => (
@@ -133,7 +137,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="NuovaSpesa"
-          component={() => <NuovaSpesa database={database} idConto={idConto} />}
+          component={NuovaSpesaScreen}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (
@@ -148,7 +152,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="HomeGraficiStatistiche"
-          component={() => <HomeGraficiStatistiche database={database} idConto={idConto} />}
+          component={HomeGraficiStatisticheScreen}
           options={({ navigation }) => ({
             title: "Statistiche",
             headerLeft: () => (
@@ -163,7 +167,7 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
         />
         <Stack.Screen
           name="Uscita"
-          component={() => <Uscita database={database} idConto={idConto} />}
+          component={UscitaScreen}
           options={({ navigation }) => ({
             headerLeft: () => (
               <View>
@@ -175,7 +179,6 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
             ),
           })}
         />
-
       </Stack.Navigator>
     </NavigationContainer >
   );
@@ -224,7 +227,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-  }, logoutItem: {
+  },
+  logoutItem: {
     marginTop: 'auto',
     borderTopWidth: 1,
     borderTopColor: '#ccc',

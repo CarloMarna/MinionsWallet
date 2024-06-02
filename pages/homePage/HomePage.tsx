@@ -21,8 +21,6 @@ import { getImageFromPath } from '../../script/minionImage';
 
 const { width, height } = Dimensions.get('window');
 
-//const dbPromise = SQLite.openDatabaseAsync('mio_database.db');
-
 interface Spesa {
   id: string;
   descrizione: string;
@@ -41,7 +39,7 @@ const truncateText = (text: string, length: number = 30) => {
 };
 
 
-const HomePageComponent = ({ database }: { database: any }) => {
+const HomePageComponent = ({ database, idConto }: { database: any, idConto:number }) => {
   const [limitElementiFlatList, setLimitElementiFlatList] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState('0');
   const [valuta, setValuta] = React.useState("€");
@@ -55,7 +53,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
   const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
   const [viewDataPicker, setViewDataPicker] = React.useState(false);
   const [causale, setCausale] = React.useState([]);
-  const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('');
+  const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('Abbigliamento');
   const [categoria, setCategoria] = React.useState([]);
   const [importo, setImporto] = React.useState('');
 
@@ -67,8 +65,8 @@ const HomePageComponent = ({ database }: { database: any }) => {
         'JOIN categoria AS cat ON s.categoria = cat.nome ' +
         'JOIN conto AS con ON s.id_conto = con.id ' +
         'JOIN valuta AS val ON con.sigla = val.sigla ' +
-        'WHERE con.id=1 '+
-        'ORDER BY s.importo DESC ' +
+        'WHERE con.id='+idConto+' '+
+        'ORDER BY s.data DESC ' +
         'LIMIT ' + limitElementiFlatList + ';'
       );
       const elencoSpese: Spesa[] = [];
@@ -90,7 +88,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
   React.useEffect(() => {
     const fetchCategorie = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT DISTINCT nome FROM categoria;');
+        const queryResult = await database.getAllAsync('SELECT nome FROM categoria;');
         const categorieFromDatabase = queryResult.map((row) => row.nome);
         setCategoria(categorieFromDatabase);
         if (categorieFromDatabase.length > 0) {
@@ -107,7 +105,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
   React.useEffect(() => {
     const fetchValuta = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT v.simbolo FROM valuta AS v JOIN conto AS c ON c.sigla=v.sigla WHERE c.id=1;');
+        const queryResult = await database.getAllAsync('SELECT v.simbolo FROM valuta AS v JOIN conto AS c ON c.sigla=v.sigla WHERE c.id='+idConto+";");
         const valutaUtilizzata = queryResult.map((row) => row.simbolo);
         setValuta(valutaUtilizzata);
       } catch (error) {
@@ -121,7 +119,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
   React.useEffect(() => {
     const fetchSaldoConto = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto=1;');
+        const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto='+idConto+';');
         const totaleSpesaConto = queryResult.map((row) => row.totSpesa);
         setSaldoConto(totaleSpesaConto);
       } catch (error) {
@@ -152,7 +150,7 @@ const HomePageComponent = ({ database }: { database: any }) => {
       if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
         return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
       }
-      const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('+parseFloat(importo)+', "'+data.toISOString().split('T')[0]+'", "'+causale+'", "'+categoriaSelezionata+'", 1);';
+      const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('+parseFloat(importo)+', "'+data.toISOString().split('T')[0]+'", "'+causale+'", "'+categoriaSelezionata+'", '+idConto+');';
       //console.log(query);
       await database.execAsync(query);
       //console.info('Inserimento riuscito!');
@@ -368,8 +366,8 @@ const HomePageComponent = ({ database }: { database: any }) => {
 
 };
 
-const HomePage = ({ database }: { database: any }) => {
-  const data = [{ key: '1', component: <HomePageComponent database={database} /> }];
+const HomePage = ({ database, idConto }: { database: any, idConto: number }) => {
+  const data = [{ key: '1', component: <HomePageComponent database={database} idConto={idConto} /> }];
 
   const renderItem = ({ item }) => item.component;
 
