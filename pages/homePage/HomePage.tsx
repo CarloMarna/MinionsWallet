@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 2,
     borderBottomWidth: 2,
-    borderColor: 'rgba(0, 87, 187, 0.4)'
+    borderColor: 'rgba(0, 87, 187, 0.4)',
   },
   visualizzaElementi: {
     flexDirection: 'row',
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   rigaSpesa: {
     flexDirection: 'row',
