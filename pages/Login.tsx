@@ -19,7 +19,7 @@ const Login = ({ navigation, database, onLogin }) => {
     if (checkCredenziali.length > 0) {
       const id_conto = await database.getFirstAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
       console.log('Login avvenuto passo id_conto'+id_conto.id);
-      onLogin(id_conto.id);
+      onLogin(id_conto.id, username);
       navigation.navigate('HomePage');
     } else {
       Alert.alert('Errore', 'Username o password non validi');

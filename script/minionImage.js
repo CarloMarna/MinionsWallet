@@ -214,6 +214,15 @@ const getImageFromPath = (path) => {
             return '';
     }
 };
+
+
+const getRandomImage = () => {
+    const keys = Object.keys(imageMapping);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return imageMapping[randomKey].id;
+};
+
+
 export {
     MinionShout,
     MinionsNewYork,
@@ -244,7 +253,8 @@ export {
     MinionsJewels,
     MinionShy,
     getImageFromPath,
-    getImagePathFromId
+    getImagePathFromId,
+    getRandomImage
 };
 
 

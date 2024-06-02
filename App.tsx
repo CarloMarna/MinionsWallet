@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato 
 import Modal from 'react-native-modal';
 import useDatabase from './db/createDB';
 import Login from './pages/Login';
+import { getImageFromPath, getRandomImage } from './script/minionImage';
 const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
@@ -24,18 +25,25 @@ const { width, height } = Dimensions.get('window');
 
 const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da navigator, passo navigation come parametro
   const database = useDatabase();
-  const [idConto, setIdConto] = useState('');
+  const [idConto, setIdConto] = useState(0);
+  const [username, setUsername] = useState('Non Sei Loggato');
   const [isMenuVisible, setMenuVisible] = useState(false);
+  const [imageUser, setImageUser] = useState(null);
 
-  const takeIdConto = (idConto) => {
+  const takeIdConto = (idConto,username) => {
     setIdConto(idConto);
+    setUsername(username);
   }
+
+  React.useEffect(() => {
+    setImageUser(getRandomImage());
+  }, []);
 
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-  const Menu = ({ navigation }) => {
+  const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
     }
@@ -51,10 +59,10 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
           <View style={styles.menuContent}>
             <View style={styles.userRow}>
               <Image
-                source={require('./assets/user/user-image.png')} // Imposta il percorso dell'immagine utente
+                source={imageUser} // Imposta il percorso dell'immagine utente
                 style={styles.userImage}
               />
-              <Text style={styles.username}>Nome Correntista</Text>
+              <Text style={styles.username}>{username}</Text>
             </View>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
@@ -118,14 +126,14 @@ const App = ({ navigation }: { navigation: any }) => { //essendo app fuori da na
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} />
+                <Menu navigation={navigation} username={username} />
               </View>
             ),
           })}
         />
         <Stack.Screen
           name="NuovaSpesa"
-          component={() => <NuovaSpesa database={database} />}
+          component={() => <NuovaSpesa database={database} idConto={idConto} />}
           options={({ navigation }) => ({
             title: "Aggiungi Spesa",
             headerLeft: () => (
