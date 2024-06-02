@@ -4,7 +4,8 @@ export const conversioneValuta = async (valutPartenza, valutaArrivo, cifra) => {
         const risposta = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${valutPartenza}/${valutaArrivo}/${cifra}`);
         const json = await risposta.json();
         if (json.result === 'success') {
-            return (jeson.conversion_result);
+            const p = parseFloat(json.conversion_result.toFixed(2));
+            return (p);
         } else {
             alert('Error nella converisone della valuta');
         }
