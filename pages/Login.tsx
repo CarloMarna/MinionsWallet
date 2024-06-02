@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert,ScrollView } from 'react-native';
 
 const Login = ({ navigation, database, onLogin }) => {
   const [username, setUsername] = useState('');
@@ -26,6 +26,7 @@ const Login = ({ navigation, database, onLogin }) => {
   };
 
   return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.title}>Accedi</Text>
       <View style={styles.inputContainer}>
@@ -48,29 +49,46 @@ const Login = ({ navigation, database, onLogin }) => {
         <Text style={styles.registerText}>Non hai un account? Registrati qui.</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    //justifyContent: 'center',
+    
     backgroundColor: '#FFF9C4',
     padding: 20,
   },
   title: {
-    fontSize: 28,
+    
+    /*fontSize: 28,
     marginBottom: 20,
+    
     fontFamily: 'minions-font',
     paddingHorizontal: 20,
     paddingVertical: 10,
     fontWeight: 'bold',
     alignItems: 'center',
-    textAlign: 'center',
+    
     borderColor: '#0057BB',
     borderWidth: 2,
-    borderRadius: 10,
+    borderRadius: 10,*/
+    marginTop: '25%',
+    fontSize: 24,
+    fontFamily: 'minions-font',
+    marginBottom: '20%',
+    borderWidth: 2,
+    borderColor: '#0057BB',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 40,
+    textAlign: 'center',
+    color: '#0057BB',
   },
   inputContainer: {
     marginBottom: 20,

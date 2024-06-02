@@ -53,7 +53,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
   const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
   const [viewDataPicker, setViewDataPicker] = React.useState(false);
   const [causale, setCausale] = React.useState([]);
-  const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('Abbigliamento');
+  const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('');
   const [categoria, setCategoria] = React.useState([]);
   const [importo, setImporto] = React.useState('');
 
@@ -382,7 +382,6 @@ const HomePage = ({ database, idConto }: { database: any, idConto: number }) => 
       data={data}
       renderItem={renderItem}
       keyExtractor={(item) => item.key}
-      scrollEnabled
     />
   );
 }
@@ -396,7 +395,7 @@ const styles = StyleSheet.create({
     padding: 20,*/
     flex: 1,
     backgroundColor: '#FFF9C4',
-    height:height
+    height:'100%'
   },
   containerSaldoConto: {
     flexDirection: 'row',
@@ -410,7 +409,7 @@ const styles = StyleSheet.create({
     width: 250, // larghezza del cerchio
     height: 120, // altezza del cerchio
     borderRadius: 25, // metà della larghezza e altezza per ottenere un cerchio
-    backgroundColor: '#fde23e', // colore di sfondo del cerchio
+    backgroundColor: '#ffef99', // colore di sfondo del cerchio
     alignItems: 'flex-start',
     padding: 20,
     shadowColor: '#000',
@@ -456,7 +455,7 @@ const styles = StyleSheet.create({
     width: 150
   },
   nuovaSpesaBtn: {
-    backgroundColor: '#fde23e',
+    backgroundColor: '#ffef99',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
@@ -482,7 +481,7 @@ const styles = StyleSheet.create({
   },
   rigaSpesa: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffef99',
     borderRadius: 10,
     padding: 10,
     marginVertical: 5,
@@ -551,6 +550,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#0057BB',
     height: height / 4,
+    borderRadius: 18
   },
   nuovaSpesaCategoriaData: {
     flexDirection: 'row'
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   btnNuovaSpesa: {
-    backgroundColor: '#fde23e',
+    backgroundColor: '#ffef99',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
