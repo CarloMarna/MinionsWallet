@@ -395,14 +395,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,*/
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#FFF9C4',
+    height:height
   },
   containerSaldoConto: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingTop: 35,
     paddingBottom: 25,
-    right: 0
+    right: 0,
     //backgroundColor: 'yellow'
   },
   cerchioEsterno: {
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
   },
   modalViewNuovaSpesa: {
     flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#FFF9C4',
     width: width,
     height: height,
     padding: 20,
@@ -619,10 +620,8 @@ const styles = StyleSheet.create({
   modalReviewSpesaContent: {
     width: 300,
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#FFF9C4',
     borderRadius: 10,
-    borderWidth: 3,
-    borderColor: '#0057BB'
   },
   modalReviewSpesaHeader: {
     flexDirection: 'row',
