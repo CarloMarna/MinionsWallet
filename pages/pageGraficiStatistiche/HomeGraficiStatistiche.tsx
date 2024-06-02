@@ -18,7 +18,7 @@ async function loadFonts() {
   });
 }
 
-const HomeMediaMinMax = ({ database, idConto }:{database:any, idConto:number}) => {
+const HomeMediaMinMax = ({ database, idConto }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.mainContainer}>
@@ -33,20 +33,20 @@ const HomeMediaMinMax = ({ database, idConto }:{database:any, idConto:number}) =
   );
 };
 
-const Statistiche = ({ database, idConto }:{database:any, idConto:number}) => {
+const Statistiche = ({ database, idConto }) => {
   return (
     <TabTop.Navigator>
       <TabTop.Screen name="Intervallo di Spesa">
         {() => <HomeMediaMinMax database={database} idConto={idConto} />}
       </TabTop.Screen>
-      <TabTop.Screen name="Spese per Categoria" >
+      <TabTop.Screen name="Spese per Categoria">
         {() => <SpesePerCategoria database={database} idConto={idConto} />}
       </TabTop.Screen>
-    </TabTop.Navigator >
+    </TabTop.Navigator>
   )
 };
 
-const HomeGraficiStatistiche = ({ database, idConto }:{database:any, idConto:number}) => {
+const HomeGraficiStatistiche = ({ database, idConto }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -62,8 +62,8 @@ const HomeGraficiStatistiche = ({ database, idConto }:{database:any, idConto:num
   }
 
   return (
-    <SafeAreaView style={styles.tabBarInferiori} >
-      <TabBottom.Navigator >
+    <SafeAreaView style={styles.tabBarInferiori}>
+      <TabBottom.Navigator>
         <TabBottom.Screen name="Statistiche" options={{
           headerShown: false, tabBarIcon: ({ color, size }) => (
             <AntDesign name="linechart" size={size} color={color} />
@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderTopColor: '#0057B8'
   },
-
   mainContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -99,7 +98,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-
   metaContainer: {
     flex: 1,
     alignItems: 'center',
