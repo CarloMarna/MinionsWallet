@@ -395,6 +395,7 @@ const styles = StyleSheet.create({
     padding: 20,*/
     flex: 1,
     backgroundColor: '#FFF9C4',
+    height:'100%'
   },
   containerSaldoConto: {
     flexDirection: 'row',
