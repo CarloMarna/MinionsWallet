@@ -41,7 +41,7 @@ const truncateText = (text: string, length: number = 30) => {
 
 const HomePageComponent = ({ database, idConto }: { database: any, idConto:number }) => {
   const [limitElementiFlatList, setLimitElementiFlatList] = React.useState("10");
-  const [saldoConto, setSaldoConto] = React.useState('0');
+  const [saldoConto, setSaldoConto] = React.useState<GLfloat>(0);
   const [valuta, setValuta] = React.useState("€");
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
   const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
@@ -120,8 +120,8 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
     const fetchSaldoConto = async () => {
       try {
         const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto='+idConto+';');
-        const totaleSpesaConto = queryResult.map((row) => row.totSpesa);
-        if(!totaleSpesaConto)
+        const totaleSpesaConto = parseFloat(queryResult.map((row) => row.totSpesa));
+        if(totaleSpesaConto)
           setSaldoConto(totaleSpesaConto);
         else
           setSaldoConto(0);
@@ -150,6 +150,8 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
 
   const aggiungiSpesa = async () => {
     try {
+      console.log(importo, data, causale, categoriaSelezionata);
+      return;
       if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
         return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
       }
