@@ -145,7 +145,7 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} />
+                <Menu navigation={navigation} username={username} />
               </View>
             ),
           })}
@@ -160,7 +160,7 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} />
+                <Menu navigation={navigation} username={username} />
               </View>
             ),
           })}
@@ -174,7 +174,7 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} />
+                <Menu navigation={navigation} username={username} />
               </View>
             ),
           })}
