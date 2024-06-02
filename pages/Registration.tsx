@@ -83,7 +83,7 @@ const Registration = ({ navigation, database, onLogin }) => {
           
           const id_conto = await database.getFirstAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
       
-          onLogin(id_conto.id);
+          onLogin(id_conto.id,lowercaseUsername);
           return {messaggio: ''};
         }
 

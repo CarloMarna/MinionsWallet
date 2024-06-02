@@ -99,17 +99,19 @@ export const calcolaSpesaMinMax = async (database, dataInizio, dataFine, idConto
         const formattedDataInizio = formatDate(dataInizio);
         const formattedDataFine = formatDate(dataFine);
         const resultMin = await database.getFirstAsync(`
-                SELECT s.importo as importo, s.categoria, c.path_icona
+                SELECT s.importo, s.categoria, c.path_icona
                 FROM spesa s join categoria c  on (s.categoria = c.nome and s.id_conto = c.idConto)
-                WHERE data BETWEEN ? AND ? AND s.id_conto = ${idConto}
+                WHERE (data BETWEEN ? AND ? )AND s.id_conto = ${idConto}
                 ORDER by importo 
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
 
+
+
         const resultMax = await database.getFirstAsync(`
-                SELECT s.importo as importo, s.categoria, c.path_icona
+                SELECT s.importo, s.categoria, c.path_icona
                 FROM spesa s join categoria c  on (s.categoria = c.nome  and s.id_conto = c.idConto)
-                WHERE s.data BETWEEN ? AND ? AND s.id_conto = ${idConto}
+                WHERE (s.data BETWEEN ? AND ?) AND s.id_conto = ${idConto}
                 ORDER BY importo  DESC
                 LIMIT 1;
             `, [formattedDataInizio, formattedDataFine]);
