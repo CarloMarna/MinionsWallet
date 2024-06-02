@@ -100,10 +100,6 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> bdc24038382496d71e940d2960fefb15acbeeb4c
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
