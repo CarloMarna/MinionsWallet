@@ -16,11 +16,9 @@ const Login = ({ navigation, database, onLogin }) => {
     );
     console.log(checkCredenziali);
     if (checkCredenziali.length > 0) {
-      const id_conto = await database.getFirstAsync(
-        `SELECT id FROM conto WHERE username = '${lowercaseUsername}'`
-      );
-
-      onLogin(id_conto.id);
+      const id_conto = await database.getFirstAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
+      
+      onLogin(id_conto.id, username);
       navigation.navigate('HomePage');
     } else {
       Alert.alert('Errore', 'Username o password non validi');

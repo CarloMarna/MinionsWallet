@@ -5,7 +5,7 @@ import { calcolaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafi
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
-const Media = ({ database, idConto }:{database:any, idConto:number}) => {
+const Media = ({ database, idConto }: { database: any, idConto: number }) => {
     const [opzione, setOpzione] = useState('Giorno');
     const [media, setMedia] = useState('');
     const [valuta, setValuta] = useState('');
@@ -50,8 +50,8 @@ const Media = ({ database, idConto }:{database:any, idConto:number}) => {
                 </Picker>
                 {isLoading ? <Text style={styles.risultatoSpesaMedia}>{media}{valuta}</Text> : (
                     <View>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                        <Text style={styles.textCaricamento}>Caricamento...</Text>
+                        <ActivityIndicator size="small" color="#0000ff" />
+                        {/* <Text style={styles.textCaricamento}>Caricamento...</Text>*/}
                     </View>
                 )
                 }

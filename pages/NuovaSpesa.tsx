@@ -18,7 +18,7 @@ async function loadFonts() {
 }
 loadFonts();
 
-const Importo=({database})=>{ 
+const Importo=({database, idConto})=>{ 
     type itemValuta={
         sigla:string,
         nome:string,
@@ -47,8 +47,8 @@ const Importo=({database})=>{
     }, [database]);
 
     
-
-    const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>();
+    const x=database.getFirstSync(`SELECT c.sigla, v.nome, v.simbolo FROM conto AS c JOIN valuta AS v ON v.sigla=c.sigla WHERE c.id=${idConto};`)
+    const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>(x);
 
     if(!loadingImporto){
         return (
@@ -79,7 +79,7 @@ const Importo=({database})=>{
     
 )}
 
-const Categorie=({database})=>{
+const Categorie=({database, idConto})=>{
     const [icone, setIcone] = useState<string[]>([]);
     const [listaCategorie, setListaCategorie] = useState<ItemCategoria[]>([]);
     const [isLoadingCategorie, setIsLoadingCategorie] = useState(false);
@@ -91,18 +91,22 @@ const Categorie=({database})=>{
     const readCategorie= async (database: any)=>{
         try{
             const categorie=await database.getAllAsync(
-                'SELECT nome, path_icona FROM categoria;'
+                `SELECT ca.nome, ca.path_icona FROM categoria AS ca 
+                JOIN conto AS co ON ca.idConto=co.id WHERE co.id=${idConto};`
             );
-            const lista_categorie: ItemCategoria[]=[];
-            for (const row of categorie) {
-                let x=getImageFromPath(row.path_icona)    //ottengo il numero
-                let y:ItemCategoria={   //creo una variabile dove metto numero e nome
-                    img:x,
-                    nomeCategoria:row.nome
-                };
-                lista_categorie.push(y);
-              }
-            return {lista_categorie};
+            if(categorie!=null){
+                const lista_categorie: ItemCategoria[]=[];
+                for (const row of categorie) {
+                    let x=getImageFromPath(row.path_icona)    //ottengo il numero
+                    let y:ItemCategoria={   //creo una variabile dove metto numero e nome
+                        img:x,
+                        nomeCategoria:row.nome
+                    };
+                    lista_categorie.push(y);
+                }
+                return {lista_categorie};
+            }
+            else return null;
         }
         catch(error){
             console.error("Errore nel prelievo delle categorie", error);
@@ -123,7 +127,7 @@ const Categorie=({database})=>{
         const readIcone= async (database: any)=>{
             try{
                 const icone=await database.getAllAsync(
-                    'SELECT path FROM icona;'
+                    `SELECT path FROM icona;`
                 );
                 const lista_icone: string[]=[];
                 for (const row of icone) {
@@ -255,7 +259,7 @@ const Categorie=({database})=>{
                         <View style={[{marginTop:30, marginBottom:15}]}><Button title='Aggiungi categoria' onPress={()=> {
                             if(textAggiuntaCategoria!='' && imgAggiuntaCategoria!=''){
                                 setModalVisible(!modalVisible);
-                                database.execAsync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}','${imgAggiuntaCategoria}');`);
+                                database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}','${idConto}','${imgAggiuntaCategoria}');`);
                                 const y:ItemCategoria={
                                     img:imgAggiuntaCategoria,
                                     nomeCategoria:textAggiuntaCategoria
@@ -289,7 +293,7 @@ const Tag=({database})=>{
     useEffect(()=>{
         const readTag=async()=>{
             try{
-                const lista_tag=await database.getAllAsync('SELECT nome FROM tag;');
+                const lista_tag=await database.getAllAsync(`SELECT nome FROM tag;`);
                 const lista: String[]=[];
                 for(const row of lista_tag){
                     lista.push(row.nome);
@@ -354,7 +358,7 @@ const Tag=({database})=>{
                 <View style={styles.elementi_tag_modal}>
                     <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                     <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
-                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execAsync(`INSERT INTO tag VALUES(${tag});`);inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tag}');`);inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                 </View>
             </Modal>
             </View>
@@ -383,7 +387,7 @@ const Data=({database}:{database:any})=>{
                 <Pressable onPress={()=>{setViewDataPicker(true)}}>
                     <View style={[{backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor:'#0057BB', borderWidth:1}]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{alignSelf: 'center'}]}/></View>
                 </Pressable>
-                {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false); inserimento.data=date.toLocaleDateString();}}></DateTimePicker>}
+                {viewDataPicker&&<DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date)=>{setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false); inserimento.data=data;}}></DateTimePicker>}
                 <Text style={styles.scrittaData}>Hai effettuato la spesa il {data.toLocaleDateString()}</Text>
             </View>
         </View>
@@ -396,21 +400,22 @@ const BottoneAggiuntaSpesa=({database, idConto}:{database:any, idConto:any})=>{
     return(
         <View>
             <TouchableOpacity onPress={()=>{
-                if(inserimento.data!='' && inserimento.descrizione!='' && inserimento.importo!='' && inserimento.nome_cat!='' && inserimento.v_sigla!=''){
-                    let x=database.getAllSync(`SELECT sigla FROM conto WHERE id=${idConto};`);
-                    let importoConvertito:string='';
-                    /*if(x!=inserimento.v_sigla){
-                        importoConvertito=conversioneValuta(inserimento.v_sigla, x, inserimento.importo);
-                        database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES (${importoConvertito}, ${inserimento.data}, ${inserimento.descrizione}, ${inserimento.nome_cat}, ${idConto});`);
+                if(inserimento.data!=null && inserimento.descrizione!='' && inserimento.importo!='' && inserimento.nome_cat!='' && inserimento.v_sigla!=''){
+                    let x=database.getFirstSync(`SELECT sigla FROM conto WHERE id='${idConto}';`);
+                    console.log(x.sigla);
+                    if(x.sigla!=inserimento.v_sigla){
+                        conversioneValuta(inserimento.v_sigla, x.sigla, inserimento.importo).then(importoConvertito=>{
+                            database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES (${importoConvertito}, '${formatDate(inserimento.data)}', '${inserimento.descrizione}', '${inserimento.nome_cat}', '${idConto}');`);
+                        })                        
                     }
                     else{
-                        */try{
-                            database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('${inserimento.importo}', '${inserimento.data}', '${inserimento.descrizione}', '${inserimento.nome_cat}', '${idConto}');`);
+                        try{
+                            database.execSync(`INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES (${inserimento.importo}, '${formatDate(inserimento.data)}', '${inserimento.descrizione}', '${inserimento.nome_cat}', '${idConto}');`);
                         }
                         catch(error){
                             console.log("errore aggiunta query"+error);
                         }
-                    //}
+                    }
                     let id_spesa=database.getAllSync(`SELECT MAX(id) FROM spesa;`);
                     for(const x in inserimento.tag){
                         if(x!=''){
@@ -446,7 +451,7 @@ let inserimento: ins={
     v_sigla:'',
     nome_cat:'',
     descrizione: '',
-    data:'',
+    data:new Date(),
     tag:[]
 };
 
@@ -469,8 +474,8 @@ const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
-                <Importo database={database}/>
-                <Categorie database={database}/>
+                <Importo database={database} idConto={idConto}/>
+                <Categorie database={database} idConto={idConto}/>
                 <Descrizione database={database}/>
                 <Data database={database}/>
                 <Tag database={database} />
@@ -480,12 +485,15 @@ const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>
 
 };
 
-const NuovaSpesa = ({ database, idConto,route }: { database: any, idConto:any, route:any}) => {
+const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto:any, route:any}) => {
     const data = [{ key: '1', component: <NuovaSpesaComponent database={database} idConto={idConto}/> }];
     
     //modifiche Sergio
-    const { id: spesaId } = route.params;
-    console.log('Spesa id passato: '+spesaId);
+    console.log(route.params);
+    if(route.params!=undefined){
+        const { id: spesaId } = route.params;
+        console.log('Spesa id passato: '+spesaId);
+    }
     //modifiche Sergio
     const renderItem = ({ item }) => item.component;
   

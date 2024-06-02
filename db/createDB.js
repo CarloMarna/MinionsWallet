@@ -138,12 +138,9 @@ export const popolaDBCompleto = async (db) => {
             `INSERT INTO tag (nome) VALUES 
                 ('Urgente'),
                 ('Concerto'),
-                ('Regalo fidanzato/a'),
+                ('Regalo fidanzato'),
                 ('Spesa settimanale'),
                 ('Croccantini Fido');`,
-
-
-
 
             // Inserimento dati nella tabella 'spesa'
             `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
