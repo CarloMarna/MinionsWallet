@@ -17,6 +17,68 @@ const Stack = createStackNavigator();
 const { width, height } = Dimensions.get('window');
 
 
+const Menu = ({ navigation, username, isMenuVisible, setMenuVisible, imageUser }) => {
+  const handleMenuClickInternal = () => {
+    setMenuVisible(!isMenuVisible);
+  };
+
+  return (
+    <View>
+      <Modal
+        isVisible={isMenuVisible}
+        animationIn="slideInLeft"
+        animationOut="slideOutLeft"
+        backdropOpacity={0.5}
+        style={styles.modal}
+        onBackdropPress={handleMenuClickInternal}>
+        <View style={styles.menuContent}>
+          <View style={styles.userRow}>
+            <Image
+              source={imageUser} // Imposta il percorso dell'immagine utente
+              style={styles.userImage}
+            />
+            <Text style={styles.username}>{username}</Text>
+          </View>
+          <TouchableOpacity style={styles.menuItem} onPress={() => {
+            setMenuVisible(false);
+            navigation.navigate("HomePage")
+          }}>
+            <Text>DashBoard</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={() => {
+            setMenuVisible(false);
+            navigation.navigate("NuovaSpesa")
+          }}>
+            <Text>Nuova Spesa</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={() => {
+            setMenuVisible(false);
+            navigation.navigate("HomeGraficiStatistiche")
+          }}>
+            <Text>Grafici & Statistiche</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={() => {
+            setMenuVisible(false);
+            navigation.navigate("Uscita")
+          }}>
+            <Text>Uscita</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
+            setMenuVisible(false);
+            navigation.navigate("Registration")
+          }}>
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>© {new Date().getFullYear()} Developed by MinionsGroup</Text>
+            <Text style={styles.versionText}>v. 1.0.0.0</Text>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+};
+
 
 const App = () => {
   const database = useDatabase();
@@ -38,67 +100,6 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-
-  const Menu = ({ navigation, username }) => {
-    const handleMenuClickInternal = () => {
-      setMenuVisible(!isMenuVisible);
-    }
-    return (
-      <View>
-        <Modal
-          isVisible={isMenuVisible}
-          animationIn="slideInLeft"
-          animationOut="slideOutLeft"
-          backdropOpacity={0.5}
-          style={styles.modal}
-          onBackdropPress={handleMenuClickInternal}>
-          <View style={styles.menuContent}>
-            <View style={styles.userRow}>
-              <Image
-                source={imageUser} // Imposta il percorso dell'immagine utente
-                style={styles.userImage}
-              />
-              <Text style={styles.username}>{username}</Text>
-            </View>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {
-              setMenuVisible(false);
-              navigation.navigate("HomePage")
-            }}>
-              <Text>DashBoard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {
-              setMenuVisible(false);
-              navigation.navigate("NuovaSpesa")
-            }}>
-              <Text>Nuova Spesa</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {
-              setMenuVisible(false);
-              navigation.navigate("HomeGraficiStatistiche")
-            }}>
-              <Text>Grafici & Statistiche</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => {
-              setMenuVisible(false);
-              navigation.navigate("Uscita")
-            }}>
-              <Text>Uscita</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
-              setMenuVisible(false);
-              navigation.navigate("Registration")
-            }}>
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>© {new Date().getFullYear()} Developed by MinionsGroup</Text>
-              <Text style={styles.versionText}>v. 1.0.0.0</Text>
-            </View>
-          </View>
-        </Modal>
-      </View>
-    );
-  }
 
   const RegistrationScreen = (props) => <Registration {...props} database={database} />;
   const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
@@ -130,7 +131,13 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} username={username} />
+                <Menu
+                  navigation={navigation}
+                  username={username}
+                  isMenuVisible={isMenuVisible}
+                  setMenuVisible={setMenuVisible}
+                  imageUser={imageUser}
+                />
               </View>
             ),
           })}
@@ -145,7 +152,13 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} username={username} />
+                <Menu
+                  navigation={navigation}
+                  username={username}
+                  isMenuVisible={isMenuVisible}
+                  setMenuVisible={setMenuVisible}
+                  imageUser={imageUser}
+                />
               </View>
             ),
           })}
@@ -160,7 +173,13 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} username={username} />
+                <Menu
+                  navigation={navigation}
+                  username={username}
+                  isMenuVisible={isMenuVisible}
+                  setMenuVisible={setMenuVisible}
+                  imageUser={imageUser}
+                />
               </View>
             ),
           })}
@@ -174,7 +193,13 @@ const App = () => {
                 <TouchableOpacity onPress={() => handleMenuClick()}>
                   <Ionicons name="menu-outline" size={30} color="black" style={{ marginLeft: 15 }} />
                 </TouchableOpacity>
-                <Menu navigation={navigation} username={username} />
+                <Menu
+                  navigation={navigation}
+                  username={username}
+                  isMenuVisible={isMenuVisible}
+                  setMenuVisible={setMenuVisible}
+                  imageUser={imageUser}
+                />
               </View>
             ),
           })}
