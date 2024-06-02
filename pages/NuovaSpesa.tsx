@@ -88,6 +88,26 @@ const Categorie=({database, idConto})=>{
         nomeCategoria: string;
     };
 
+    const eliminaCategorie= (database:any)=>{
+        try{
+            const categorieDaEliminare=database.getAllSync(
+                `SELECT ca1.idConto, ca1.nome FROM categoria AS ca1
+                WHERE (ca1.idConto, ca1.nome) NOT IN (SELECT ca2.idConto, ca2.nome FROM categoria AS ca2 
+                JOIN spesa AS s ON ca2.idConto=s.id_conto AND ca2.nome=s.categoria 
+                WHERE ca2.idConto=${idConto});`
+            );
+            console.log(categorieDaEliminare);
+            for(const x of categorieDaEliminare){
+                console.log(x.idConto+x.nome);
+                database.execSync(`DELETE FROM categoria WHERE categoria.idConto=${x.idConto} AND categoria.nome='${x.nome}';`);
+                
+            }
+        }
+        catch(error){
+            console.log("Errore nell'eliminazione dell categorie"+error);
+        }
+    }
+
     const readCategorie= async (database: any)=>{
         try{
             const categorie=await database.getAllAsync(
@@ -150,6 +170,7 @@ const Categorie=({database, idConto})=>{
             }
         };
 
+        eliminaCategorie(database);
         fetchIcone();
         fetchCategorie();
         setIsLoadingCategorie(true);
@@ -358,7 +379,10 @@ const Tag=({database})=>{
                 <View style={styles.elementi_tag_modal}>
                     <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                     <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{width: 100, height: 50, fontSize: 15}]}></TextInput>
-                    <Pressable onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tag}');`);inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                    <View style={[{flexDirection:'row', alignItems:'center', marginVertical:'auto'}]}>
+                        <Pressable style={[{marginRight:5}]} onPress={()=>{setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tag}');`);inserimento.tag=selectedTag}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                        <Pressable onPress={()=>setTagModalVisible(false)}><Text style={styles.testo_bottone_tag}>Annulla</Text></Pressable>
+                    </View>
                 </View>
             </Modal>
             </View>
@@ -473,7 +497,7 @@ const NuovaSpesaComponent=({database, idConto}: { database: any, idConto:any})=>
     }
 
     return(
-        <SafeAreaView style={{flex: 1, backgroundColor:'#FEEC47'}}>
+        <SafeAreaView style={{flex: 1, backgroundColor:'#FFF9C4'}}>
                 <Importo database={database} idConto={idConto}/>
                 <Categorie database={database} idConto={idConto}/>
                 <Descrizione database={database}/>
@@ -618,16 +642,14 @@ const styles=StyleSheet.create({
         alignItems:'center',
         backgroundColor:'white',
         width: 300,
-        height:450,
         alignSelf:'center',
-        marginTop:20,
         borderColor:'#0057BB',
         borderWidth:2,
         paddingVertical:15
     },
     elementi_tag_modal: {
         width: 270,
-        height: 200,
+        height: 180,
         alignSelf:'center',
         marginTop:20,
         borderColor:'#0057BB',
@@ -664,7 +686,7 @@ const styles=StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center',
         width: 100,
-        height:40,
+        height:40
     },
     inputDescrizione: {
         flexDirection:'row', 
