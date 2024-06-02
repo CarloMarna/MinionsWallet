@@ -1,12 +1,10 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Dimensions, ScrollView, Alert, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { useState, useEffect } from 'react';
 import PureChart from 'react-native-pure-chart';
 import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
-
 
 const Grafici = ({ database, idConto }) => {
     const [spesePerAnno, setSpesePerAnno] = useState([]);
@@ -15,13 +13,16 @@ const Grafici = ({ database, idConto }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [valutaConto, setValuta] = useState('');
     const { width: windowWidth } = useWindowDimensions();
+
     useEffect(() => {
         const caricaDati = async () => {
             try {
-                const speseAnno = await caricaSpesePerAnno(database, idConto);
-                const speseCategoria = await caricaSpesePerCategoria(database, idConto);
-                const speseCategoriaMedia = await caricaSpesePerCategoriaMedia(database, idConto);
-                const valuta = await ottieniValuta(database, idConto);
+                const [speseAnno, speseCategoria, speseCategoriaMedia, valuta] = await Promise.all([
+                    caricaSpesePerAnno(database, idConto),
+                    caricaSpesePerCategoria(database, idConto),
+                    caricaSpesePerCategoriaMedia(database, idConto),
+                    ottieniValuta(database, idConto),
+                ]);
                 setSpesePerAnno(speseAnno);
                 setSpesePerCategoria(speseCategoria);
                 setSpesePerCategoriaMedia(speseCategoriaMedia);
@@ -34,7 +35,7 @@ const Grafici = ({ database, idConto }) => {
         };
 
         caricaDati();
-    }, [database]);
+    }, [database, idConto]);
 
     const chartConfigAndamento = {
         backgroundGradientFrom: "#05AF00",
@@ -50,32 +51,30 @@ const Grafici = ({ database, idConto }) => {
         {
             seriesName: 'Spese Categoria',
             data: spesePerCategoria.map(item => ({ x: item.categoria, y: item.speseCategoria })),
-            color: '#297AB1'
+            color: '#297AB1',
         },
         {
             seriesName: 'Spese Categoria Media',
             data: spesePerCategoriaMedia.map(item => ({ x: item.categoria, y: item.speseCategoria })),
-            color: 'yellow'
+            color: 'yellow',
         }
     ];
 
     const dataGraficoAndamento = {
         labels: spesePerAnno.map(item => item.mese),
-        datasets: [{ data: spesePerAnno.map(item => item.totale) }]
+        datasets: [{ data: spesePerAnno.map(item => item.totale) }],
     };
 
     const legenda = dataGraficoMedia.map((data, index) => (
         <View key={index} style={styles.legendItem}>
             <View style={[styles.legendColor, { backgroundColor: data.color }]} />
-            <Text style={styles.legendText}>{data.seriesName} in {valutaConto}</Text>
+            <Text style={styles.legendText}>{`${data.seriesName} in ${valutaConto}`}</Text>
         </View>
     ));
 
-    const handleDataPointClick = (data) => {
-        const dataIndex = data.index;
-        const mese = dataGraficoAndamento.labels[dataIndex];
-        const valore = data.value;
-        Alert.alert('Dettagli', `Mese: ${mese}\nImporto Totale: ${valore}${valutaConto}`, [{ text: 'OK' }]);
+    const handleDataPointClick = ({ index, value }) => {
+        const mese = dataGraficoAndamento.labels[index];
+        Alert.alert('Dettagli', `Mese: ${mese}\nImporto Totale: ${value}${valutaConto}`, [{ text: 'OK' }]);
     };
 
     if (isLoading) {
@@ -164,7 +163,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FAEBD7',
     },
     textCaricamento: {
-        fontSize: 18, fontWeight: 'bold',
+        fontSize: 18,
+        fontWeight: 'bold',
         marginTop: 20,
         color: '#4682B4',
     },
@@ -179,15 +179,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginVertical: 20,
     },
-
     chart: {
         marginVertical: 8,
-    },
-    label: {
-        fontSize: 12,
-        textAlign: 'center',
-        marginTop: 8,
-        marginBottom: 4,
     },
     legend: {
         flexDirection: 'row',
@@ -212,5 +205,3 @@ const styles = StyleSheet.create({
 });
 
 export default Grafici;
-
-

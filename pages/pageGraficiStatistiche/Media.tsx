@@ -9,26 +9,26 @@ const Media = ({ database, idConto }: { database: any, idConto: number }) => {
     const [opzione, setOpzione] = useState('Giorno');
     const [media, setMedia] = useState('');
     const [valuta, setValuta] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const onChange = async (opzione) => {
         setOpzione(opzione);
+        setIsLoading(true);
         const mediaCalcolata = await calcolaMedia(database, opzione, idConto);
         setMedia(mediaCalcolata);
+        setIsLoading(false);
     };
 
     useEffect(() => {
-        const fetchInizialelMedia = async () => {
+        const fetchInizialeMedia = async () => {
             const mediaIniziale = await calcolaMedia(database, opzione, idConto);
             const valuta = await ottieniValuta(database, idConto);
             setMedia(mediaIniziale);
             setValuta(valuta);
-            setIsLoading(true);
+            setIsLoading(false);
         };
-        fetchInizialelMedia();
-    }, [database, opzione]);
-
-
+        fetchInizialeMedia();
+    }, [database, idConto]);
 
     return (
         <View style={styles.containerMedia}>
@@ -48,14 +48,14 @@ const Media = ({ database, idConto }: { database: any, idConto: number }) => {
                     <Picker.Item label="Mese" value="Mese" />
                     <Picker.Item label="Anno" value="Anno" />
                 </Picker>
-                {isLoading ? <Text style={styles.risultatoSpesaMedia}>{media}{valuta}</Text> : (
-                    <View>
+                {isLoading ? (
+                    <View style={styles.loadingContainer}>
                         <ActivityIndicator size="small" color="#0000ff" />
-                        {/* <Text style={styles.textCaricamento}>Caricamento...</Text>*/}
+                        <Text style={styles.textCaricamento}>Caricamento...</Text>
                     </View>
-                )
-                }
-
+                ) : (
+                    <Text style={styles.risultatoSpesaMedia}>{media}{valuta}</Text>
+                )}
             </View>
             <Image
                 style={styles.miniPazzoImage}
@@ -124,9 +124,14 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     textCaricamento: {
-        fontSize: 18, fontWeight: 'bold',
+        fontSize: 18,
+        fontWeight: 'bold',
         marginTop: 20,
         color: '#4682B4',
+    },
+    loadingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
 });
 

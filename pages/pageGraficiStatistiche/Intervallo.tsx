@@ -8,7 +8,7 @@ import { getImageFromPath } from '../../script/minionImage';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const CalendarButton = ({ onPress }) => (
-    <TouchableOpacity onPress={onPress} >
+    <TouchableOpacity onPress={onPress}>
         <AntDesign name="calendar" size={screenWidth * 0.07} color="white" />
     </TouchableOpacity>
 );
@@ -39,7 +39,6 @@ const ModalContent = ({ modalVisible, onClose, content }) => {
 };
 
 const Intervallo = ({ database, idConto }) => {
-
     const [dataInizio, setDataInizio] = useState(new Date());
     const [dataFine, setDataFine] = useState(new Date());
     const [showDatePickerInizio, setShowDatePickerInizio] = useState(false);
@@ -53,8 +52,7 @@ const Intervallo = ({ database, idConto }) => {
     const [valuta, setValuta] = useState('');
     const [modalVisibleMinimo, setModalVisibleMinimo] = useState(false);
     const [modalVisibleMassimo, setModalVisibleMassimo] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchSpese = async () => {
@@ -66,28 +64,27 @@ const Intervallo = ({ database, idConto }) => {
             setCategoriaSpesaMassima(categoriaMax);
             setPathMax(pathMax);
             setPathMin(pathMin);
-            setIsLoading(true);
+            setIsLoading(false);
         };
         fetchSpese();
     }, [database, dataInizio, dataFine]);
 
     const toggleDatePicker = (flag) => {
-        if (flag === true) setShowDatePickerInizio(!showDatePickerInizio);
+        if (flag) setShowDatePickerInizio(!showDatePickerInizio);
         else setShowDatePickerFine(!showDatePickerFine);
     };
 
     const toggleModal = (flag) => {
-        if (flag === true) setModalVisibleMinimo(!modalVisibleMinimo);
+        if (flag) setModalVisibleMinimo(!modalVisibleMinimo);
         else setModalVisibleMassimo(!modalVisibleMassimo);
     };
 
     const onChangeData = (flag, selectedDate) => {
-        if (flag === true) {
-            const currentDate = selectedDate || dataInizio;
+        const currentDate = selectedDate || (flag ? dataInizio : dataFine);
+        if (flag) {
             setShowDatePickerInizio(false);
             setDataInizio(currentDate);
         } else {
-            const currentDate = selectedDate || dataFine;
             setShowDatePickerFine(false);
             setDataFine(currentDate);
         }
@@ -96,7 +93,7 @@ const Intervallo = ({ database, idConto }) => {
     const imageToShowMin = pathMin ? getImageFromPath(pathMin) : null;
     const imageToShowMax = pathMax ? getImageFromPath(pathMax) : null;
 
-    if (!isLoading) {
+    if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -106,7 +103,7 @@ const Intervallo = ({ database, idConto }) => {
     }
 
     return (
-        <View style={{ flex: 1, alignItems: 'center' }} >
+        <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={[styles.containerDate]}>
                 <View style={{ alignItems: 'center', flex: 1 }}>
                     <Text style={styles.textElementDate}>Data Inizio:</Text>
@@ -152,9 +149,9 @@ const Intervallo = ({ database, idConto }) => {
                     <Text style={styles.textElementDate}>Categoria per spesa massima:</Text>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => categoriaSpesaMassima != 'N/A' ? toggleModal(true) : null}>
+                        onPress={() => categoriaSpesaMassima !== 'N/A' ? toggleModal(true) : null}>
                         {imageToShowMax ? (
-                            <Image source={imageToShowMax} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
+                            <Image source={imageToShowMax} style={styles.imageCategory} />
                         ) : (
                             <Text style={styles.textNA}>N/A</Text>
                         )}
@@ -164,9 +161,9 @@ const Intervallo = ({ database, idConto }) => {
                     <Text style={styles.textElementDate}>Categoria per spesa minima:</Text>
                     <Pressable
                         style={[styles.button, styles.buttonOpen]}
-                        onPress={() => categoriaSpesaMinima != 'N/A' ? toggleModal(false) : null}>
+                        onPress={() => categoriaSpesaMinima !== 'N/A' ? toggleModal(false) : null}>
                         {imageToShowMin ? (
-                            <Image source={imageToShowMin} style={{ width: screenWidth * 0.17, height: screenHeight * 0.06, resizeMode: 'contain' }} />
+                            <Image source={imageToShowMin} style={styles.imageCategory} />
                         ) : (
                             <Text style={styles.textNA}>N/A</Text>
                         )}
@@ -183,7 +180,7 @@ const Intervallo = ({ database, idConto }) => {
                 onClose={() => setModalVisibleMassimo(false)}
                 content={categoriaSpesaMinima}
             />
-        </View >
+        </View>
     );
 };
 
@@ -197,7 +194,6 @@ const styles = StyleSheet.create({
     containerDate: {
         marginTop: screenHeight * 0.02,
         flexDirection: 'row',
-
     },
     textElementDate: {
         fontSize: screenWidth * 0.05,
@@ -286,7 +282,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: screenWidth * 0.05
     },
-
     textNA: {
         textAlignVertical: 'center',
         textAlign: 'center',
@@ -301,11 +296,16 @@ const styles = StyleSheet.create({
         fontSize: screenWidth * 0.06
     },
     textCaricamento: {
-        fontSize: 18, fontWeight: 'bold',
+        fontSize: 18,
+        fontWeight: 'bold',
         marginTop: 20,
         color: '#4682B4',
     },
+    imageCategory: {
+        width: screenWidth * 0.17,
+        height: screenHeight * 0.06,
+        resizeMode: 'contain'
+    }
 });
 
 export default Intervallo;
-
