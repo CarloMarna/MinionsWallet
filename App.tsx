@@ -99,9 +99,7 @@ const App = () => {
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
-
-
-<<<<<<< HEAD
+  
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
