@@ -54,6 +54,7 @@ const Login = ({ navigation, database, onLogin }) => {
     </SafeAreaView>
   );
 };
+export default Login;
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -121,5 +122,3 @@ const styles = StyleSheet.create({
     
   },
 });
-
-export default Login;
