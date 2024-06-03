@@ -198,6 +198,7 @@ const Registration = ({ navigation, database, onLogin }) => {
           value={accountName}
         />
         <Text style={styles.label}>Valuta:</Text>
+        <View style={styles.pickerContainer}>
         <Picker
           selectedValue={selectedCurrency}
           onValueChange={(itemValue, itemIndex) => setSelectedCurrency(itemValue)}
@@ -207,7 +208,10 @@ const Registration = ({ navigation, database, onLogin }) => {
             <Picker.Item key={currency.sigla} label={`${currency.sigla} ${currency.simbolo}`} value={currency.sigla} />
           ))}
         </Picker>
-        <Button title="Registrati" onPress={() => handleRegistration()} />
+        </View>
+        <TouchableOpacity style={styles.regButton} onPress={() => handleRegistration()}>
+        <Text style={styles.buttonText}>Registrati</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleGoToLogin}>
           <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
         </TouchableOpacity>
@@ -234,6 +238,7 @@ const styles = StyleSheet.create({
 
 
   },
+ 
   title: {
     fontSize: 24,
     fontFamily: 'minions-font',
@@ -244,6 +249,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 40,
     color: '#0057BB',
+    marginTop: 40,
 
 
 
@@ -264,6 +270,15 @@ const styles = StyleSheet.create({
     width: '80%',
     fontFamily: 'minions-font',
   },
+  pickerContainer: {
+    width: '80%',
+    borderWidth: 2,
+    borderColor: '#0057BB',
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   picker: {
 
     marginTop: 10,
@@ -274,12 +289,15 @@ const styles = StyleSheet.create({
     height: 40,
     textAlign: 'center',
     borderRadius: 6,
-    backgroundColor: 'white',
+    
     color: '#0057BB',
     marginBottom: 10,
-
+    
+    
+    
 
   },
+  
   labelLog: {
     fontSize: 18,
     marginBottom: 10,
@@ -287,6 +305,18 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     width: '80%',
     fontFamily: 'minions-font',
+  },
+  regButton: {
+    backgroundColor: '#0057BB',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'minions-font',
+    fontWeight: 'bold',
   },
 });
 
