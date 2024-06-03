@@ -383,7 +383,7 @@ const Tag = ({ database, inserimento }) => {
                         <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                         <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{ width: 100, height: 50, fontSize: 15 }]}></TextInput>
                         <View style={[{ flexDirection: 'row', alignItems: 'center', marginVertical: 'auto' }]}>
-                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); tag.push(tagText); setTag(tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tag}');`); inserimento.tag = selectedTag }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                             <Pressable onPress={() => setTagModalVisible(false)}><Text style={styles.testo_bottone_tag}>Annulla</Text></Pressable>
                         </View>
                     </View>

@@ -316,7 +316,9 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
           </TouchableOpacity>
         </ScrollView>
       </Modal>
-      <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
+      <View style={[{flex:1}]}>
+        <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
+      </View>
       <Modal
         isVisible={modalVisible}
         animationIn="slideInLeft"
