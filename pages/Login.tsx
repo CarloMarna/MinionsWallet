@@ -14,7 +14,6 @@ const Login = ({ navigation, database, onLogin }) => {
     const checkCredenziali = await database.getAllAsync(
       `SELECT * FROM utente WHERE username = '${lowercaseUsername}' and pwd = '${password}';`
     );
-    console.log(checkCredenziali);
     if (checkCredenziali.length > 0) {
       const id_conto = await database.getFirstAsync(`SELECT id FROM conto WHERE username = '${lowercaseUsername}'`);
       
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    //justifyContent: 'center',
+   
     
     backgroundColor: '#FFF9C4',
     padding: 20,
