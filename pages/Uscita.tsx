@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from '@react-navigation/native';
@@ -10,8 +10,8 @@ const Uscita = ({navigation, database, idConto ,username}) => {
 
     const [total, setTotal] = useState(100);
     const [category, setCategory] = useState('Tutte');
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(new Date('2024-01-01'));
+    const [endDate, setEndDate] = useState(new Date('2024-12-31'));
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -268,6 +268,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
 
     //fine aggiunte
     return (
+    <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>Totale Uscite di {username}</Text>
@@ -333,6 +334,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
                         )}
                     </View>
                 </View>
+                <View style={styles.flatListContainer}>
                 <FlatList
                     data={spese}
                     renderItem={({ item }) => (
@@ -361,12 +363,15 @@ const Uscita = ({navigation, database, idConto ,username}) => {
                     )}
                     keyExtractor={(item, index) => index.toString()}
                     scrollEnabled={false}
-
+                    style={styles.flatList}
+                    contentContainerStyle={styles.flatListContent}
 
                 />
+                </View>
                 {renderModal()}
             </View>
         </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -454,7 +459,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#EFEFEF',
         padding: 10,
         marginBottom: 10,
-        borderRadius: 20,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#2196F3',
     },
     spesaItemText: {
         fontSize: 16,
@@ -541,6 +548,23 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 16,
         
+    },
+    flatList: {
+        flex: 0,
+        width: '100%',
+        backgroundColor: '#ffef99', // Giallo scuro
+        borderWidth: 2,
+        borderColor: '#2196F3', // Blu
+        borderRadius: 30,
+        padding:20,
+        
+    },
+    flatListContent: {
+        paddingHorizontal: 20, // Spaziatura orizzontale per far vedere il bordo
+       
+    },
+    flatListContainer: {
+       width: '100%',
     },
     
 });

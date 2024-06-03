@@ -47,7 +47,13 @@ const Importo = ({ database, idConto, inserimento }) => {
 
 
     const x = database.getFirstSync(`SELECT c.sigla, v.nome, v.simbolo FROM conto AS c JOIN valuta AS v ON v.sigla=c.sigla WHERE c.id=${idConto};`)
-    const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>(x);
+    const valutaDefault:itemValuta={
+        sigla:x.sigla,
+        nome:x.nome,
+        simbolo:x.simbolo
+    };
+    const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>(valutaDefault);
+    inserimento.v_sigla=valutaDefault.sigla;
 
     if (!loadingImporto) {
         return (
@@ -83,6 +89,9 @@ const Categorie = ({ database, idConto, inserimento }) => {
     const [icone, setIcone] = useState<string[]>([]);
     const [listaCategorie, setListaCategorie] = useState<ItemCategoria[]>([]);
     const [isLoadingCategorie, setIsLoadingCategorie] = useState(false);
+    const [selectedIcon, setSelectedIcon] = useState("");
+    const [imgAggiuntaCategoria, setImgAggiuntaCategoria] = useState('');
+    const [textAggiuntaCategoria, setTextAggiuntaCategoria] = useState('');
 
     type ItemCategoria = {  //definico il tipo ItemCategoria con immagine e nome
         img: string;
@@ -109,9 +118,9 @@ const Categorie = ({ database, idConto, inserimento }) => {
         }
     }
 
-    const readCategorie = async (database: any) => {
+    const readCategorie = (database: any) => {
         try {
-            const categorie = await database.getAllAsync(
+            const categorie =  database.getAllSync(
                 `SELECT ca.nome, ca.path_icona FROM categoria AS ca 
                 JOIN conto AS co ON ca.idConto=co.id WHERE co.id=${idConto};`
             );
@@ -135,9 +144,9 @@ const Categorie = ({ database, idConto, inserimento }) => {
         }
     }
 
-    const fetchCategorie = async () => {
+    const fetchCategorie = () => {
         try {
-            const result = await readCategorie(database);
+            const result = readCategorie(database);
             setListaCategorie(result.lista_categorie);
         } catch (error) {
             console.error("Errore nel prelievo delle icone", error);
@@ -175,7 +184,6 @@ const Categorie = ({ database, idConto, inserimento }) => {
         fetchIcone();
         fetchCategorie();
         setIsLoadingCategorie(true);
-        //console.log("categoria sel. "+inserimento.nome_cat);
         setSelectedCategory((inserimento.nome_cat).toString());
     }, [database, inserimento.nome_cat]);
 
@@ -226,17 +234,13 @@ const Categorie = ({ database, idConto, inserimento }) => {
         </View>
     );
 
-    const [selectedIcon, setSelectedIcon] = useState("");
-    const [imgAggiuntaCategoria, setImgAggiuntaCategoria] = useState('');
-    const [textAggiuntaCategoria, setTextAggiuntaCategoria] = useState('');
-
     const renderItemPopUp = ({ item }: { item: string }) => {
         const borderColor = item === selectedIcon ? '#0057BB' : '';
         const path = getImageFromPath(item);
         return (
             <ItemPopUp
                 item={path}
-                onPress={() => { setSelectedIcon(item); setImgAggiuntaCategoria(getImagePathFromId(path)); }}
+                onPress={() => { setSelectedIcon(item); setImgAggiuntaCategoria(getImagePathFromId(path));}}
                 borderColor={borderColor}
             />
         )
@@ -281,15 +285,14 @@ const Categorie = ({ database, idConto, inserimento }) => {
                         <View style={[{ height: 200, margin: 10 }]}><FlatList scrollEnabled style={[{ flexWrap: 'wrap', flexDirection: 'row' }]} numColumns={5} data={icone} renderItem={renderItemPopUp} /></View>
                         <View style={[{ marginTop: 30, marginBottom: 15 }]}><Button title='Aggiungi categoria' onPress={() => {
                             if (textAggiuntaCategoria != '' && imgAggiuntaCategoria != '') {
+                                setSelectedIcon('');
                                 setModalVisible(!modalVisible);
-                                database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}','${idConto}','${imgAggiuntaCategoria}');`);
-                                const y: ItemCategoria = {
-                                    img: imgAggiuntaCategoria,
-                                    nomeCategoria: textAggiuntaCategoria
-                                };
+                                database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}',${idConto},'${imgAggiuntaCategoria}');`);
+                                const x=database.getFirstSync(`SELECT nome FROM categoria WHERE nome='${textAggiuntaCategoria}';`);
+                                console.log("Ho inserito la categoria"+x.nome);
+                                console.log("richiamo fetch categorie");
                                 fetchCategorie();
                                 setSelectedCategory(textAggiuntaCategoria);
-                                inserimento.nome_cat = textAggiuntaCategoria;
                                 setImgAggiuntaCategoria('');
                                 setTextAggiuntaCategoria('');
                             }
@@ -313,25 +316,27 @@ const Tag = ({ database, inserimento }) => {
     const [tag, setTag] = useState<string[]>([]);
     const [selectedTag, setSelectedTag] = useState<string[]>([]);
     const [isLoadingTag, setIsLoadingTag] = useState(false);
+
+    const readTag = async () => {
+        try {
+            const lista_tag = await database.getAllAsync(`SELECT nome FROM tag;`);
+            const lista: String[] = [];
+            for (const row of lista_tag) {
+                lista.push(row.nome);
+            }
+            return { lista };
+        }
+        catch (error) {
+            console.error("Errore nel prelievo delle icone", error);
+            return [];
+        }
+    }
+    const setListaTag = async () => {
+        const result = await readTag();
+        setTag(result.lista);
+    }
+
     useEffect(() => {
-        const readTag = async () => {
-            try {
-                const lista_tag = await database.getAllAsync(`SELECT nome FROM tag;`);
-                const lista: String[] = [];
-                for (const row of lista_tag) {
-                    lista.push(row.nome);
-                }
-                return { lista };
-            }
-            catch (error) {
-                console.error("Errore nel prelievo delle icone", error);
-                return [];
-            }
-        }
-        const setListaTag = async () => {
-            const result = await readTag();
-            setTag(result.lista);
-        }
         setSelectedTag(inserimento.tag);
         setListaTag();
         setIsLoadingTag(true);
@@ -383,7 +388,7 @@ const Tag = ({ database, inserimento }) => {
                         <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                         <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{ width: 100, height: 50, fontSize: 15 }]}></TextInput>
                         <View style={[{ flexDirection: 'row', alignItems: 'center', marginVertical: 'auto' }]}>
-                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); setListaTag();}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                             <Pressable onPress={() => setTagModalVisible(false)}><Text style={styles.testo_bottone_tag}>Annulla</Text></Pressable>
                         </View>
                     </View>
@@ -670,7 +675,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderColor: '#0057BB',
         borderWidth: 2,
-        borderRadius: 4
+        borderRadius: 4,
     },
     testo_spesa: {
         fontFamily: 'minions-font',
@@ -681,7 +686,7 @@ const styles = StyleSheet.create({
         height: 60,
         textAlign: 'center',
         borderRightWidth: 2,
-        backgroundColor: 'white'
+        backgroundColor:'#ffef99'
     },
     spesa: {
         flex: 1,
@@ -698,7 +703,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: 150,
         textAlign: 'center',
-        backgroundColor: 'white',
+        backgroundColor:'#ffef99',
         color: '#0057BB',
     },
     scritte: {
@@ -708,7 +713,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     categorie: {
-        backgroundColor: 'white',
+        backgroundColor:'#ffef99',
         borderColor: '#0057BB',
         borderWidth: 2,
         borderRadius: 20,
@@ -801,7 +806,7 @@ const styles = StyleSheet.create({
     },
     inputDescrizione: {
         flexDirection: 'row',
-        backgroundColor: 'white',
+        backgroundColor:'#ffef99',
         borderColor: '#0057BB',
         borderWidth: 2,
         borderRadius: 6,

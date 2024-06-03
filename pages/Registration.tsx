@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -169,6 +169,7 @@ const Registration = ({ navigation, database, onLogin }) => {
     return null;
   }
   return (
+<SafeAreaView>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>Benvenuto in MINIONs</Text>
@@ -221,6 +222,7 @@ const Registration = ({ navigation, database, onLogin }) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 export default Registration;
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFF9C4',
-
+    
 
 
   },
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontFamily: 'minions-font',
-    marginBottom: '20%',
+    marginBottom: 60,
     borderWidth: 2,
     borderColor: '#0057BB',
     backgroundColor: 'white',
