@@ -289,10 +289,9 @@ const Categorie = ({ database, idConto, inserimento }) => {
                                 setModalVisible(!modalVisible);
                                 database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}',${idConto},'${imgAggiuntaCategoria}');`);
                                 const x=database.getFirstSync(`SELECT nome FROM categoria WHERE nome='${textAggiuntaCategoria}';`);
-                                console.log("Ho inserito la categoria"+x.nome);
-                                console.log("richiamo fetch categorie");
                                 fetchCategorie();
                                 setSelectedCategory(textAggiuntaCategoria);
+                                inserimento.nome_cat=selectedCategory;
                                 setImgAggiuntaCategoria('');
                                 setTextAggiuntaCategoria('');
                             }
@@ -409,8 +408,19 @@ const Descrizione = ({ database, inserimento }: { database: any, inserimento: in
 }
 
 const Data = ({ database, inserimento }: { database: any, inserimento: ins }) => {
-    const [data, setData] = useState(new Date(inserimento.data));
+    const [data, setData] = useState(inserimento.data);
     const [viewDataPicker, setViewDataPicker] = useState(false);
+
+    const dataSelezionata = (event, selectedDate) => {
+        if (event.type === 'set') {
+            const dataNuova = selectedDate || data;
+            setData(dataNuova);
+            inserimento.data = dataNuova;
+            setViewDataPicker(false);
+        } else {
+            setViewDataPicker(false);
+        }
+    };
 
     return (
         <View>
@@ -419,7 +429,7 @@ const Data = ({ database, inserimento }: { database: any, inserimento: ins }) =>
                 <Pressable onPress={() => { setViewDataPicker(true) }}>
                     <View style={[{ backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor: '#0057BB', borderWidth: 1 }]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{ alignSelf: 'center' }]} /></View>
                 </Pressable>
-                {viewDataPicker && <DateTimePicker mode='date' display='calendar' value={data} onChange={(event, date) => { setData(new Date(date.getFullYear(), date.getMonth(), date.getDate())); setViewDataPicker(false); inserimento.data = data; }}></DateTimePicker>}
+                {viewDataPicker && <DateTimePicker mode='date' display='calendar' value={data} onChange={dataSelezionata}></DateTimePicker>}
                 <Text style={styles.scrittaData}>Hai effettuato la spesa il {data && data.toLocaleDateString()}</Text>
             </View>
         </View>
@@ -428,7 +438,7 @@ const Data = ({ database, inserimento }: { database: any, inserimento: ins }) =>
     )
 }
 
-const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { database: any, idConto: any, inserimento: ins, isModifing: boolean }) => {
+const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: any, inserimento: ins, isModifing: boolean, navigation:any }) => {
 
     function insert() {
         if (inserimento.data != null && inserimento.descrizione != '' && inserimento.importo != '' && inserimento.nome_cat != '' && inserimento.v_sigla != '') {
@@ -459,6 +469,7 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
                 }
             }
             Alert.alert("Operazione completata!", "Spesa aggiunta correttamente.");
+            navigation.replace('NuovaSpesa');
         }
         else {
             Alert.alert("Attenzione!", "Spesa non aggiunta. Compilare tutti i campi obbligatori.");
@@ -468,8 +479,9 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
     function upl() {
         if (inserimento.data != null && inserimento.descrizione != '' && inserimento.importo != '' && inserimento.nome_cat != '' && inserimento.v_sigla != '') {
             try {
-                var query= `UPDATE spesa SET importo=${inserimento.importo}, data='${formatDate(new Date(inserimento.data))}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`;
-                database.execSync(query);
+                let x=formatDate(inserimento.data);
+                database.execSync(`UPDATE spesa SET importo=${inserimento.importo}, data='${x}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`);
+                inserimento.data=new Date();
             }
             catch (error) {
                 console.log("errore aggiornamento query" + error);
@@ -489,7 +501,6 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
         for (var i = 0; i<tag.length; i++) {
             if (tag[i] != '' && !tagPrecedenti.some(t => t.nome_tag === tag[i])) {
                 try {
-                    //console.log(tag[i]+" "+!tagPrecedenti.includes(tag[i]));
                     const query = `INSERT INTO tag_spesa VALUES (${inserimento.idSpesa}, '${tag[i]}');`;
                     console.log(query);
                     database.execSync(query);
@@ -500,6 +511,7 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
 
             }
         }
+        navigation.replace('Uscita');
     };
 
     const txtBottone = isModifing ? "Applica Modifiche" : "Aggiungi Spesa";
@@ -507,10 +519,13 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
     return (
         <View>
             <TouchableOpacity onPress={() => {
-                if (!isModifing)
+                if (!isModifing){
                     insert();
-                else
+                }
+                    
+                else{
                     upl();
+                }
             }}>
                 <View style={styles.botton}>
                     <Ionicons name='basket-outline' color='white' size={30}></Ionicons>
@@ -520,19 +535,9 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing }: { 
         </View>
     );
 }
-/*
-let inserimento: ins={
-    importo:'',
-    v_simbolo: '',
-    v_nome:'',
-    v_sigla:'',
-    nome_cat:'',
-    descrizione: '',
-    data:new Date(),
-    tag:[]
-};*/
 
-const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing }: { database: any, idConto: number, inserimento: any, isModifing: boolean }) => {
+
+const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: number, inserimento: any, isModifing: boolean, navigation:any }) => {
 
     const [fontLoaded, setFontLoaded] = useState(false);
 
@@ -557,20 +562,14 @@ const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing }: { d
             <Descrizione database={database} inserimento={inserimento} />
             <Data database={database} inserimento={inserimento} />
             <Tag database={database} inserimento={inserimento} />
-            <BottoneAggiuntaSpesa database={database} idConto={idConto} inserimento={inserimento} isModifing={isModifing} />
+            <BottoneAggiuntaSpesa database={database} idConto={idConto} inserimento={inserimento} isModifing={isModifing} navigation={navigation}/>
         </SafeAreaView>
     )
 
 };
 
-const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto: any, route: any }) => {
+const NuovaSpesa = ({ database, idConto, route, navigation }: { database: any, idConto: any, route: any,navigation:any }) => {
     const [isModifing, setIsModifing] = useState<boolean>(false);
-    const today = new Date();
-    /*const [modificaImporto, setModificaImporto] = useState('');
-    const [modificaCategoria, setModficaCategoria]=useState('');
-    const [modificaTag, setModificaTag]=useState<string[]>([]);
-    const [modificaDescrizione, setModificaDescrizione]=useState('');
-    const [modificaData, setModificaData]=useState(new Date());*/
 
 
     const [inserimento, setInserimento] = useState<ins>({
@@ -580,7 +579,7 @@ const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto: any,
         v_sigla: "",
         nome_cat: "",
         descrizione: "",
-        data: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+        data: new Date(),
         tag: [],
         idSpesa: ""
     });
@@ -594,11 +593,6 @@ const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto: any,
             const spesa = database.getFirstSync(`SELECT * FROM spesa WHERE id=${spesaId};`);
             const tag_spesa = database.getAllSync(`SELECT nome_tag FROM tag_spesa WHERE id_spesa=${spesaId}`);
             const valuta = database.getFirstSync(`SELECT v.sigla, v.nome, v.simbolo FROM valuta AS v JOIN conto AS c on c.sigla=v.sigla WHERE c.id=${idConto};`);
-            /*setModificaImporto(spesa.importo);
-            setModificaData(spesa.data);
-            setModificaDescrizione(spesa.descrizione);
-            setModficaCategoria(spesa.categoria);
-            setModificaTag(elencoTag);*/
 
             var elencoTag: string[] = [];
             for (const x of tag_spesa) {
@@ -613,26 +607,15 @@ const NuovaSpesa = ({ database, idConto, route }: { database: any, idConto: any,
                 v_sigla: valuta.sigla,
                 nome_cat: spesa.categoria,
                 descrizione: spesa.descrizione,
-                data: (new Date(spesa.data)).toISOString(),
+                data: (new Date(spesa.data)),
                 tag: elencoTag,
                 idSpesa: spesaId
             });
 
-
-
-            /*inserimento.data=modificaData;
-            inserimento.descrizione=modificaDescrizione;
-            inserimento.importo=modificaImporto;
-            inserimento.nome_cat=modificaCategoria;
-            inserimento.tag=modificaTag;
-            inserimento.v_sigla=valuta.sigla;
-            inserimento.v_nome=valuta.nome;
-            inserimento.v_simbolo=valuta.simbolo;*/
-
         }
     }, [route.params]); // Dependency array to ensure this effect runs only when route.params changes
 
-    const data = [{ key: '1', component: <NuovaSpesaComponent isModifing={isModifing} inserimento={inserimento} database={database} idConto={idConto} /> }];
+    const data = [{ key: '1', component: <NuovaSpesaComponent isModifing={isModifing} inserimento={inserimento} database={database} idConto={idConto} navigation={navigation}/> }];
 
 
     const renderItem = ({ item }) => item.component;
