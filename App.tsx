@@ -35,7 +35,7 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-  const Menu = ({ navigation, username }) => {
+  const Menu = ({ navigation, username, imageUser }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
     }
