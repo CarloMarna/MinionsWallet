@@ -65,6 +65,8 @@ const Uscita = ({navigation, database, idConto }) => {
             console.error("Errore il calcolo delle uscite: ", error);
         }
     };
+
+    
     calculateTotal();
     useEffect(() => {
         calculateTotal();
@@ -98,15 +100,7 @@ const Uscita = ({navigation, database, idConto }) => {
     }, [database, category, startDate, endDate]);
 
 
-    /*useEffect(() => {
-        console.log("Spese ordinate:", spese);
-    }, [spese]);*/
-    /*useEffect(() => {
-        console.log("Spese ordinate:");
-        spese.forEach(spesa => {
-            console.log(`Categoria: ${spesa.categoria}, Data: ${new Date(spesa.data)}, Importo: ${spesa.importo}, Descrizione: ${spesa.descrizione}`);
-        });
-    }, [spese]);*/
+   
 
 
     const toggleStartDatePicker = () => {
@@ -177,7 +171,16 @@ const Uscita = ({navigation, database, idConto }) => {
     const toggleModal = () => {
         setModalVisible(!modalVisible);
     };
-
+    const takeTag =async (selectedItem) => {
+        console.log(selectedItem.id);
+        /*const tags = await database.getAllAsync(
+            "Select nome_tag from tag_spesa where id_spesa= ? ", [selectedItem.id]
+        );*/
+        const tags =await database.getAllAsync(
+            "Select id_spesa, nome_tag from tag_spesa");
+        //if tags!=undefined set... else set 'nessun tag'
+        console.log(tags);
+    };
     const renderModal = () => {
         if (!selectedItem) return null;
 
@@ -293,6 +296,7 @@ const Uscita = ({navigation, database, idConto }) => {
                             onPress={() => {
                                 setSelectedItem(item);
                                 toggleModal();
+                                takeTag(selectedItem);
                             }}
                         >
                             {/*fine Aggiunte */}

@@ -12,12 +12,14 @@ import Grafici from './Grafici';
 const TabTop = createMaterialTopTabNavigator();
 const TabBottom = createBottomTabNavigator();
 
+// Funzione per caricare i font personalizzati
 async function loadFonts() {
   await Font.loadAsync({
     'fredoka-one': require('../../assets/fonts/Fredoka-VariableFont_wdth,wght.ttf'),
   });
 }
 
+// Componente che contiene le schermate Intervallo e Media
 const HomeMediaMinMax = ({ database, idConto }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -33,6 +35,7 @@ const HomeMediaMinMax = ({ database, idConto }) => {
   );
 };
 
+// Componente che contiene le schermate del top tab navigator
 const Statistiche = ({ database, idConto }) => {
   return (
     <TabTop.Navigator>
@@ -46,6 +49,7 @@ const Statistiche = ({ database, idConto }) => {
   )
 };
 
+// Componente principale che gestisce il caricamento dei font e contiene il bottom tab navigator
 const HomeGraficiStatistiche = ({ database, idConto }) => {
   const [fontLoaded, setFontLoaded] = useState(false);
 

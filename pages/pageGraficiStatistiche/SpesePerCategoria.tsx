@@ -8,23 +8,21 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 type SpesaCategoriaType = {
     categoria: string,
     percentuale: number,
-    path: string
+    path: string,
 };
 
 const renderSpeseCategoria = ({ item }: { item: SpesaCategoriaType }) => {
     const path = getImageFromPath(item.path);
     return (
-        <>
-            <View style={styles.rigaSpesa}>
-                <View style={styles.categoriaSpesa}>
-                    <Image style={[{ width: 50, height: 50 }]} source={path} />
-                </View>
-                <View style={styles.percentualeCategorie}>
-                    <Text style={styles.spesaCategoriaText}>{item.categoria}</Text>
-                    <Text style={[styles.spesaCategoriaText, styles.spesaCategoriaTextPercentuale]}>{item.percentuale}%</Text>
-                </View>
+        <View style={styles.rigaSpesa}>
+            <View style={styles.categoriaSpesa}>
+                <Image style={styles.categoriaImmagine} source={path} />
             </View>
-        </>
+            <View style={styles.percentualeCategorie}>
+                <Text style={styles.spesaCategoriaText}>{item.categoria}</Text>
+                <Text style={[styles.spesaCategoriaText, styles.spesaCategoriaTextPercentuale]}>{item.percentuale}%</Text>
+            </View>
+        </View>
     );
 };
 
@@ -46,7 +44,7 @@ const SpesePerCategoria = ({ database, idConto }) => {
             setIsLoading(false);
         };
         caricaSpese();
-    }, [database]);
+    }, [database, idConto]);
 
     useEffect(() => {
         const detectOrientation = () => {
@@ -56,7 +54,7 @@ const SpesePerCategoria = ({ database, idConto }) => {
 
         const subscription = Dimensions.addEventListener('change', detectOrientation);
         detectOrientation();
-        return () => subscription.remove();
+        return () => subscription?.remove();
     }, []);
 
     if (isLoading) {
@@ -71,7 +69,7 @@ const SpesePerCategoria = ({ database, idConto }) => {
     return (
         <View style={styles.container}>
             {spesaCat.length === 0 ? (
-                <View style={[styles.noSpeseContainer, orientation === 'landscape' && { flexDirection: 'row' }]}>
+                <View style={[styles.noSpeseContainer, orientation === 'landscape' && styles.noSpeseLandscape]}>
                     <Text style={styles.noSpeseText}>Nessuna spesa disponibile</Text>
                     {orientation === 'portrait' && (
                         <View style={styles.noSpeseImageContainer}>
@@ -86,6 +84,7 @@ const SpesePerCategoria = ({ database, idConto }) => {
                         data={spesaCat}
                         renderItem={renderSpeseCategoria}
                         style={styles.flatList}
+                        keyExtractor={(item) => item.categoria}
                         ListFooterComponent={orientation !== 'portrait' ? <MinionComponent /> : null}
                     />
                     {orientation === 'portrait' && <MinionComponent />}
@@ -117,10 +116,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 17,
     },
-    listSeparator: {
-        height: 1,
-        backgroundColor: '#ccc',
-    },
     minionsContainer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -142,6 +137,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    noSpeseLandscape: {
+        flexDirection: 'row',
+    },
     noSpeseText: {
         color: 'red',
         fontSize: 20,
@@ -160,7 +158,6 @@ const styles = StyleSheet.create({
         height: screenHeight * 0.25,
         resizeMode: 'contain',
     },
-
     rigaSpesa: {
         flexDirection: 'row',
         backgroundColor: '#fff',
@@ -170,28 +167,28 @@ const styles = StyleSheet.create({
         marginHorizontal: 3,
         elevation: 6,
         shadowColor: '#0057BB',
-        shadowOpacity: 0.5
+        shadowOpacity: 0.5,
     },
-
     categoriaSpesa: {
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 10,
     },
-
+    categoriaImmagine: {
+        width: 50,
+        height: 50,
+    },
     flatList: {
         paddingTop: 10,
-        paddingLeft: 20,
-        paddingRight: 20,
-        paddingBottom: 20
+        paddingHorizontal: 20,
+        paddingBottom: 20,
     },
-
     percentualeCategorie: {
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-    }
+    },
 });
 
 export default SpesePerCategoria;
