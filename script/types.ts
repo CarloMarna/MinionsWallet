@@ -7,4 +7,5 @@ export type ins = {
     descrizione: string;
     data: Date;
     tag: string[];
+    idSpesa: string;
   };

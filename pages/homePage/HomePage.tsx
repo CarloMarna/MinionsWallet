@@ -394,8 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,*/
     flex: 1,
-    backgroundColor: '#FFF9C4',
-    height:'100%'
+    backgroundColor: '#FFF9C4'
   },
   containerSaldoConto: {
     flexDirection: 'row',
