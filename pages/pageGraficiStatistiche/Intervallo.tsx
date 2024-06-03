@@ -54,6 +54,7 @@ const Intervallo = ({ database, idConto }) => {
     const [modalVisibleMassimo, setModalVisibleMassimo] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+
     useEffect(() => {
         const fetchSpese = async () => {
             const { min, max, categoriaMin, categoriaMax, pathMin, pathMax } = await calcolaSpesaMinMax(database, dataInizio, dataFine, idConto);
@@ -118,6 +119,7 @@ const Intervallo = ({ database, idConto }) => {
                     {showDatePickerInizio && (
                         <DateTimePicker
                             value={dataInizio}
+                            timeZoneName={'Europe/Rome'}
                             mode="date"
                             display="calendar"
                             onChange={(event, selectedDate) => onChangeData(true, selectedDate)}
@@ -136,7 +138,9 @@ const Intervallo = ({ database, idConto }) => {
                     <Text style={styles.risultatoSpesaMedia}>{spesaMassima}{valuta}</Text>
                     {showDatePickerFine && (
                         <DateTimePicker
+                            timeZoneName={'Europe/Rome'}
                             value={dataFine}
+                            maximumDate={new Date()}
                             mode="date"
                             display="calendar"
                             onChange={(event, selectedDate) => onChangeData(false, selectedDate)}
