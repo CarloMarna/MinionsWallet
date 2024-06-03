@@ -110,7 +110,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
     };
 
     fetchCategorie();
-  }, [database]);
+  }, [database, isInsertNewSpesa]);
 
   React.useEffect(() => {
     const fetchValuta = async () => {
