@@ -39,7 +39,7 @@ const truncateText = (text: string, length: number = 30) => {
 };
 
 
-const HomePageComponent = ({ database, idConto }: { database: any, idConto:number }) => {
+const HomePageComponent = ({ database, idConto } : { database: any, idConto:number }) => {
   const [limitElementiFlatList, setLimitElementiFlatList] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState<GLfloat>(0);
   const [valuta, setValuta] = React.useState("€");
@@ -50,12 +50,22 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
   const [isInsertNewSpesa,setStatusInsertNewSpesa] = React.useState<boolean>(false);
 
   const today = new Date();
-  const [data, setData] = React.useState(new Date(today.getFullYear(), today.getMonth(), today.getDate()));
+  const [data, setData] = React.useState(new Date());
   const [viewDataPicker, setViewDataPicker] = React.useState(false);
   const [causale, setCausale] = React.useState([]);
   const [categoriaSelezionata, setCategoriaSelezionata] = React.useState('');
   const [categoria, setCategoria] = React.useState([]);
   const [importo, setImporto] = React.useState('');
+
+  const dataSelezionata = (event, selectedDate) => {
+    if (event.type === 'set') {
+        const dataNuova = selectedDate || data;
+        setData(dataNuova);
+        setViewDataPicker(false);
+    } else {
+        setViewDataPicker(false);
+    }
+};
 
   React.useEffect(() => {
     const load_spese = async () => {
@@ -150,13 +160,10 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
 
   const aggiungiSpesa = async () => {
     try {
-      console.log(importo, data, causale, categoriaSelezionata);
-      //return;
       if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
         return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
       }
       const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('+parseFloat(importo)+', "'+data.toISOString().split('T')[0]+'", "'+causale+'", "'+categoriaSelezionata+'", '+idConto+');';
-      //console.log(query);
       await database.execAsync(query);
       //console.info('Inserimento riuscito!');
       setCausale([]);
@@ -203,7 +210,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
       </Pressable>
     );
   };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerSaldoConto}>
@@ -211,9 +218,6 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
         <View style={styles.cerchioEsterno}>
           <Text style={[styles.testo, { paddingLeft: 5 }]}><Ionicons size={25} name="wallet-outline" />{"  " + parseFloat(saldoConto).toFixed(2) + " " + valuta}</Text>
           <Text style={[{ paddingLeft: 5, fontSize: 13 }]}>Totale spese al {today.toLocaleDateString()}</Text>
-          {/*<View style={{ position: 'absolute', bottom: 10, right: 7 }}>
-            <Text>Visualizza Spese</Text>
-          </View>*/}
         </View>
       </View>
       <View style={styles.containerVisualizzaElementi}>
@@ -290,13 +294,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
                   mode='date'
                   display='calendar'
                   value={data}
-                  onChange={(event, date) => {
-                    setData(
-                      new Date(date.getFullYear(),
-                        date.getMonth(), date.getDate())
-                    );
-                    setViewDataPicker(false)
-                  }}>
+                  onChange={dataSelezionata}>
                 </DateTimePicker>}
             </View>
           </View>
