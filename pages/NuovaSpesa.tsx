@@ -184,7 +184,7 @@ const Categorie = ({ database, idConto, inserimento }) => {
         fetchIcone();
         fetchCategorie();
         setIsLoadingCategorie(true);
-        setSelectedCategory((inserimento.nome_cat).toString());
+        setSelectedCategory(inserimento.nome_cat);
     }, [database, inserimento.nome_cat]);
 
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -288,10 +288,9 @@ const Categorie = ({ database, idConto, inserimento }) => {
                                 setSelectedIcon('');
                                 setModalVisible(!modalVisible);
                                 database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}',${idConto},'${imgAggiuntaCategoria}');`);
-                                const x=database.getFirstSync(`SELECT nome FROM categoria WHERE nome='${textAggiuntaCategoria}';`);
-                                fetchCategorie();
-                                setSelectedCategory(textAggiuntaCategoria);
                                 inserimento.nome_cat=selectedCategory;
+                                setSelectedCategory(textAggiuntaCategoria);
+                                fetchCategorie();
                                 setImgAggiuntaCategoria('');
                                 setTextAggiuntaCategoria('');
                             }
