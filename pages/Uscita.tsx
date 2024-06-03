@@ -5,7 +5,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 
-const Uscita = ({navigation, database, idConto }) => {
+const Uscita = ({navigation, database, idConto ,username}) => {
 
 
     const [total, setTotal] = useState(100);
@@ -17,11 +17,10 @@ const Uscita = ({navigation, database, idConto }) => {
     const [categories, setCategories] = useState([]);
     const [spese, setSpese] = useState([]);
     const [valuta,setValuta]= useState('EUR');
-
-    //aggiunte
     const [selectedItem, setSelectedItem] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-    //fine aggiunte
+    const [tagModal,setTagModal]= useState([]);
+    
     //gestione picker categoria da db
     const fetchCategories = async () => {
         try {
@@ -79,10 +78,10 @@ const Uscita = ({navigation, database, idConto }) => {
             let params;
 
             if (category === 'Tutte') {
-                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND id_conto=?";
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data <= ? AND data >= ? AND id_conto=?";
                 params = [formatDate(endDate), formatDate(startDate),idConto];
             } else {
-                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data < ? AND data > ? AND categoria = ? AND id_conto=?";
+                query = "SELECT importo, data, categoria, descrizione,id FROM spesa WHERE data <= ? AND data >= ? AND categoria = ? AND id_conto=?";
                 params = [formatDate(endDate), formatDate(startDate), category,idConto];
             }
 
@@ -173,51 +172,97 @@ const Uscita = ({navigation, database, idConto }) => {
     };
     const takeTag =async (selectedItem) => {
         console.log(selectedItem.id);
-        /*const tags = await database.getAllAsync(
+        let i=115;
+        const tags = await database.getAllAsync(
             "Select nome_tag from tag_spesa where id_spesa= ? ", [selectedItem.id]
+        );
+        /*const tags = await database.getAllAsync(
+            "Select nome_tag from tag_spesa where id_spesa= ? ", [i]
         );*/
-        const tags =await database.getAllAsync(
-            "Select id_spesa, nome_tag from tag_spesa");
+        /*const tags =await database.getAllAsync(
+            "Select id_spesa, nome_tag from tag_spesa");*/
         //if tags!=undefined set... else set 'nessun tag'
-        console.log(tags);
+        if (tags.length === 0) {
+            setTagModal([]);
+        } else {
+            setTagModal(tags.map(tag => tag.nome_tag).join(', '));
+        }
+    };
+    useEffect(() => {
+        if (selectedItem) {
+            takeTag(selectedItem);
+        }
+    }, [selectedItem]);
+    const handlePressItem = (item) => {
+        setSelectedItem(item);
+        toggleModal();
     };
     const renderModal = () => {
         if (!selectedItem) return null;
 
         return (
             <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    toggleModal();
-                }}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Dettagli Spesa</Text>
-                        <Text style={styles.modalText}>Descrizione: {selectedItem.descrizione}</Text>
-                        <Text style={styles.modalText}>Categoria: {selectedItem.categoria}</Text>
-                        <Text style={styles.modalText}>Importo: {selectedItem.importo}</Text>
-                        <Text style={styles.modalText}>Data: {new Date(selectedItem.data).toLocaleDateString('it-IT')}</Text>
-                        <Text style={styles.modalText}>ID: {selectedItem.id}</Text>
-                        <Button title="Elimina" onPress={() => {
-                            Alert.alert(
-                                'Elimina Spesa',
-                                'Sei sicuro di voler eliminare questa spesa?',
-                                [
-                                    { text: 'Annulla', style: 'cancel' },
-                                    { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) },
-                                    
-                                ],
-                                { cancelable: false }
-                            );
-                        }} />
-                        <Button title="Modifica" onPress={() => modificaSpesa(selectedItem)}/>
-                        <Button title="Chiudi" onPress={toggleModal} />
-                    </View>
+    animationType="slide"
+    transparent={true}
+    visible={modalVisible}
+    onRequestClose={() => {
+        toggleModal();
+    }}
+>
+    <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Dettagli Spesa</Text>
+            <View style={styles.modalTable}>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>Descrizione:</Text>
+                    <Text style={styles.modalTableCellValue}>{selectedItem.descrizione}</Text>
                 </View>
-            </Modal>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>Categoria:</Text>
+                    <Text style={styles.modalTableCellValue}>{selectedItem.categoria}</Text>
+                </View>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>Importo:</Text>
+                    <Text style={styles.modalTableCellValue}>{selectedItem.importo}</Text>
+                </View>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>Data:</Text>
+                    <Text style={styles.modalTableCellValue}>{new Date(selectedItem.data).toLocaleDateString('it-IT')}</Text>
+                </View>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>ID:</Text>
+                    <Text style={styles.modalTableCellValue}>{selectedItem.id}</Text>
+                </View>
+                <View style={styles.modalTableRow}>
+                    <Text style={styles.modalTableCellLabel}>Tags:</Text>
+                    <Text style={styles.modalTableCellValue}>{tagModal}</Text>
+                </View>
+            </View>
+            <View style={styles.modalButtonContainer}>
+                <Pressable style={styles.modalButton} onPress={() => {
+                    Alert.alert(
+                        'Elimina Spesa',
+                        'Sei sicuro di voler eliminare questa spesa?',
+                        [
+                            { text: 'Annulla', style: 'cancel' },
+                            { text: 'Elimina', onPress: () => deleteSpesa(selectedItem) },
+                        ],
+                        { cancelable: false }
+                    );
+                }}>
+                    <Text style={styles.modalButtonText}>Elimina</Text>
+                </Pressable>
+                <Pressable style={styles.modalButton} onPress={() => modificaSpesa(selectedItem)}>
+                    <Text style={styles.modalButtonText}>Modifica</Text>
+                </Pressable>
+                <Pressable style={styles.modalButton} onPress={toggleModal}>
+                    <Text style={styles.modalButtonText}>Chiudi</Text>
+                </Pressable>
+            </View>
+        </View>
+    </View>
+</Modal>
+
         );
     };
 
@@ -225,7 +270,7 @@ const Uscita = ({navigation, database, idConto }) => {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
-                <Text style={styles.title}>Totale Uscite di {idConto}</Text>
+                <Text style={styles.title}>Totale Uscite di {username}</Text>
 
                 <View style={styles.totalContainer}>
                     <Text style={styles.totalLabel}>Totale:</Text>
@@ -294,9 +339,11 @@ const Uscita = ({navigation, database, idConto }) => {
                         //aggiunte
                         <Pressable
                             onPress={() => {
-                                setSelectedItem(item);
-                                toggleModal();
+                                handlePressItem(item);
+                                /*setSelectedItem(item);
                                 takeTag(selectedItem);
+                                toggleModal();*/
+                                
                             }}
                         >
                             {/*fine Aggiunte */}
@@ -306,7 +353,7 @@ const Uscita = ({navigation, database, idConto }) => {
                                 <Text style={styles.spesaItemText}>Categoria: {item.categoria}</Text>
                                 <Text style={styles.spesaItemText}>Importo: {item.importo}</Text>
                                 <Text style={styles.spesaItemText}>Data: {new Date(item.data).toLocaleDateString('it-IT')}</Text>
-
+                                
                             </View>
                             {/* Aggiunte */}
                         </Pressable>
@@ -433,7 +480,69 @@ const styles = StyleSheet.create({
     modalText: {
         fontSize: 16,
         marginBottom: 5,
-    }
+    },
+    modalField: {
+        flexDirection: 'row',
+        marginBottom: 10,
+    },
+    modalFieldLabel: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0057BB',
+    },
+    modalFieldValue: {
+        flex: 2,
+        fontSize: 16,
+        color: '#0057BB',
+    },
+    modalTable: {
+        marginBottom: 20,
+        borderWidth: 1,
+        borderColor: '#0057BB',
+        borderRadius: 5,
+        
+    },
+    
+    
+    modalTableRow: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        borderBottomWidth: 1,
+    borderBottomColor: '#0057BB'
+    },
+    modalTableCellLabel: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0057BB',
+        
+        
+    },
+    modalTableCellValue: {
+        flex: 1,
+        fontSize: 16,
+        color: '#0057BB',
+    },
+    modalButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 20,
+        
+    },
+    modalButton: {
+        backgroundColor: '#0057BB',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 5,
+        
+    },
+    modalButtonText: {
+        color: '#FFF',
+        fontSize: 16,
+        
+    },
+    
 });
 
 export default Uscita;

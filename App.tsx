@@ -165,7 +165,7 @@ const App = () => {
   const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
   const NuovaSpesaScreen = (props) => <NuovaSpesa {...props}  database={database} idConto={idConto} />;
   const HomeGraficiStatisticheScreen = () => <HomeGraficiStatistiche database={database} idConto={idConto} />;
-  const UscitaScreen = (props) => <Uscita {...props} database={database} idConto={idConto} />;
+  const UscitaScreen = (props) => <Uscita {...props} database={database} idConto={idConto} username={username} />;
 
   return (
     <NavigationContainer>
