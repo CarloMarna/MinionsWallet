@@ -21,7 +21,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [tagModal,setTagModal]= useState([]);
     
-    //gestione picker categoria da db
+    
     const fetchCategories = async () => {
         try {
             const result = await database.getAllAsync(`SELECT nome FROM categoria`);
@@ -38,7 +38,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
     const formatDate = (date: Date) => {
         return date.toISOString().split('T')[0];
     };
-    //gestione calcolo totale dinamico da db
+    
     const calculateTotal = async () => {
         try {
             let query2 = "SELECT sigla FROM conto where id=?";
@@ -71,7 +71,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
         calculateTotal();
     }, [database, category, startDate, endDate]);
 
-    //gestione lista spese dinamica da db
+    
     const fetchSpese = async () => {
         try {
             let query;
@@ -133,9 +133,9 @@ const Uscita = ({navigation, database, idConto ,username}) => {
             toggleEndDatePicker();
         }
     };
-    //aggiunte
+    
     const modificaSpesa= (spesaToModify) =>{
-        console.log(spesaToModify.id);
+        
         navigation.navigate('NuovaSpesa', { id: spesaToModify.id });
     }
     const deleteSpesa = async (spesaToDelete) => {
@@ -144,19 +144,18 @@ const Uscita = ({navigation, database, idConto ,username}) => {
 
             const deleteQuery = `DELETE FROM spesa WHERE id = ${spesaToDelete.id}`;
             await database.execAsync(deleteQuery);
-            console.log('Eliminazione effettuata');
-            //setSpese(prevSpese => prevSpese.filter(spesa => spesa.id !== spesaToDelete.id));
+            
+            
             fetchSpese();
             const result = await database.getAllAsync(
                 "Select id from spesa where categoria= ? order by id asc", [spesaToDelete.categoria]
             );
-            console.log(result);
-            console.log(result.length);
+            
             if (result.length === 0) {
-                console.log(spesaToDelete.categoria);
+                
                 const deleteCategoryQuery = `DELETE FROM categoria WHERE nome = '${spesaToDelete.categoria}'`;
                 await database.execAsync(deleteCategoryQuery);
-                console.log(`Categoria eliminata`);
+               
                 fetchCategories();
             }
 
@@ -171,17 +170,12 @@ const Uscita = ({navigation, database, idConto ,username}) => {
         setModalVisible(!modalVisible);
     };
     const takeTag =async (selectedItem) => {
-        console.log(selectedItem.id);
+        
         let i=115;
         const tags = await database.getAllAsync(
             "Select nome_tag from tag_spesa where id_spesa= ? ", [selectedItem.id]
         );
-        /*const tags = await database.getAllAsync(
-            "Select nome_tag from tag_spesa where id_spesa= ? ", [i]
-        );*/
-        /*const tags =await database.getAllAsync(
-            "Select id_spesa, nome_tag from tag_spesa");*/
-        //if tags!=undefined set... else set 'nessun tag'
+        
         if (tags.length === 0) {
             setTagModal([]);
         } else {
@@ -266,7 +260,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
         );
     };
 
-    //fine aggiunte
+    
     return (
     <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -342,13 +336,11 @@ const Uscita = ({navigation, database, idConto ,username}) => {
                         <Pressable
                             onPress={() => {
                                 handlePressItem(item);
-                                /*setSelectedItem(item);
-                                takeTag(selectedItem);
-                                toggleModal();*/
+                              
                                 
                             }}
                         >
-                            {/*fine Aggiunte */}
+                            
 
                             <View style={styles.spesaItem}>
                                 <Text style={styles.spesaItemText}>Descrizione: {item.descrizione}</Text>
@@ -357,7 +349,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
                                 <Text style={styles.spesaItemText}>Data: {new Date(item.data).toLocaleDateString('it-IT')}</Text>
                                 
                             </View>
-                            {/* Aggiunte */}
+                            
                         </Pressable>
 
                     )}
@@ -552,15 +544,15 @@ const styles = StyleSheet.create({
     flatList: {
         flex: 0,
         width: '100%',
-        backgroundColor: '#ffef99', // Giallo scuro
+        backgroundColor: '#ffef99', 
         borderWidth: 2,
-        borderColor: '#2196F3', // Blu
+        borderColor: '#2196F3', 
         borderRadius: 30,
         padding:20,
         
     },
     flatListContent: {
-        paddingHorizontal: 20, // Spaziatura orizzontale per far vedere il bordo
+        paddingHorizontal: 20, 
        
     },
     flatListContainer: {
