@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert,ScrollView, SafeAreaView } from 'react-native';
-
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert,ScrollView, SafeAreaView ,Dimensions} from 'react-native';
+const { width, height } = Dimensions.get('window');
 const Login = ({ navigation, database, onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -58,6 +58,7 @@ export default Login;
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    minHeight: height,
   },
   container: {
     flex: 1,

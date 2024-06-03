@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Platform, FlatList, Modal, Button, Alert, ScrollView, SafeAreaView,Dimensions} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRoute } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
-
+const { width, height } = Dimensions.get('window');
 const Uscita = ({navigation, database, idConto ,username}) => {
 
 
@@ -370,6 +370,7 @@ const Uscita = ({navigation, database, idConto ,username}) => {
 const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
+        minHeight: height,
     },
     container: {
         flex: 1,

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableOpacity, ScrollView, SafeAreaView,Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -11,11 +11,11 @@ async function loadFonts() {
   });
 }
 loadFonts();
-
+const { width, height } = Dimensions.get('window');
 const Registration = ({ navigation, database, onLogin }) => {
 
 
-  
+
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -23,7 +23,7 @@ const Registration = ({ navigation, database, onLogin }) => {
   const [currencies, setCurrencies] = useState([]);
   const [selectedCurrency, setSelectedCurrency] = useState('EUR');
   const [isDatabaseInitialized, setIsDatabaseInitialized] = useState(false);
-  const handleGoToLogin = () => {  //reindirizzamento a login da modificare
+  const handleGoToLogin = () => {  
     navigation.navigate("Login");
 
   }
@@ -96,7 +96,7 @@ const Registration = ({ navigation, database, onLogin }) => {
   };
   
   const handleRegistration = async () => {
-    //logica registrazione
+    
     if (!username || !email || !password || !accountName) {
       Alert.alert('Errore', 'Si prega di compilare tutti i campi');
       return;
@@ -109,7 +109,7 @@ const Registration = ({ navigation, database, onLogin }) => {
     }
     const registrationResult = await registrazioneUtente();
 
-    console.log(registrationResult);
+    
 
     if (registrationResult.messaggio === 'usernameDuplicato') {
       Alert.alert(
@@ -169,7 +169,7 @@ const Registration = ({ navigation, database, onLogin }) => {
     return null;
   }
   return (
-<SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>Benvenuto in MINIONs</Text>
@@ -228,9 +228,15 @@ const Registration = ({ navigation, database, onLogin }) => {
 export default Registration;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFF9C4',
+  },
   scrollContainer: {
     flexGrow: 1,
+    minHeight: height,
   },
+ 
   container: {
     flex: 1,
     justifyContent: 'center',

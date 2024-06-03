@@ -65,10 +65,13 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                if ((await db.getAllAsync('Select 1 as flag from valuta'))==null) {
-                   await popolaDBParziale(db);
-                   await popolaDBCompleto(db);
+
+                let x=await db.getFirstAsync('Select 1 as flag from valuta');
+                if (x==null) {
+                    await popolaDBParziale(db);
+                    await popolaDBCompleto(db);
                 }
+                
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
