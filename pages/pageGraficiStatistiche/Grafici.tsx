@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Dimensions, ScrollView, Alert, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import { PureChart } from 'react-native-pure-chart';
+import PureChart from 'react-native-pure-chart';
 import { caricaSpesePerAnno, caricaSpesePerCategoria, caricaSpesePerCategoriaMedia, ottieniValuta } from '../../script/scriptStatisticheGrafici';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
