@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert,ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert,ScrollView, SafeAreaView } from 'react-native';
 
 const Login = ({ navigation, database, onLogin }) => {
   const [username, setUsername] = useState('');
@@ -26,6 +26,7 @@ const Login = ({ navigation, database, onLogin }) => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.title}>Accedi</Text>
@@ -50,6 +51,7 @@ const Login = ({ navigation, database, onLogin }) => {
       </TouchableOpacity>
     </View>
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -63,25 +65,17 @@ const styles = StyleSheet.create({
     
     backgroundColor: '#FFF9C4',
     padding: 20,
+    shadowOpacity: 0.25, 
+    shadowRadius: 3.84,
+    elevation: 5, 
   },
   title: {
     
-    /*fontSize: 28,
-    marginBottom: 20,
     
-    fontFamily: 'minions-font',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    fontWeight: 'bold',
-    alignItems: 'center',
-    
-    borderColor: '#0057BB',
-    borderWidth: 2,
-    borderRadius: 10,*/
-    marginTop: '25%',
+    marginTop: 40,
     fontSize: 24,
     fontFamily: 'minions-font',
-    marginBottom: '20%',
+    marginBottom: 60,
     borderWidth: 2,
     borderColor: '#0057BB',
     backgroundColor: 'white',
@@ -121,9 +115,10 @@ const styles = StyleSheet.create({
   },
   registerText: {
     fontSize: 16,
-    marginTop: 20,
+    marginTop: '20%',
     color: '#0057BB',
     fontFamily: 'minions-font',
+    
   },
 });
 
