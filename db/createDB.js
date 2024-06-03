@@ -9,7 +9,7 @@ const useDatabase = () => {
         const prepareDB = async () => {
             try {
                 const db = await dbPromise;
-                //await deleteTable(db);
+                await deleteTable(db);
                 const sqlCommands = [
                     `CREATE TABLE IF NOT EXISTS valuta (
                         sigla CHAR(3) PRIMARY KEY NOT NULL,
@@ -65,10 +65,10 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                if ((await db.execAsync('Select 1 as flag from valuta'))) {
+                //if ((await db.execAsync('Select 1 as flag from valuta'))) {
                     await popolaDBParziale(db);
                     await popolaDBCompleto(db);
-                }
+                //}
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);

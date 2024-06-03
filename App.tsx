@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Dimensions, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useEffect } from 'react';
@@ -14,71 +14,6 @@ import Login from './pages/Login';
 import { getImageFromPath, getRandomImage } from './script/minionImage';
 
 const Stack = createStackNavigator();
-const { width, height } = Dimensions.get('window');
-
-/*
-const Menu = ({ navigation, username, isMenuVisible, setMenuVisible, imageUser }) => {
-  const handleMenuClickInternal = () => {
-    setMenuVisible(!isMenuVisible);
-  };
-
-  return (
-    <View>
-      <Modal
-        isVisible={isMenuVisible}
-        animationIn="slideInLeft"
-        animationOut="slideOutLeft"
-        backdropOpacity={0.5}
-        style={styles.modal}
-        onBackdropPress={handleMenuClickInternal}>
-        <View style={styles.menuContent}>
-          <View style={styles.userRow}>
-            <Image
-              source={imageUser} // Imposta il percorso dell'immagine utente
-              style={styles.userImage}
-            />
-            <Text style={styles.username}>{username}</Text>
-          </View>
-          <TouchableOpacity style={styles.menuItem} onPress={() => {
-            setMenuVisible(false);
-            navigation.navigate("HomePage")
-          }}>
-            <Text>DashBoard</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => {
-            setMenuVisible(false);
-            navigation.navigate("NuovaSpesa")
-          }}>
-            <Text>Nuova Spesa</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => {
-            setMenuVisible(false);
-            navigation.navigate("HomeGraficiStatistiche")
-          }}>
-            <Text>Grafici & Statistiche</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => {
-            setMenuVisible(false);
-            navigation.navigate("Uscita")
-          }}>
-            <Text>Uscita</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
-            setMenuVisible(false);
-            navigation.navigate("Registration")
-          }}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>© {new Date().getFullYear()} Developed by MinionsGroup</Text>
-            <Text style={styles.versionText}>v. 1.0.0.0</Text>
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
-};*/
-
 
 const App = () => {
   const database = useDatabase();
@@ -99,6 +34,7 @@ const App = () => {
   const handleMenuClick = () => {
     setMenuVisible(!isMenuVisible);
   }
+
   const Menu = ({ navigation, username }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
@@ -111,8 +47,9 @@ const App = () => {
           animationOut="slideOutLeft"
           backdropOpacity={0.5}
           style={styles.modal}
-          onBackdropPress={handleMenuClickInternal}>
-          <View style={styles.menuContent}>
+          onBackdropPress={() => setMenuVisible(false)} 
+          >
+          <ScrollView contentContainerStyle={styles.menuContent}>
             <View style={styles.userRow}>
               <Image
                 source={imageUser} // Imposta il percorso dell'immagine utente
@@ -154,7 +91,7 @@ const App = () => {
               <Text style={styles.footerText}>© {new Date().getFullYear()} Developed by MinionsGroup</Text>
               <Text style={styles.versionText}>v. 1.0.0.0</Text>
             </View>
-          </View>
+          </ScrollView>
         </Modal>
       </View>
     );
@@ -277,74 +214,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  /*modal: {
-    margin: 0,
-    justifyContent: 'flex-start',
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'transparent', // Colore di sfondo per il modal
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-  },
-  menuContent: {
-    backgroundColor: 'white',
-    height: height,
-    width: width * 4 / 5,
-    padding: 20,
-  },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  userImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 10,
-  },
-  username: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  menuItem: {
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  logoutItem: {
-    marginTop: 'auto',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-  },
-  logoutText: {
-    color: 'red',
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  footerText: {
-    color: 'black',
-    fontSize: 10
-  },
-  versionText: {
-    color: 'black',
-    fontSize: 10
-  },*/
   modal: {
     margin: 0,
     justifyContent: 'flex-start',
+    width: '80%'
   },
   menuContent: {
-    backgroundColor: '#FFF9C4', // Colore giallo chiaro, giocoso
+    backgroundColor: '#FFF9C4',
     padding: 20,
     paddingTop: 40,
-    flex: 1,
     borderTopRightRadius: 30,
     borderBottomRightRadius: 30,
     shadowColor: '#000',
@@ -352,8 +230,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 8,
-    height: '100%',
-    width: '80%', // Usato percentuali per migliorare la compatibilità con diversi schermi
+    width: '100%',
+    flexGrow: 1,
   },
   userRow: {
     flexDirection: 'row',

@@ -316,9 +316,6 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
           </TouchableOpacity>
         </ScrollView>
       </Modal>
-      <View style={[{flex:1}]}>
-        <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} />
-      </View>
       <Modal
         isVisible={modalVisible}
         animationIn="slideInLeft"
@@ -369,6 +366,7 @@ const HomePageComponent = ({ database, idConto }: { database: any, idConto:numbe
           </View>
         </ScrollView>
       </Modal>
+      <FlatList style={styles.flatList} data={spese} renderItem={renderSpese} keyExtractor={(item) => item.id} ListEmptyComponent={<Text style={styles.nessunaSpesa}>Nessuna Spesa Da Mostrare</Text>} />
     </SafeAreaView>
   );
 
@@ -395,8 +393,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,*/
-    flex: 1,
-    backgroundColor: '#FFF9C4'
+    backgroundColor: '#FFF9C4',
+    minHeight: height,
   },
   containerSaldoConto: {
     flexDirection: 'row',
@@ -479,6 +477,11 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingBottom: 20,
+  },
+  nessunaSpesa: {
+    textAlign: 'center',
+    padding: 20,
+    color: '#666',
   },
   rigaSpesa: {
     flexDirection: 'row',
