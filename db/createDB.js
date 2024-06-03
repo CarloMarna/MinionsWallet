@@ -65,9 +65,9 @@ const useDatabase = () => {
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-                if ((await db.execAsync('Select 1 as flag from valuta'))) {
-                    await popolaDBParziale(db);
-                    await popolaDBCompleto(db);
+                if ((await db.getAllAsync('Select 1 as flag from valuta'))==null) {
+                   await popolaDBParziale(db);
+                   await popolaDBCompleto(db);
                 }
                 setDatabase(db);
             } catch (error) {
