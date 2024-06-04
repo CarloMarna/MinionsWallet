@@ -217,9 +217,7 @@ const Registration = ({ navigation, database, onLogin }) => {
           <Text style={styles.labelLog}>Se hai già un account clicca qui</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
-          <Text style={styles.label}>Ti scocci di fare il login?Cliccami</Text>
-        </TouchableOpacity>
+        
       </View>
     </ScrollView>
     </SafeAreaView>
