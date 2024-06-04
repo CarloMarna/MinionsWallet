@@ -39,6 +39,7 @@ const Importo = ({ database, idConto, inserimento }) => {
         const set_valute = async () => {
             const result = await load_valute();
             setListaValute(result.lista_valute);
+            inserimento.v_sigla = valutaDefault.sigla;
         };
 
         set_valute();
@@ -53,7 +54,7 @@ const Importo = ({ database, idConto, inserimento }) => {
         simbolo: x.simbolo
     };
     const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>(valutaDefault);
-    inserimento.v_sigla = valutaDefault.sigla;
+
 
     if (!loadingImporto) {
         return (
@@ -479,7 +480,16 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
         if (inserimento.data != null && inserimento.descrizione != '' && inserimento.importo != '' && inserimento.nome_cat != '' && inserimento.v_sigla != '') {
             try {
                 let x = formatDate(inserimento.data);
-                database.execSync(`UPDATE spesa SET importo=${inserimento.importo}, data='${x}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`);
+                let valuta = database.getFirstSync(`SELECT sigla FROM conto WHERE id=${idConto};`);
+                console.log(inserimento.v_sigla);
+                if (valuta.sigla != inserimento.v_sigla) {
+                    console.log("ci sono");
+                    conversioneValuta(inserimento.v_sigla, valuta.sigla, inserimento.importo).then(importoConvertito => {
+                        database.execSync(`UPDATE spesa SET importo=${importoConvertito}, data='${x}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`)
+                    })
+                } else {
+                    database.execSync(`UPDATE spesa SET importo=${inserimento.importo}, data='${x}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`);
+                }
                 inserimento.data = new Date();
             }
             catch (error) {
