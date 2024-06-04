@@ -35,7 +35,7 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-  const Menu = ({ navigation, username, imageUser }) => {
+  const Menu = ({ navigation, username, imageUser, database }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
     }
@@ -47,8 +47,8 @@ const App = () => {
           animationOut="slideOutLeft"
           backdropOpacity={0.5}
           style={styles.modal}
-          onBackdropPress={() => setMenuVisible(false)} 
-          >
+          onBackdropPress={() => setMenuVisible(false)}
+        >
           <ScrollView contentContainerStyle={styles.menuContent}>
             <View style={styles.userRow}>
               <Image
@@ -59,31 +59,34 @@ const App = () => {
             </View>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
-              navigation.navigate("HomePage")
+              navigation.navigate("HomePage");
             }}>
               <Text>DashBoard</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
-              navigation.navigate("NuovaSpesa")
+              if (database) {
+                database.close();
+              }
+              navigation.navigate("NuovaSpesa");
             }}>
               <Text>Nuova Spesa</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
-              navigation.navigate("HomeGraficiStatistiche")
+              navigation.navigate("HomeGraficiStatistiche");
             }}>
               <Text>Grafici & Statistiche</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
-              navigation.navigate("Uscita")
+              navigation.navigate("Uscita");
             }}>
               <Text>Uscita</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
               setMenuVisible(false);
-              navigation.navigate("Registration")
+              navigation.navigate("Registration");
             }}>
               <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
@@ -97,10 +100,10 @@ const App = () => {
     );
   }
 
-  const RegistrationScreen = (props) => <Registration {...props} database={database} onLogin={takeIdConto}/>;
+  const RegistrationScreen = (props) => <Registration {...props} database={database} onLogin={takeIdConto} />;
   const LoginScreen = (props) => <Login {...props} database={database} onLogin={takeIdConto} />;
   const HomePageScreen = () => <HomePage database={database} idConto={idConto} />;
-  const NuovaSpesaScreen = (props) => <NuovaSpesa {...props}  database={database} idConto={idConto} />;
+  const NuovaSpesaScreen = (props) => <NuovaSpesa {...props} database={database} idConto={idConto} />;
   const HomeGraficiStatisticheScreen = () => <HomeGraficiStatistiche database={database} idConto={idConto} />;
   const UscitaScreen = (props) => <Uscita {...props} database={database} idConto={idConto} username={username} />;
 
@@ -133,6 +136,7 @@ const App = () => {
                   isMenuVisible={isMenuVisible}
                   setMenuVisible={setMenuVisible}
                   imageUser={imageUser}
+                  database={database}
                 />
               </View>
             ),
