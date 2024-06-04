@@ -311,14 +311,14 @@ const Categorie = ({ database, idConto, inserimento }) => {
     )
 };
 
-const Tag = ({ database, inserimento }) => {
+const Tag = ({ database, inserimento, idConto }) => {
     const [tag, setTag] = useState<string[]>([]);
     const [selectedTag, setSelectedTag] = useState<string[]>([]);
     const [isLoadingTag, setIsLoadingTag] = useState(false);
 
     const readTag = async () => {
         try {
-            const lista_tag = await database.getAllAsync(`SELECT nome FROM tag;`);
+            const lista_tag = await database.getAllAsync(`SELECT nome FROM tag WHERE idConto = ${idConto};`);
             const lista: String[] = [];
             for (const row of lista_tag) {
                 lista.push(row.nome);
@@ -387,7 +387,7 @@ const Tag = ({ database, inserimento }) => {
                         <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                         <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{ width: 100, height: 50, fontSize: 15 }]}></TextInput>
                         <View style={[{ flexDirection: 'row', alignItems: 'center', marginVertical: 'auto' }]}>
-                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); setListaTag(); }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}',${idConto});`); setListaTag(); }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                             <Pressable onPress={() => setTagModalVisible(false)}><Text style={styles.testo_bottone_tag}>Annulla</Text></Pressable>
                         </View>
                     </View>
@@ -460,7 +460,7 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
             for (let x = 0; x < inserimento.tag.length; x++) {
                 if (inserimento.tag[x] != '') {
                     try {
-                        database.execSync(`INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES(${id_spesa.id}, '${inserimento.tag[x]}');`);
+                        database.execSync(`INSERT INTO tag_spesa (id_spesa, nome_tag, idConto) VALUES(${id_spesa.id}, '${inserimento.tag[x]}',${idConto});`);
                     }
                     catch (error) {
                         console.log("errore aggiunta tag" + error);
@@ -504,13 +504,13 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
         console.log(inserimento.tag);
         for (const y of tagPrecedenti) {
             if (!tag.includes(y.nome_tag)) {
-                database.execSync(`DELETE FROM tag_spesa WHERE id_spesa=${inserimento.idSpesa} AND nome_tag='${y.nome_tag}';`);
+                database.execSync(`DELETE FROM tag_spesa WHERE id_spesa=${inserimento.idSpesa} AND nome_tag='${y.nome_tag}' AND idConto = ${idConto};`);
             }
         }
         for (var i = 0; i < tag.length; i++) {
             if (tag[i] != '' && !tagPrecedenti.some(t => t.nome_tag === tag[i])) {
                 try {
-                    const query = `INSERT INTO tag_spesa VALUES (${inserimento.idSpesa}, '${tag[i]}');`;
+                    const query = `INSERT INTO tag_spesa VALUES (${inserimento.idSpesa}, '${tag[i]}',${idConto});`;
                     console.log(query);
                     database.execSync(query);
                 }
@@ -570,7 +570,7 @@ const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navig
             <Categorie database={database} idConto={idConto} inserimento={inserimento} />
             <Descrizione database={database} inserimento={inserimento} />
             <Data database={database} inserimento={inserimento} />
-            <Tag database={database} inserimento={inserimento} />
+            <Tag database={database} inserimento={inserimento} idConto={idConto} />
             <BottoneAggiuntaSpesa database={database} idConto={idConto} inserimento={inserimento} isModifing={isModifing} navigation={navigation} />
         </SafeAreaView>
     )

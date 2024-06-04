@@ -30,7 +30,7 @@ const useDatabase = () => {
                         data_apertura DATE NOT NULL DEFAULT (CURRENT_TIMESTAMP),
                         sigla CHAR(3) NOT NULL,
                         username varchar(50)  NOT NULL,
-                        FOREIGN KEY (username) REFERENCES utente (username) ON DELETE CASCADE ON UPDATE CASCADE
+                        FOREIGN KEY (username) REFERENCES utente (username) ON DELETE CASCADE ON UPDATE CASCADE,
                         FOREIGN KEY (sigla) REFERENCES valuta (sigla)
                     );`,
                     `CREATE TABLE IF NOT EXISTS categoria (
@@ -52,20 +52,25 @@ const useDatabase = () => {
                         FOREIGN KEY (id_conto) REFERENCES categoria (idConto)
                     );`,
                     `CREATE TABLE IF NOT EXISTS tag (
-                        nome VARCHAR(30) PRIMARY KEY NOT NULL
+                        nome VARCHAR(30)  NOT NULL,
+                        idConto INTEGER NOT NULL,
+                        PRIMARY KEY (nome,idConto),
+                        FOREIGN KEY (IdConto) REFERENCES categoria (id)
                     );`,
                     `CREATE TABLE IF NOT EXISTS tag_spesa (
                         id_spesa INTEGER NOT NULL,
                         nome_tag VARCHAR(30) NOT NULL,
-                        PRIMARY KEY (id_spesa, nome_tag),
+                        idConto INTEGER NOT NULL,
+                        PRIMARY KEY (id_spesa, nome_tag, idConto),
                         FOREIGN KEY (id_spesa) REFERENCES spesa (id) ON DELETE CASCADE ON UPDATE CASCADE,
-                        FOREIGN KEY (nome_tag) REFERENCES tag (nome)
+                        FOREIGN KEY (nome_tag) REFERENCES tag (nome) ON DELETE CASCADE ON UPDATE CASCADE,
+                        FOREIGN KEY (idConto) REFERENCES conto (id) ON DELETE CASCADE ON UPDATE CASCADE 
                     );`
                 ];
                 for (const command of sqlCommands) {
                     await db.execAsync(command);
                 }
-
+                console.log("Creazione effettuata con successo");
                 let x = await db.getFirstAsync('Select 1 as flag from valuta');
                 if (x == null) {
                     await popolaDBParziale(db);
@@ -134,12 +139,12 @@ export const popolaDBCompleto = async (db) => {
                 ('Casa', '/assets/img/icone_minions/Minion-Shy.png',1);`,
 
             // Inserimento dati nella tabella 'tag'
-            `INSERT INTO tag (nome) VALUES 
-                ('Urgente'),
-                ('Concerto'),
-                ('Regalo fidanzato'),
-                ('Spesa settimanale'),
-                ('Croccantini Fido');`,
+            `INSERT INTO tag (nome, idConto) VALUES 
+                ('Urgente',1),
+                ('Concerto',2),
+                ('Regalo fidanzato',1),
+                ('Spesa settimanale',1),
+                ('Croccantini Fido',1);`,
 
             // Inserimento dati nella tabella 'spesa'
             `INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES
@@ -237,9 +242,9 @@ export const popolaDBCompleto = async (db) => {
         (55.75, '2024-05-18', 'Tasse', 'Altro', 1);`,
 
             // Inserimento dati nella tabella 'tag_spesa'
-            `INSERT INTO tag_spesa (id_spesa, nome_tag) VALUES 
-        (1, 'Croccantini Fido'),
-        (2, 'Urgente');`
+            `INSERT INTO tag_spesa (id_spesa, nome_tag,idConto) VALUES 
+        (1, 'Croccantini Fido',1),
+        (2, 'Urgente',1);`
         ];
         console.log("Caricamento completo effettuato");
         for (const command of insertCommands) {
