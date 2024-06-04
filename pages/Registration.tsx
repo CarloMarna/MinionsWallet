@@ -172,7 +172,7 @@ const Registration = ({ navigation, database, onLogin }) => {
     <SafeAreaView style={styles.safeArea}>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Benvenuto in MINIONs</Text>
+        <Text style={styles.title}>Benvenuto in Minions Wallet</Text>
         <Text style={styles.label}>Username:</Text>
         <TextInput
           style={styles.input}

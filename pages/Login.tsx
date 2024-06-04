@@ -28,7 +28,7 @@ const Login = ({ navigation, database, onLogin }) => {
     <SafeAreaView style={{ flex: 1 }}>
     <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
-      <Text style={styles.title}>Accedi</Text>
+      <Text style={styles.title}>Effettua il LOGIN</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Username:</Text>
         <TextInput style={styles.input} onChangeText={setUsername} value={username} />
