@@ -35,7 +35,7 @@ const MinionComponent = () => (
 const SpesePerCategoria = ({ database, idConto }) => {
     const [spesaCat, setSpesaCat] = useState<SpesaCategoriaType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [orientation, setOrientation] = useState('portrait');
+    const [orientamento, setOrientamento] = useState('portrait');
 
     useEffect(() => {
         const caricaSpese = async () => {
@@ -47,13 +47,13 @@ const SpesePerCategoria = ({ database, idConto }) => {
     }, [database, idConto]);
 
     useEffect(() => {
-        const detectOrientation = () => {
+        const rilevaOrientamento = () => {
             const { height, width } = Dimensions.get('window');
-            setOrientation(width > height ? 'landscape' : 'portrait');
+            setOrientamento(width > height ? 'landscape' : 'portrait');
         };
 
-        const subscription = Dimensions.addEventListener('change', detectOrientation);
-        detectOrientation();
+        const subscription = Dimensions.addEventListener('change', rilevaOrientamento);
+        rilevaOrientamento();
         return () => subscription?.remove();
     }, []);
 
@@ -69,9 +69,9 @@ const SpesePerCategoria = ({ database, idConto }) => {
     return (
         <View style={styles.container}>
             {spesaCat.length === 0 ? (
-                <View style={[styles.noSpeseContainer, orientation === 'landscape' && styles.noSpeseLandscape]}>
+                <View style={[styles.noSpeseContainer, orientamento === 'landscape' && styles.noSpeseLandscape]}>
                     <Text style={styles.noSpeseText}>Nessuna spesa disponibile</Text>
-                    {orientation === 'portrait' && (
+                    {orientamento === 'portrait' && (
                         <View style={styles.noSpeseImageContainer}>
                             <Image source={require('../../assets/Image/miniSorprese.png')} style={styles.noSpeseImage} />
                         </View>
@@ -85,9 +85,9 @@ const SpesePerCategoria = ({ database, idConto }) => {
                         renderItem={renderSpeseCategoria}
                         style={styles.flatList}
                         keyExtractor={(item) => item.categoria}
-                        ListFooterComponent={orientation !== 'portrait' ? <MinionComponent /> : null}
+                        ListFooterComponent={orientamento !== 'portrait' ? <MinionComponent /> : null}
                     />
-                    {orientation === 'portrait' && <MinionComponent />}
+                    {orientamento === 'portrait' && <MinionComponent />}
                 </>
             )}
         </View>
