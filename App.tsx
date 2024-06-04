@@ -35,7 +35,7 @@ const App = () => {
     setMenuVisible(!isMenuVisible);
   }
 
-  const Menu = ({ navigation, username, imageUser, database }) => {
+  const Menu = ({ navigation, username, imageUser, database, idConto }) => {
     const handleMenuClickInternal = () => {
       setMenuVisible(!isMenuVisible);
     }
@@ -83,6 +83,9 @@ const App = () => {
             </TouchableOpacity>
             <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => {
               setMenuVisible(false);
+              database = null;
+              idConto = null;
+              imageUser = null;
               navigation.navigate("Registration");
             }}>
               <Text style={styles.logoutText}>Logout</Text>
@@ -177,6 +180,7 @@ const App = () => {
                   isMenuVisible={isMenuVisible}
                   setMenuVisible={setMenuVisible}
                   imageUser={imageUser}
+                  idConto={idConto}
                 />
               </View>
             ),
