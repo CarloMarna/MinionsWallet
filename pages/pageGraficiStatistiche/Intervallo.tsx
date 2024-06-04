@@ -122,6 +122,7 @@ const Intervallo = ({ database, idConto }) => {
                             timeZoneName={'Europe/Rome'}
                             mode="date"
                             display="calendar"
+                            maximumDate={new Date()}
                             onChange={(event, selectedDate) => onChangeData(true, selectedDate)}
                         />
                     )}

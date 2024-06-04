@@ -39,7 +39,7 @@ const truncateText = (text: string, length: number = 30) => {
 };
 
 
-const HomePageComponent = ({ database, idConto } : { database: any, idConto:number }) => {
+const HomePageComponent = ({ database, idConto }: { database: any, idConto: number }) => {
   const [limitElementiFlatList, setLimitElementiFlatList] = React.useState("10");
   const [saldoConto, setSaldoConto] = React.useState<GLfloat>(0);
   const [valuta, setValuta] = React.useState("€");
@@ -47,7 +47,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
   const [spesaModalVisible, setSpesaModalVisible] = React.useState<boolean>(false);
   const [selectedSpesa, setSelectedSpesa] = React.useState<Spesa | null>(null);
   const [spese, setSpese] = React.useState([]);
-  const [isInsertNewSpesa,setStatusInsertNewSpesa] = React.useState<boolean>(false);
+  const [isInsertNewSpesa, setStatusInsertNewSpesa] = React.useState<boolean>(false);
 
   const today = new Date();
   const [data, setData] = React.useState(new Date());
@@ -59,13 +59,13 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
 
   const dataSelezionata = (event, selectedDate) => {
     if (event.type === 'set') {
-        const dataNuova = selectedDate || data;
-        setData(dataNuova);
-        setViewDataPicker(false);
+      const dataNuova = selectedDate || data;
+      setData(dataNuova);
+      setViewDataPicker(false);
     } else {
-        setViewDataPicker(false);
+      setViewDataPicker(false);
     }
-};
+  };
 
   React.useEffect(() => {
     const load_spese = async () => {
@@ -75,7 +75,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
         'JOIN categoria AS cat ON s.categoria = cat.nome ' +
         'JOIN conto AS con ON s.id_conto = con.id ' +
         'JOIN valuta AS val ON con.sigla = val.sigla ' +
-        'WHERE con.id='+idConto+' '+
+        'WHERE con.id=' + idConto + ' ' +
         'ORDER BY s.data DESC ' +
         'LIMIT ' + limitElementiFlatList + ';'
       );
@@ -98,7 +98,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
   React.useEffect(() => {
     const fetchCategorie = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT nome FROM categoria WHERE idConto='+idConto+';');
+        const queryResult = await database.getAllAsync('SELECT nome FROM categoria WHERE idConto=' + idConto + ';');
         const categorieFromDatabase = queryResult.map((row) => row.nome);
         setCategoria(categorieFromDatabase);
         if (categorieFromDatabase.length > 0) {
@@ -115,7 +115,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
   React.useEffect(() => {
     const fetchValuta = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT v.simbolo FROM valuta AS v JOIN conto AS c ON c.sigla=v.sigla WHERE c.id='+idConto+";");
+        const queryResult = await database.getAllAsync('SELECT v.simbolo FROM valuta AS v JOIN conto AS c ON c.sigla=v.sigla WHERE c.id=' + idConto + ";");
         const valutaUtilizzata = queryResult.map((row) => row.simbolo);
         setValuta(valutaUtilizzata);
       } catch (error) {
@@ -129,9 +129,9 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
   React.useEffect(() => {
     const fetchSaldoConto = async () => {
       try {
-        const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto='+idConto+';');
+        const queryResult = await database.getAllAsync('SELECT CAST(SUM(s.importo) AS DECIMAL(10,2)) AS totSpesa FROM spesa AS s WHERE s.id_conto=' + idConto + ';');
         const totaleSpesaConto = parseFloat(queryResult.map((row) => row.totSpesa));
-        if(totaleSpesaConto)
+        if (totaleSpesaConto)
           setSaldoConto(totaleSpesaConto);
         else
           setSaldoConto(0);
@@ -161,9 +161,9 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
   const aggiungiSpesa = async () => {
     try {
       if (!importo || !data || causale.length === 0 || !categoriaSelezionata) {
-        return Alert.alert('Informazioni Mancanti','Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
+        return Alert.alert('Informazioni Mancanti', 'Ops... Hai dimenticato di inserire le informazioni, tranquillo non è successo nulla.');
       }
-      const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES ('+parseFloat(importo)+', "'+data.toISOString().split('T')[0]+'", "'+causale+'", "'+categoriaSelezionata+'", '+idConto+');';
+      const query = 'INSERT INTO spesa (importo, data, descrizione, categoria, id_conto) VALUES (' + parseFloat(importo) + ', "' + data.toISOString().split('T')[0] + '", "' + causale + '", "' + categoriaSelezionata + '", ' + idConto + ');';
       await database.execAsync(query);
       //console.info('Inserimento riuscito!');
       setCausale([]);
@@ -210,7 +210,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
       </Pressable>
     );
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.containerSaldoConto}>
@@ -293,6 +293,7 @@ const HomePageComponent = ({ database, idConto } : { database: any, idConto:numb
                 <DateTimePicker
                   mode='date'
                   display='calendar'
+                  maximumDate={new Date()}
                   value={data}
                   onChange={dataSelezionata}>
                 </DateTimePicker>}

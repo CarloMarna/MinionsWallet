@@ -47,13 +47,13 @@ const Importo = ({ database, idConto, inserimento }) => {
 
 
     const x = database.getFirstSync(`SELECT c.sigla, v.nome, v.simbolo FROM conto AS c JOIN valuta AS v ON v.sigla=c.sigla WHERE c.id=${idConto};`)
-    const valutaDefault:itemValuta={
-        sigla:x.sigla,
-        nome:x.nome,
-        simbolo:x.simbolo
+    const valutaDefault: itemValuta = {
+        sigla: x.sigla,
+        nome: x.nome,
+        simbolo: x.simbolo
     };
     const [selectedValuePicker, setSelectedValuePicker] = useState<itemValuta>(valutaDefault);
-    inserimento.v_sigla=valutaDefault.sigla;
+    inserimento.v_sigla = valutaDefault.sigla;
 
     if (!loadingImporto) {
         return (
@@ -120,7 +120,7 @@ const Categorie = ({ database, idConto, inserimento }) => {
 
     const readCategorie = (database: any) => {
         try {
-            const categorie =  database.getAllSync(
+            const categorie = database.getAllSync(
                 `SELECT ca.nome, ca.path_icona FROM categoria AS ca 
                 JOIN conto AS co ON ca.idConto=co.id WHERE co.id=${idConto};`
             );
@@ -240,7 +240,7 @@ const Categorie = ({ database, idConto, inserimento }) => {
         return (
             <ItemPopUp
                 item={path}
-                onPress={() => { setSelectedIcon(item); setImgAggiuntaCategoria(getImagePathFromId(path));}}
+                onPress={() => { setSelectedIcon(item); setImgAggiuntaCategoria(getImagePathFromId(path)); }}
                 borderColor={borderColor}
             />
         )
@@ -288,7 +288,7 @@ const Categorie = ({ database, idConto, inserimento }) => {
                                 setSelectedIcon('');
                                 setModalVisible(!modalVisible);
                                 database.execSync(`INSERT INTO categoria VALUES('${textAggiuntaCategoria}',${idConto},'${imgAggiuntaCategoria}');`);
-                                inserimento.nome_cat=selectedCategory;
+                                inserimento.nome_cat = selectedCategory;
                                 setSelectedCategory(textAggiuntaCategoria);
                                 fetchCategorie();
                                 setImgAggiuntaCategoria('');
@@ -386,7 +386,7 @@ const Tag = ({ database, inserimento }) => {
                         <Text style={styles.scritte_popup}>Inserisci il nome del tag</Text>
                         <TextInput placeholder='Nome tag...' onChangeText={(text) => setTagText(text)} style={[{ width: 100, height: 50, fontSize: 15 }]}></TextInput>
                         <View style={[{ flexDirection: 'row', alignItems: 'center', marginVertical: 'auto' }]}>
-                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); setListaTag();}}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
+                            <Pressable style={[{ marginRight: 5 }]} onPress={() => { setTagModalVisible(false); inserimento.tag.push(tagText); setTag(inserimento.tag); setSelectedTag(selectedTag.concat(tagText)); database.execSync(`INSERT INTO tag VALUES('${tagText}');`); setListaTag(); }}><Text style={styles.testo_bottone_tag}>Aggiungi tag</Text></Pressable>
                             <Pressable onPress={() => setTagModalVisible(false)}><Text style={styles.testo_bottone_tag}>Annulla</Text></Pressable>
                         </View>
                     </View>
@@ -428,7 +428,7 @@ const Data = ({ database, inserimento }: { database: any, inserimento: ins }) =>
                 <Pressable onPress={() => { setViewDataPicker(true) }}>
                     <View style={[{ backgroundColor: 'white', width: 'auto', height: 'auto', borderRadius: 6, borderColor: '#0057BB', borderWidth: 1 }]}><Ionicons name='calendar-outline' color={'#0057BB'} size={60} style={[{ alignSelf: 'center' }]} /></View>
                 </Pressable>
-                {viewDataPicker && <DateTimePicker mode='date' display='calendar' value={data} onChange={dataSelezionata}></DateTimePicker>}
+                {viewDataPicker && <DateTimePicker mode='date' display='calendar' maximumDate={new Date()} value={data} onChange={dataSelezionata}></DateTimePicker>}
                 <Text style={styles.scrittaData}>Hai effettuato la spesa il {data && data.toLocaleDateString()}</Text>
             </View>
         </View>
@@ -437,7 +437,7 @@ const Data = ({ database, inserimento }: { database: any, inserimento: ins }) =>
     )
 }
 
-const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: any, inserimento: ins, isModifing: boolean, navigation:any }) => {
+const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: any, inserimento: ins, isModifing: boolean, navigation: any }) => {
 
     function insert() {
         if (inserimento.data != null && inserimento.descrizione != '' && inserimento.importo != '' && inserimento.nome_cat != '' && inserimento.v_sigla != '') {
@@ -478,9 +478,9 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
     function upl() {
         if (inserimento.data != null && inserimento.descrizione != '' && inserimento.importo != '' && inserimento.nome_cat != '' && inserimento.v_sigla != '') {
             try {
-                let x=formatDate(inserimento.data);
+                let x = formatDate(inserimento.data);
                 database.execSync(`UPDATE spesa SET importo=${inserimento.importo}, data='${x}', descrizione='${inserimento.descrizione}', categoria='${inserimento.nome_cat}', id_conto=${idConto} WHERE id=${inserimento.idSpesa};`);
-                inserimento.data=new Date();
+                inserimento.data = new Date();
             }
             catch (error) {
                 console.log("errore aggiornamento query" + error);
@@ -497,7 +497,7 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
                 database.execSync(`DELETE FROM tag_spesa WHERE id_spesa=${inserimento.idSpesa} AND nome_tag='${y.nome_tag}';`);
             }
         }
-        for (var i = 0; i<tag.length; i++) {
+        for (var i = 0; i < tag.length; i++) {
             if (tag[i] != '' && !tagPrecedenti.some(t => t.nome_tag === tag[i])) {
                 try {
                     const query = `INSERT INTO tag_spesa VALUES (${inserimento.idSpesa}, '${tag[i]}');`;
@@ -518,11 +518,11 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
     return (
         <View>
             <TouchableOpacity onPress={() => {
-                if (!isModifing){
+                if (!isModifing) {
                     insert();
                 }
-                    
-                else{
+
+                else {
                     upl();
                 }
             }}>
@@ -536,7 +536,7 @@ const BottoneAggiuntaSpesa = ({ database, idConto, inserimento, isModifing, navi
 }
 
 
-const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: number, inserimento: any, isModifing: boolean, navigation:any }) => {
+const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navigation }: { database: any, idConto: number, inserimento: any, isModifing: boolean, navigation: any }) => {
 
     const [fontLoaded, setFontLoaded] = useState(false);
 
@@ -561,13 +561,13 @@ const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navig
             <Descrizione database={database} inserimento={inserimento} />
             <Data database={database} inserimento={inserimento} />
             <Tag database={database} inserimento={inserimento} />
-            <BottoneAggiuntaSpesa database={database} idConto={idConto} inserimento={inserimento} isModifing={isModifing} navigation={navigation}/>
+            <BottoneAggiuntaSpesa database={database} idConto={idConto} inserimento={inserimento} isModifing={isModifing} navigation={navigation} />
         </SafeAreaView>
     )
 
 };
 
-const NuovaSpesa = ({ database, idConto, route, navigation }: { database: any, idConto: any, route: any,navigation:any }) => {
+const NuovaSpesa = ({ database, idConto, route, navigation }: { database: any, idConto: any, route: any, navigation: any }) => {
     const [isModifing, setIsModifing] = useState<boolean>(false);
 
 
@@ -614,7 +614,7 @@ const NuovaSpesa = ({ database, idConto, route, navigation }: { database: any, i
         }
     }, [route.params]); // Dependency array to ensure this effect runs only when route.params changes
 
-    const data = [{ key: '1', component: <NuovaSpesaComponent isModifing={isModifing} inserimento={inserimento} database={database} idConto={idConto} navigation={navigation}/> }];
+    const data = [{ key: '1', component: <NuovaSpesaComponent isModifing={isModifing} inserimento={inserimento} database={database} idConto={idConto} navigation={navigation} /> }];
 
 
     const renderItem = ({ item }) => item.component;
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
         height: 60,
         textAlign: 'center',
         borderRightWidth: 2,
-        backgroundColor:'#ffef99'
+        backgroundColor: '#ffef99'
     },
     spesa: {
         flex: 1,
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: 150,
         textAlign: 'center',
-        backgroundColor:'#ffef99',
+        backgroundColor: '#ffef99',
         color: '#0057BB',
     },
     scritte: {
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     categorie: {
-        backgroundColor:'#ffef99',
+        backgroundColor: '#ffef99',
         borderColor: '#0057BB',
         borderWidth: 2,
         borderRadius: 20,
@@ -788,7 +788,7 @@ const styles = StyleSheet.create({
     },
     inputDescrizione: {
         flexDirection: 'row',
-        backgroundColor:'#ffef99',
+        backgroundColor: '#ffef99',
         borderColor: '#0057BB',
         borderWidth: 2,
         borderRadius: 6,
