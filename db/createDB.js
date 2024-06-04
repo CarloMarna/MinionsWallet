@@ -71,7 +71,6 @@ const useDatabase = () => {
                     await popolaDBParziale(db);
                     await popolaDBCompleto(db);
                 }
-
                 setDatabase(db);
             } catch (error) {
                 console.error('Errore nel preparare il database:', error);
@@ -79,11 +78,6 @@ const useDatabase = () => {
         };
 
         prepareDB();
-        return () => {
-            if (database) {
-                database.close();
-            }
-        };
     }, []);
 
     return database;
@@ -284,13 +278,13 @@ export const popolaDBParziale = async (db) => {
 
             // Inserimento dati nella tabella 'utente'
             `INSERT INTO utente (username, mail, pwd) VALUES 
-                ('carlo', 'john@example.com', '123'),
+                ('prova_app', 'john@example.com', '123'),
                 ('john_doe', 'jane@example.com', 'password456');`,
 
 
             // Inserimento dati nella tabella 'conto'
             `INSERT INTO conto (nome_conto, sigla,username) VALUES 
-                ('Conto Corrente', 'EUR', 'carlo'),
+                ('Conto Corrente', 'EUR', 'prova_app'),
                 ('Conto Risparmio', 'USD', 'john_doe');`,
         ];
         console.log("Caricamento effettuato");
