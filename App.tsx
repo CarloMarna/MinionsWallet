@@ -65,9 +65,6 @@ const App = () => {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => {
               setMenuVisible(false);
-              if (database) {
-                database.close();
-              }
               navigation.navigate("NuovaSpesa");
             }}>
               <Text>Nuova Spesa</Text>
