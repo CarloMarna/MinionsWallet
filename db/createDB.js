@@ -92,38 +92,6 @@ const useDatabase = () => {
 export const popolaDBCompleto = async (db) => {
     try {
         const insertCommands = [
-            // Inserimento dati nella tabella 'icona'
-            `INSERT INTO icona (path) VALUES 
-        ('/assets/img/icone_minions/Minion-Bananas.png'),
-        ('/assets/img/icone_minions/Minion-Cake.png'),
-        ('/assets/img/icone_minions/Minion-Crazy.png'),
-        ('/assets/img/icone_minions/Minion-Dancing.png'),
-        ('/assets/img/icone_minions/Minion-Duck.png'),
-        ('/assets/img/icone_minions/Minion-Evil.png'),
-        ('/assets/img/icone_minions/Minion-Fruits.png'),
-        ('/assets/img/icone_minions/Minion-Kungfu.png'),
-        ('/assets/img/icone_minions/Minion-Maid.png'),
-        ('/assets/img/icone_minions/Minion-Playing-Golf.png'),
-        ('/assets/img/icone_minions/Minion-Reading.png'),
-        ('/assets/img/icone_minions/Minion-Sad.png'),
-        ('/assets/img/icone_minions/Minion-Shout.png'),
-        ('/assets/img/icone_minions/Minion-Shy.png'),
-        ('/assets/img/icone_minions/Minions-Chitarra.png'),
-        ('/assets/img/icone_minions/Minions-Festa.png'),
-        ('/assets/img/icone_minions/Minions-Spa.png'),
-        ('/assets/img/icone_minions/Minions-Pillola.png'),
-        ('/assets/img/icone_minions/Minions-Christmas.png'),
-        ('/assets/img/icone_minions/Minions-Chef.png'),
-        ('/assets/img/icone_minions/Minions-Vacay.png'),
-        ('/assets/img/icone_minions/Minions-Toy.png'),
-        ('/assets/img/icone_minions/Minions-Woman.png'),
-        ('/assets/img/icone_minions/Minions-Transport.png'),
-        ('/assets/img/icone_minions/Minions-Technology.png'),
-        ('/assets/img/icone_minions/Minions-NewYork.png'),
-        ('/assets/img/icone_minions/Minions-Jewels.png'),
-        ('/assets/img/icone_minions/Minions-Sad-Christmas.png');
-        `,
-
             // Inserimento dati nella tabella 'categoria'
             `INSERT INTO categoria (nome, path_icona,idConto) VALUES 
                 ('Alimentazione', '/assets/img/icone_minions/Minion-Fruits.png',1),
@@ -258,6 +226,37 @@ export const popolaDBCompleto = async (db) => {
 export const popolaDBParziale = async (db) => {
     try {
         const insertCommands = [
+            // Inserimento dati nella tabella 'icona'
+            `INSERT INTO icona (path) VALUES 
+        ('/assets/img/icone_minions/Minion-Bananas.png'),
+        ('/assets/img/icone_minions/Minion-Cake.png'),
+        ('/assets/img/icone_minions/Minion-Crazy.png'),
+        ('/assets/img/icone_minions/Minion-Dancing.png'),
+        ('/assets/img/icone_minions/Minion-Duck.png'),
+        ('/assets/img/icone_minions/Minion-Evil.png'),
+        ('/assets/img/icone_minions/Minion-Fruits.png'),
+        ('/assets/img/icone_minions/Minion-Kungfu.png'),
+        ('/assets/img/icone_minions/Minion-Maid.png'),
+        ('/assets/img/icone_minions/Minion-Playing-Golf.png'),
+        ('/assets/img/icone_minions/Minion-Reading.png'),
+        ('/assets/img/icone_minions/Minion-Sad.png'),
+        ('/assets/img/icone_minions/Minion-Shout.png'),
+        ('/assets/img/icone_minions/Minion-Shy.png'),
+        ('/assets/img/icone_minions/Minions-Chitarra.png'),
+        ('/assets/img/icone_minions/Minions-Festa.png'),
+        ('/assets/img/icone_minions/Minions-Spa.png'),
+        ('/assets/img/icone_minions/Minions-Pillola.png'),
+        ('/assets/img/icone_minions/Minions-Christmas.png'),
+        ('/assets/img/icone_minions/Minions-Chef.png'),
+        ('/assets/img/icone_minions/Minions-Vacay.png'),
+        ('/assets/img/icone_minions/Minions-Toy.png'),
+        ('/assets/img/icone_minions/Minions-Woman.png'),
+        ('/assets/img/icone_minions/Minions-Transport.png'),
+        ('/assets/img/icone_minions/Minions-Technology.png'),
+        ('/assets/img/icone_minions/Minions-NewYork.png'),
+        ('/assets/img/icone_minions/Minions-Jewels.png'),
+        ('/assets/img/icone_minions/Minions-Sad-Christmas.png');
+        `,
             // Inserimento dati nella tabella 'valuta'
             `INSERT INTO valuta (sigla, nome, simbolo) VALUES 
         ('EUR', 'Euro', '€'),
@@ -279,10 +278,10 @@ export const popolaDBParziale = async (db) => {
         ('THB', 'Baht thailandese', '฿'),
         ('SAR', 'Riyal saudita', '﷼'),
         ('TRY', 'Lira turca', '₺'),
-        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`,
+        ('AED', 'Dirham degli Emirati Arabi Uniti', 'د.إ');`
 
             // Inserimento dati nella tabella 'utente'
-            `INSERT INTO utente (username, mail, pwd) VALUES 
+            , `INSERT INTO utente (username, mail, pwd) VALUES 
                 ('prova_app', 'john@example.com', '12345678'),
                 ('john_doe', 'jane@example.com', 'password456');`,
 
