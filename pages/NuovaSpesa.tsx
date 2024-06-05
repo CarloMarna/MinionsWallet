@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ActivityIndicator, Alert, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Alert, Text, TextInput, View, Modal, FlatList, SafeAreaView, StyleSheet, Image, Pressable, Button, TouchableOpacity, Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Font from 'expo-font';
@@ -9,6 +9,7 @@ import { ins } from '../script/types';
 import { conversioneValuta } from '../script/conversioneValuta';
 import { formatDate } from '../script/scriptStatisticheGrafici';
 
+const { width, height } = Dimensions.get('window');
 
 async function loadFonts() {
     await Font.loadAsync({
@@ -565,7 +566,7 @@ const NuovaSpesaComponent = ({ database, idConto, inserimento, isModifing, navig
     //console.log(inserimento.importo);
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF9C4' }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF9C4', minHeight:height }}>
             <Importo database={database} idConto={idConto} inserimento={inserimento} />
             <Categorie database={database} idConto={idConto} inserimento={inserimento} />
             <Descrizione database={database} inserimento={inserimento} />
@@ -660,7 +661,6 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     spesa_valuta: {
-        flex: 1,
         marginVertical: 10,
         flexDirection: 'row',
         width: 304,
