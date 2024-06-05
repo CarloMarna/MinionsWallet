@@ -400,14 +400,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingTop: 35,
     paddingBottom: 25,
-    right: 0,
-    //backgroundColor: 'yellow'
+    right: 0
   },
   cerchioEsterno: {
-    width: 250, // larghezza del cerchio
-    height: 120, // altezza del cerchio
-    borderRadius: 25, // metà della larghezza e altezza per ottenere un cerchio
-    backgroundColor: '#ffef99', // colore di sfondo del cerchio
+    width: 250,
+    height: 120,
+    borderRadius: 25,
+    backgroundColor: '#ffef99',
     alignItems: 'flex-start',
     padding: 20,
     shadowColor: '#000',
@@ -420,8 +419,8 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   testo: {
-    color: 'black', // colore del testo
-    fontSize: 18, // dimensione del testo
+    color: 'black',
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'left'
   },
