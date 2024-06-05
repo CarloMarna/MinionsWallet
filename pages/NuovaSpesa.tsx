@@ -811,7 +811,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5E642',
+        backgroundColor: '#FFF9C4',
     },
     textContainerCaricamento: {
         fontSize: 20,
