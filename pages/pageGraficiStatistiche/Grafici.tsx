@@ -72,7 +72,7 @@ const Grafici = ({ database, idConto }) => {
         </View>
     ));
 
-    const handleDataPointClick = ({ index, value }) => {
+    const clickPunto = ({ index, value }) => {
         const mese = dataGraficoAndamento.labels[index];
         Alert.alert('Dettagli', `Mese: ${mese}\nImporto Totale: ${value}${valutaConto}`, [{ text: 'OK' }]);
     };
@@ -105,7 +105,7 @@ const Grafici = ({ database, idConto }) => {
                                 bezier
                                 yAxisSuffix={valutaConto}
                                 style={styles.chart}
-                                onDataPointClick={handleDataPointClick}
+                                onDataPointClick={clickPunto}
                             />
                         </ScrollView>
                     )}
